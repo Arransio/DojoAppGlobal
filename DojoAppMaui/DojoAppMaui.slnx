@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../../../Dojo-App/Api_Dojo_App/Api_Dojo_App.csproj" />
+  <Project Path="DojoAppMaui/DojoAppMaui.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

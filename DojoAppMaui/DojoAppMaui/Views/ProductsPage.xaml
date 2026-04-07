@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="DojoAppMaui.Views.ProductsPage">
+
+    <VerticalStackLayout>
+
+        <CollectionView ItemsSource="{Binding Products}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <VerticalStackLayout Padding="10">
+
+                        <Label Text="{Binding Name}" FontSize="18"/>
+                        <Label Text="{Binding Price, StringFormat='€{0:F2}'}"/>
+
+                        <Picker 
+                            Title="Talla"
+                            ItemsSource="{Binding ProductVariants}"
+                            ItemDisplayBinding="{Binding Size}"
+                            SelectedItem="{Binding SelectedVariant}" />
+
+                        <CollectionView ItemsSource="{Binding SelectedVariant.Colors}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsSelected}" />
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <HorizontalStackLayout>
+                            <Button Text="-" />
+                            <Label Text="{Binding Quantity}" />
+                            <Button Text="+" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding Total, StringFormat='Total: €{0:F2}'}"/>
+
+                    </VerticalStackLayout>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Label Text="{Binding Total, StringFormat='TOTAL: €{0:F2}'}"
+               FontSize="22"
+               FontAttributes="Bold"/>
+
+    </VerticalStackLayout>
+
+</ContentPage>
