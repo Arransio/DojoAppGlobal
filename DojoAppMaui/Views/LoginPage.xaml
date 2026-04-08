@@ -17,20 +17,20 @@
                 HorizontalOptions="Center"/>
 
             <!-- Usuario -->
-            <Entry 
+			<Entry 
                 Placeholder="Usuario"
-                 Text="{Binding Username}" />
+                Text="{Binding Username}" />
 
-            <Entry 
+		    <Entry 
                 Placeholder="Contraseña"
                 IsPassword="True"
                 Text="{Binding Password}" />
 
-            <!-- Botón login -->
-            <Button 
-                Text="Iniciar sesión" />
+			<Button 
+                Text="Iniciar sesión"
+                Command="{Binding LoginCommand}" /> 
 
-            <!-- Recordar usuario -->
+			<!-- Recordar usuario -->
             <HorizontalStackLayout>
                 <CheckBox />
                 <Label Text="Recordar usuario"
