@@ -1,38 +1,57 @@
-<ContentPage
-	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DojoAppMaui.Views.HomePage">
-    <CollectionView x:Name="ProductsCollectionView">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Border Stroke="Gray" StrokeThickness="1" Padding="10" Margin="5">
-                    <VerticalStackLayout>
-                        <Label Text="{Binding Name}" FontSize="18" />
-                        <Label Text="{Binding Price}" FontSize="14" />
-                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Sizes}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
+
+    <Grid RowDefinitions="*,Auto">
+
+     
+        <CollectionView x:Name="ProductsCollectionView" Grid.Row="0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="5">
+                        <VerticalStackLayout>
+
+                            <Label Text="{Binding Name}" FontSize="18" />
+                            <Label Text="{Binding Price}" FontSize="14" />
+
+                            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Sizes}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate>
                                         <Button 
                                             Text="{Binding .}" 
                                             Padding="5"
                                             Margin="2"
-                                            Clicked="OnSizeClicked">    
-                                        <Button.Triggers>
-                                            <DataTrigger 
-                                            TargetType="Button"
-                                            Binding="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectedSize}"
-                                            Value="{Binding .}">            
-                                                <Setter Property="BackgroundColor" Value="Green"/>
-                                                <Setter Property="TextColor" Value="White"/>
-                                            </DataTrigger>
-                                        </Button.Triggers>
-                                    </Button>
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+                                            Clicked="OnSizeClicked"/>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+
+                            <Button 
+                                Text="Añadir al carrito"
+                                Margin="5"
+                                Clicked="OnAddToCartClicked"/>
+
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid Grid.Row="1" BackgroundColor="Black" Padding="10" ColumnDefinitions="*,Auto">
+
+            <Label 
+                x:Name="CartSummaryLabel"
+                Text="0 items - 0€"
+                TextColor="White"
+                VerticalOptions="Center"/>
+
+            <Button 
+                Text="🛒"
+                Grid.Column="1"
+                Clicked="OnCartClicked"/>
+
+        </Grid>
+
+    </Grid>
+
 </ContentPage>
