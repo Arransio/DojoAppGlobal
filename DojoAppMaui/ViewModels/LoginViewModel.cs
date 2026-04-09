@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 //using AndroidX.Browser.Trusted;
@@ -52,9 +53,18 @@ public class LoginViewModel : BaseViewModel
 		{
 			var result = await _authService.LoginAsync(Username, Password);
 
+			Debug.WriteLine("TOKEN LOGIN: " + result.token);
+
 			await TokenStorage.SaveToken(result.token);
+
 			var token = await TokenStorage.GetToken();
-			
+			Debug.WriteLine("TOKEN STORAGE: " + token);
+
+
+			var test = await _authService.TestAuth();
+			Debug.WriteLine("RESULTADO TEST: " + test);
+
+
 
 			Application.Current.MainPage = new HomePage();
 		}
