@@ -1,74 +1,101 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\a.arranz\\Dojo-App\\",
+  "WorkspaceRootPath": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\controllers\\campaignscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\campaignscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\controllers\\pedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\pedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\campaign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\campaign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\pedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\pedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\pedidoitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\pedidoitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\color.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\api_dojo_app.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\api_dojo_app.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\api_dojo_app.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\api_dojo_app.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\loginresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\loginresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\campaignscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\campaignscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\pedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\pedidoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\campaign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\campaign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\pedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\pedido.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\pedidoitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\pedidoitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\color.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\color.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\productvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\productvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\productvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\models\\productvariantcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\models\\productvariantcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\models\\productvariantcolor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\controllers\\productvariantscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\productvariantscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\productvariantscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\controllers\\colorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\colorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\colorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojo-app\\api_dojo_app\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|c:\\users\\a.arranz\\dojoapp\\dojo-app\\api_dojo_app\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C1159C80-347B-E163-A78C-058826B6AD87}|Api_Dojo_App\\Api_Dojo_App.csproj|solutionrelative:api_dojo_app\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -78,7 +105,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 13,
           "Children": [
             {
               "$type": "Bookmark",
@@ -122,76 +149,159 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PedidoItem.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\PedidoItem.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\PedidoItem.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\PedidoItem.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Models\\PedidoItem.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAuAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAQwCkAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T11:01:46.04Z",
+              "WhenOpened": "2026-04-07T14:35:32.554Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "LoginRequest.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\LoginRequest.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\LoginRequest.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\LoginRequest.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Models\\LoginRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-07T14:11:51.084Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\appsettings.json",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\appsettings.json",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\appsettings.json",
+              "RelativeToolTip": "Api_Dojo_App\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-07T14:12:43.979Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Program.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Program.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Program.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Program.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAADgvxcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T09:59:52.875Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "LoginResponse.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\LoginResponse.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\LoginResponse.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\LoginResponse.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Models\\LoginResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-07T14:12:09.556Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Api_Dojo_App.csproj",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Api_Dojo_App.csproj",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Api_Dojo_App.csproj",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Api_Dojo_App.csproj",
+              "RelativeToolTip": "Api_Dojo_App\\Api_Dojo_App.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-04-07T14:28:18.129Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "CampaignsController.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\CampaignsController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\CampaignsController.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\CampaignsController.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\CampaignsController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\CampaignsController.cs",
               "RelativeToolTip": "Api_Dojo_App\\Controllers\\CampaignsController.cs",
-              "ViewState": "AgIAABoAAAAAAAAAAAAYwCgAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAqwCgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T09:31:14.484Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "AppDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Data\\AppDbContext.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Data\\AppDbContext.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Data\\AppDbContext.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Data\\AppDbContext.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T09:37:10.807Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "PedidosController.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\PedidosController.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\PedidosController.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\PedidosController.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Controllers\\PedidosController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-01T10:50:12.468Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Product.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Product.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Models\\Product.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T10:27:49.973Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-31T09:31:14.484Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Data\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Data\\AppDbContext.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T09:37:10.807Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "PedidosController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\PedidosController.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\PedidosController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\PedidosController.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Controllers\\PedidosController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-01T10:50:12.468Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Api_Dojo_App.http",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Api_Dojo_App.http",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Api_Dojo_App.http",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Api_Dojo_App.http",
+              "RelativeToolTip": "Api_Dojo_App\\Api_Dojo_App.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2026-04-07T16:27:53.667Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Properties\\launchSettings.json",
+              "RelativeToolTip": "Api_Dojo_App\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-07T16:28:07.239Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Product.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Models\\Product.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T10:27:49.973Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
               "Title": "Color.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Color.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Color.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Color.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Color.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Color.cs",
               "RelativeToolTip": "Api_Dojo_App\\Models\\Color.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -199,37 +309,47 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 12,
               "Title": "Campaign.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Campaign.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Campaign.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Campaign.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Campaign.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Campaign.cs",
               "RelativeToolTip": "Api_Dojo_App\\Models\\Campaign.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T09:54:24.439Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-31T09:54:24.439Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 15,
+              "Title": "PedidoItem.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\PedidoItem.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\PedidoItem.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\PedidoItem.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Models\\PedidoItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T11:01:46.04Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "Pedido.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Pedido.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Pedido.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Pedido.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\Pedido.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\Pedido.cs",
               "RelativeToolTip": "Api_Dojo_App\\Models\\Pedido.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAAQwA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T11:00:57.952Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-31T11:00:57.952Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 17,
               "Title": "ProductVariant.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariant.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariant.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\ProductVariant.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariant.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariant.cs",
               "RelativeToolTip": "Api_Dojo_App\\Models\\ProductVariant.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -237,37 +357,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 14,
               "Title": "User.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\User.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
               "RelativeToolTip": "Api_Dojo_App\\Models\\User.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T11:56:58.366Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-31T11:56:58.366Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Program.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Program.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Program.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Program.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-01T09:59:52.875Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 18,
               "Title": "ProductVariantColor.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariantColor.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariantColor.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\ProductVariantColor.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariantColor.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Models\\ProductVariantColor.cs",
               "RelativeToolTip": "Api_Dojo_App\\Models\\ProductVariantColor.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -275,11 +381,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 19,
               "Title": "ProductsController.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductsController.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\ProductsController.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductsController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductsController.cs",
               "RelativeToolTip": "Api_Dojo_App\\Controllers\\ProductsController.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAgwCgAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -287,11 +393,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 20,
               "Title": "ProductVariantsController.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductVariantsController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductVariantsController.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\ProductVariantsController.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductVariantsController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\ProductVariantsController.cs",
               "RelativeToolTip": "Api_Dojo_App\\Controllers\\ProductVariantsController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -299,11 +405,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 21,
               "Title": "ColorsController.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\ColorsController.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
               "RelativeToolTip": "Api_Dojo_App\\Controllers\\ColorsController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -311,11 +417,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 22,
               "Title": "UsersController.cs",
-              "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\UsersController.cs",
+              "DocumentMoniker": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\UsersController.cs",
               "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\UsersController.cs",
-              "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Controllers\\UsersController.cs",
+              "ToolTip": "C:\\Users\\a.arranz\\DojoApp\\Dojo-App\\Api_Dojo_App\\Controllers\\UsersController.cs",
               "RelativeToolTip": "Api_Dojo_App\\Controllers\\UsersController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -323,12 +429,12 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 23,
               "Title": "20260331095647_InitialCreate.01.cs",
               "DocumentMoniker": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs",
+              "RelativeDocumentMoniker": "..\\..\\Dojo-App\\Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs",
               "ToolTip": "C:\\Users\\a.arranz\\Dojo-App\\Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs",
+              "RelativeToolTip": "..\\..\\Dojo-App\\Api_Dojo_App\\Migrations\\20260331095647_InitialCreate.01.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-31T09:56:48.135Z"
