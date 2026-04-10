@@ -10,13 +10,13 @@
             Spacing="15"
             VerticalOptions="Center">
 
-            <!-- Logo -->
+            <!-- Logo pendiente -->
             <Image 
                 Source="dotnet_bot.png"
                 HeightRequest="120"
                 HorizontalOptions="Center"/>
 
-            <!-- Usuario -->
+            <!-- Credenciales del utuario -->
 			<Entry 
                 Placeholder="Usuario"
                 Text="{Binding Username}" />
@@ -28,16 +28,17 @@
 
 			<Button 
                 Text="Iniciar sesión"
-                Command="{Binding LoginCommand}" /> 
+                Command="{Binding LoginCommand}" 
+                Clicked="OnLoginClicked"/> 
 
-			<!-- Recordar usuario -->
+			<!-- botonsito de recordar usuario -->
             <HorizontalStackLayout>
                 <CheckBox />
                 <Label Text="Recordar usuario"
                        VerticalOptions="Center"/>
             </HorizontalStackLayout>
 
-            <!-- Olvidaste contraseña -->
+            <!-- Olvidaste contraseña¿?¿? -->
             <Label 
                 Text="¿Olvidaste tu contraseña?"
                 TextColor="Blue">

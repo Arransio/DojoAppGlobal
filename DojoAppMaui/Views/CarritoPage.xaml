@@ -1,0 +1,37 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DojoAppMaui.Views.CarritoPage"
+             Title="Carrito">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <CollectionView x:Name="CartCollection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10" ColumnDefinitions="*,Auto">
+
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Product.Name}" FontAttributes="Bold" FontSize="14"/>
+                            <Label Text="{Binding Size}" />
+                            <Label Text="{Binding Product.Price, StringFormat='{}{0:F2} €'}"/>
+                        </VerticalStackLayout>
+
+                        <Button Text="❌"
+                        Grid.Column="1"
+                        Clicked="OnRemoveClicked"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+        <Label x:Name="TotalLabel"
+               Grid.Row="1"
+               Padding="10"
+               FontAttributes="Bold"
+               FontSize="18"
+               HorizontalOptions="Center"/>
+
+    </Grid>
+
+</ContentPage>

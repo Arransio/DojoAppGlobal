@@ -1,13 +1,18 @@
-﻿using DojoAppMaui.Views;
+﻿using DojoAppMaui.Services;
+using DojoAppMaui.Views;
 
 namespace DojoAppMaui;
 
 public partial class App : Application
 {
-	public App()
+
+    public static CarritoService CarritoService { get; private set; }
+    public App()
 	{
 		InitializeComponent();
 
-		MainPage = new LoginPage();
-	}
+        CarritoService = new CarritoService();
+
+        MainPage = new NavigationPage(new LoginPage());
+    }
 }

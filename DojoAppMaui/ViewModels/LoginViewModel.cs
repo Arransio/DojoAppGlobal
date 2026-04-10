@@ -1,6 +1,9 @@
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
+using DojoAppMaui.Views;
+
+
 //using AndroidX.Browser.Trusted;
 using DojoAppMaui.Services;
 using DojoAppMaui.Views;
@@ -64,9 +67,6 @@ public class LoginViewModel : BaseViewModel
 			var test = await _authService.TestAuth();
 			Debug.WriteLine("RESULTADO TEST: " + test);
 
-
-
-			Application.Current.MainPage = new HomePage();
 		}
 		catch (Exception ex)
 		{
@@ -78,4 +78,5 @@ public class LoginViewModel : BaseViewModel
 			
 		}
 	}
+
 }
