@@ -2,7 +2,7 @@
 {
     public class ProductVariantColor
     {
-        public string Name { get; set; }
+        public int ColorId { get; set; }
         public string Role { get; set; } // Primary / Secondary
     }
 }

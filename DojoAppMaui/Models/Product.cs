@@ -12,5 +12,7 @@ namespace DojoAppMaui.Models
         public List<string> Sizes { get; set; }
 
         public string SelectedSize { get; set; }
+
+        public List<ProductVariantUI> VariantsUI { get; set; } = new();
     }
 }
