@@ -18,6 +18,7 @@
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate>
                                         <Button 
+											x:Name="SizeButton"
                                             Text="{Binding .}" 
                                             Padding="5"
                                             Margin="2"

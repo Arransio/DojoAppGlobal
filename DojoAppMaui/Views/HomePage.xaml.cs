@@ -107,11 +107,31 @@ public partial class HomePage : ContentPage
 
         App.CarritoService.AddItem(product, product.SelectedSize);
 
-        var originalColor = button.BackgroundColor;
-        var originalTextColor = button.TextColor;
-        var originalText = button.Text;
+        //reseteo color botones tallas por contenedor post addtocart
+		var parentLayout = button.Parent as VerticalStackLayout;
 
-        button.IsEnabled = false;
+		foreach (var child in parentLayout.Children)
+		{
+			if (child is HorizontalStackLayout sizeContainer)
+			{
+				foreach (var sizeChild in sizeContainer.Children)
+				{
+					if (sizeChild is Button sizeBtn)
+					{
+						sizeBtn.BackgroundColor = (Color)Application.Current.Resources["Primary"];
+						sizeBtn.TextColor = Colors.White;
+					}
+				}
+			}
+		}
+
+
+		var originalColor = button.BackgroundColor;
+        var originalTextColor = button.TextColor;
+        var originalText = button.Text;  
+
+       
+		button.IsEnabled = false;
 
         button.Text = "Añadido";
         button.BackgroundColor = Microsoft.Maui.Graphics.Colors.Green;
@@ -119,13 +139,16 @@ public partial class HomePage : ContentPage
 
         await Task.Delay(500);
 
+
         // restaurar estado
         button.Text = originalText;
         button.BackgroundColor = originalColor;
         button.TextColor = originalTextColor;
-        button.IsEnabled = true;
+        button.IsEnabled = true;      
 
-        UpdateCartSummary();
+
+
+		UpdateCartSummary();
     }
 
 
@@ -218,7 +241,7 @@ public partial class HomePage : ContentPage
 
         await LoadColors();
         await LoadVariants();
-        LoadProducts();
+              LoadProducts();
         UpdateCartSummary();
 
     }
