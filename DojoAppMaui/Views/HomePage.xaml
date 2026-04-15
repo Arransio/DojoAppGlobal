@@ -1,58 +1,150 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DojoAppMaui.Views.HomePage">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:local="clr-namespace:DojoAppMaui.Models"
+			 x:Class="DojoAppMaui.Views.HomePage">
 
-    <Grid RowDefinitions="*,Auto">
+	<Grid RowDefinitions="*,Auto">
 
-     
-        <CollectionView x:Name="ProductsCollectionView" Grid.Row="0">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Padding="10" Margin="5">
-                        <VerticalStackLayout>
+		<CollectionView x:Name="ProductsCollectionView" Grid.Row="0">
+			<CollectionView.ItemTemplate>
+				<DataTemplate x:DataType="local:Product">
+					<Frame Padding="10" Margin="0,5,0,5" BorderColor="LightGray" CornerRadius="10" HasShadow="True">
+						<VerticalStackLayout Spacing="10">
+							<!-- Header: Product Name, Price and Expand/Collapse Button -->
+							<Grid ColumnDefinitions="*,50" Padding="0" ColumnSpacing="10">
+								<VerticalStackLayout Grid.Column="0" Spacing="2">
+									<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+									<Label Text="{Binding Price, StringFormat='{0:F2}€'}" FontSize="14" TextColor="Gray" />
+								</VerticalStackLayout>
+								<Button 
+									Grid.Column="1"
+									Text="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
+									Padding="10"
+									Clicked="OnProductHeaderClicked"
+									CommandParameter="{Binding .}"
+									BackgroundColor="Transparent"
+									TextColor="Black"
+									FontSize="20"
+									HorizontalOptions="End"
+									VerticalOptions="Center"/>
+							</Grid>
 
-                            <Label Text="{Binding Name}" FontSize="18" />
-                            <Label Text="{Binding Price}" FontSize="14" />
+							<!-- Step 1: Size Selection -->
+							<VerticalStackLayout Padding="0,10,0,0" Spacing="8" IsVisible="{Binding IsExpanded, FallbackValue=False}">
+								<Label Text="Step 1: Selecciona una talla" FontSize="14" FontAttributes="Bold" TextColor="#1976D2" />
+								<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableSizes}">
+									<BindableLayout.ItemTemplate>
+										<DataTemplate x:DataType="x:String">
+											<Button 
+												Text="{Binding .}"
+												Padding="10,8"
+												Margin="5"
+												Clicked="OnSizeStepClicked"
+												CornerRadius="5"
+												BackgroundColor="#2196F3"
+												TextColor="White"
+												FontSize="12"
+												FontAttributes="Bold"/>
+										</DataTemplate>
+									</BindableLayout.ItemTemplate>
+								</FlexLayout>
+							</VerticalStackLayout>
 
-                            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Sizes}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate>
-                                        <Button 
-											x:Name="SizeButton"
-                                            Text="{Binding .}" 
-                                            Padding="5"
-                                            Margin="2"
-                                            Clicked="OnSizeClicked"/>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </HorizontalStackLayout>
+							<!-- Step 2: Primary Color Selection -->
+							<VerticalStackLayout Padding="0,10,0,0" Spacing="8" IsVisible="{Binding CanSelectPrimaryColor, FallbackValue=False}">
+								<Label Text="Step 2: Selecciona un color principal" FontSize="14" FontAttributes="Bold" TextColor="#F57C00" />
+								<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailablePrimaryColors}">
+									<BindableLayout.ItemTemplate>
+										<DataTemplate x:DataType="local:ColorOption">
+											<Button 
+												Text="{Binding Name}"
+												Padding="10,8"
+												Margin="5"
+												Clicked="OnPrimaryColorClicked"
+												CornerRadius="5"
+												BackgroundColor="#FF9800"
+												TextColor="White"
+												FontSize="12"
+												FontAttributes="Bold"/>
+										</DataTemplate>
+									</BindableLayout.ItemTemplate>
+								</FlexLayout>
+							</VerticalStackLayout>
 
-                            <Button 
-                                Text="Añadir al carrito"
-                                Margin="5"
-                                Clicked="OnAddToCartClicked"/>
+							<!-- Step 3: Secondary Color Selection -->
+							<VerticalStackLayout Padding="0,10,0,0" Spacing="8" IsVisible="{Binding CanSelectSecondaryColor, FallbackValue=False}">
+								<Label Text="Step 3: Selecciona un color secundario" FontSize="14" FontAttributes="Bold" TextColor="#C62828" />
+								<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableSecondaryColors}">
+									<BindableLayout.ItemTemplate>
+										<DataTemplate x:DataType="local:ColorOption">
+											<Button 
+												Text="{Binding Name}"
+												Padding="10,8"
+												Margin="5"
+												Clicked="OnSecondaryColorClicked"
+												CornerRadius="5"
+												BackgroundColor="#F44336"
+												TextColor="White"
+												FontSize="12"
+												FontAttributes="Bold"/>
+										</DataTemplate>
+									</BindableLayout.ItemTemplate>
+								</FlexLayout>
+							</VerticalStackLayout>
 
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+							<!-- Step 4: Add to Cart Button -->
+							<Button 
+								Text="Añadir al carrito"
+								Margin="0,10,0,0"
+								IsEnabled="{Binding CanAddToCart}"
+								IsVisible="{Binding CanSelectSecondaryColor, FallbackValue=False}"
+								Opacity="{Binding CanAddToCart, Converter={StaticResource BoolToOpacityConverter}}"
+								Clicked="OnAddToCartClicked"
+								CommandParameter="{Binding .}"
+								Padding="10,12"
+								BackgroundColor="#4CAF50"
+								TextColor="White"
+								FontSize="14"
+								FontAttributes="Bold"
+								CornerRadius="5"/>
 
-        <Grid Grid.Row="1" BackgroundColor="Black" Padding="10" ColumnDefinitions="*,Auto">
+							<!-- Selection Summary -->
+							<Frame Padding="10" Margin="0,10,0,0" BackgroundColor="#F5F5F5" CornerRadius="5" BorderColor="LightGray" IsVisible="{Binding SelectedSizeStep, Converter={StaticResource IsNotNullConverter}}">
+								<VerticalStackLayout Spacing="5">
+									<Label Text="✓ Seleccionado:" FontSize="12" FontAttributes="Bold" TextColor="#1976D2" />
+									<Label Text="{Binding SelectedSizeStep, StringFormat='   Talla: {0}'}" FontSize="11" TextColor="#424242" />
+									<Label Text="{Binding SelectedPrimaryColor, StringFormat='   Color Principal: {0}'}" FontSize="11" TextColor="#424242" IsVisible="{Binding SelectedPrimaryColor, Converter={StaticResource IsNotNullConverter}}" />
+									<Label Text="{Binding SelectedSecondaryColor, StringFormat='   Color Secundario: {0}'}" FontSize="11" TextColor="#424242" IsVisible="{Binding SelectedSecondaryColor, Converter={StaticResource IsNotNullConverter}}" />
+								</VerticalStackLayout>
+							</Frame>
 
-            <Label 
-                x:Name="CartSummaryLabel"
-                Text="0 items - 0€"
-                TextColor="White"
-                VerticalOptions="Center"/>
+						</VerticalStackLayout>
+					</Frame>
+				</DataTemplate>
+			</CollectionView.ItemTemplate>
+		</CollectionView>
 
-            <Button 
-                Text="🛒"
-                Grid.Column="1"
-                Clicked="OnCartClicked"/>
+		<Grid Grid.Row="1" BackgroundColor="Black" Padding="10" ColumnDefinitions="*,Auto" ColumnSpacing="10">
 
-        </Grid>
+			<Label 
+				x:Name="CartSummaryLabel"
+				Text="0 items - 0€"
+				TextColor="White"
+				VerticalOptions="Center"
+				FontSize="14"
+				FontAttributes="Bold"/>
 
-    </Grid>
+			<Button 
+				Text="🛒"
+				Grid.Column="1"
+				Clicked="OnCartClicked"
+				BackgroundColor="#424242"
+				TextColor="White"
+				Padding="15,10"
+				FontSize="16"/>
+
+		</Grid>
+
+	</Grid>
 
 </ContentPage>
