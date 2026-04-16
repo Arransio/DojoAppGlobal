@@ -8,7 +8,7 @@ namespace DojoAppMaui.Models
 {
 	public class LoginResponse
 	{
-		public string token { get; set; }
+		public string Token { get; set; }
 		public int UserId { get; set; }
 	}
 }

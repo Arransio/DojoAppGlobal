@@ -27,9 +27,8 @@
                 Text="{Binding Password}" />
 
 			<Button 
-                Text="Iniciar sesión"
-                Command="{Binding LoginCommand}" 
-                Clicked="OnLoginClicked"/> 
+				Text="Iniciar sesión"
+				Command="{Binding LoginCommand}" />
 
 			<!-- botonsito de recordar usuario -->
             <HorizontalStackLayout>

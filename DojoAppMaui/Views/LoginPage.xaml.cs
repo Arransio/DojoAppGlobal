@@ -10,9 +10,4 @@ public partial class LoginPage : ContentPage
 		InitializeComponent();
 		BindingContext = new LoginViewModel();
 	}
-
-	public async void OnLoginClicked(object sender, EventArgs e)
-	{
-		await Navigation.PushAsync(new HomePage());
-    }
 }
