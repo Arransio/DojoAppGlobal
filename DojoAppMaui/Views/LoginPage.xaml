@@ -30,6 +30,15 @@
 				Text="Iniciar sesión"
 				Command="{Binding LoginCommand}" />
 
+			<!-- Botón de registro -->
+			<Button 
+				Text="{Binding RegisterButtonText}"
+				Command="{Binding RegisterCommand}"
+				IsEnabled="{Binding IsRegisterButtonEnabled}"
+				BackgroundColor="Transparent"
+				TextColor="Blue"
+				FontSize="14"/>
+
 			<!-- botonsito de recordar usuario -->
             <HorizontalStackLayout>
                 <CheckBox />

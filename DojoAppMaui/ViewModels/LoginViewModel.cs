@@ -3,11 +3,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
 using DojoAppMaui.Views;
 
-
 //using AndroidX.Browser.Trusted;
 using DojoAppMaui.Services;
 using DojoAppMaui.Views;
-
 
 namespace DojoAppMaui.ViewModels;
 
@@ -15,7 +13,7 @@ public class LoginViewModel : BaseViewModel
 {
 	private readonly AuthService _authService;
 
-	//Usuario
+	// Usuario
 	private string username;
 	public string Username
 	{
@@ -23,7 +21,7 @@ public class LoginViewModel : BaseViewModel
 		set => SetProperty(ref username, value);
 	}
 
-	//Contraseña
+	// Contraseña
 	private string password;
 	public string Password
 	{
@@ -31,13 +29,33 @@ public class LoginViewModel : BaseViewModel
 		set => SetProperty(ref password, value);
 	}
 
+	// Control de throttling para registro
+	private DateTime _lastRegisterClickTime = DateTime.MinValue;
+	private const int RegisterThrottleSeconds = 60; // 1 minuto
+
+	private bool _isRegisterButtonEnabled = true;
+	public bool IsRegisterButtonEnabled
+	{
+		get => _isRegisterButtonEnabled;
+		set => SetProperty(ref _isRegisterButtonEnabled, value);
+	}
+
+	private string _registerButtonText = "¿No tienes cuenta? Registrarse";
+	public string RegisterButtonText
+	{
+		get => _registerButtonText;
+		set => SetProperty(ref _registerButtonText, value);
+	}
+
 	public ICommand LoginCommand { get; }
+	public ICommand RegisterCommand { get; }
 
 	public LoginViewModel()
 	{
 		_authService = new AuthService();
 
 		LoginCommand = new Command(async () => await Login());
+		RegisterCommand = new Command(async () => await OnRegisterClicked());
 	}
 
 	private async Task Login()
@@ -120,4 +138,143 @@ public class LoginViewModel : BaseViewModel
 		}
 	}
 
+	private async Task OnRegisterClicked()
+	{
+		// Verificar throttling (esperar 1 minuto entre intentos)
+		var timeSinceLastClick = DateTime.Now - _lastRegisterClickTime;
+
+		if (timeSinceLastClick.TotalSeconds < RegisterThrottleSeconds && _lastRegisterClickTime != DateTime.MinValue)
+		{
+			var secondsRemaining = RegisterThrottleSeconds - (int)timeSinceLastClick.TotalSeconds;
+			await Application.Current.MainPage.DisplayAlert(
+				"Espera por favor",
+				$"Puedes volver a registrarte en {secondsRemaining} segundos",
+				"OK");
+			return;
+		}
+
+		_lastRegisterClickTime = DateTime.Now;
+		IsRegisterButtonEnabled = false;
+		StartThrottleTimer();
+
+		// Pedir datos de registro
+		var action = await Application.Current.MainPage.DisplayActionSheet(
+			"Crear nueva cuenta",
+			"Cancelar",
+			null,
+			"Continuar");
+
+		if (action != "Continuar")
+		{
+			return;
+		}
+
+		// Mostrar diálogo de entrada para nuevo usuario
+		var newUsername = await Application.Current.MainPage.DisplayPromptAsync(
+			"Nuevo Usuario",
+			"Ingresa un nombre de usuario (mínimo 3 caracteres)",
+			placeholder: "usuario",
+			maxLength: 50);
+
+		if (string.IsNullOrWhiteSpace(newUsername))
+		{
+			return;
+		}
+
+		if (newUsername.Length < 3)
+		{
+			await Application.Current.MainPage.DisplayAlert(
+				"Error",
+				"El usuario debe tener mínimo 3 caracteres",
+				"OK");
+			return;
+		}
+
+		// Mostrar diálogo de entrada para nueva contraseña
+		var newPassword = await Application.Current.MainPage.DisplayPromptAsync(
+			"Nueva Contraseña",
+			"Ingresa una contraseña (mínimo 4 caracteres)",
+			placeholder: "contraseña",
+			maxLength: 50);
+
+		if (string.IsNullOrWhiteSpace(newPassword))
+		{
+			return;
+		}
+
+		if (newPassword.Length < 4)
+		{
+			await Application.Current.MainPage.DisplayAlert(
+				"Error",
+				"La contraseña debe tener mínimo 4 caracteres",
+				"OK");
+			return;
+		}
+
+		// Intentar registrar
+		await AttemptRegister(newUsername, newPassword);
+	}
+
+	private async Task AttemptRegister(string newUsername, string newPassword)
+	{
+		if (IsBusy) return;
+
+		IsBusy = true;
+
+		try
+		{
+			Debug.WriteLine("[LoginViewModel] Iniciando registro...");
+
+			var result = await _authService.RegisterAsync(newUsername, newPassword);
+
+			if (result?.Token == null)
+			{
+				await Application.Current.MainPage.DisplayAlert(
+					"Error",
+					"No se recibió token del servidor",
+					"OK");
+				return;
+			}
+
+			// Registro exitoso - guardar token y navegar
+			await TokenStorage.SaveToken(result.Token);
+
+			await Application.Current.MainPage.DisplayAlert(
+				"Éxito",
+				"Usuario registrado y autenticado",
+				"OK");
+
+			// Navegar a HomePage
+			await Application.Current.MainPage.Navigation.PushAsync(new HomePage());
+
+			// Limpiar campos
+			Username = string.Empty;
+			Password = string.Empty;
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"[LoginViewModel] Error en registro: {ex.Message}");
+
+			await Application.Current.MainPage.DisplayAlert(
+				"Error al registrarse",
+				ex.Message,
+				"OK");
+		}
+		finally
+		{
+			IsBusy = false;
+		}
+	}
+
+	private async void StartThrottleTimer()
+	{
+		for (int i = RegisterThrottleSeconds; i > 0; i--)
+		{
+			RegisterButtonText = $"Espera... ({i}s)";
+			await Task.Delay(1000);
+		}
+
+		IsRegisterButtonEnabled = true;
+		RegisterButtonText = "¿No tienes cuenta? Registrarse";
+	}
 }

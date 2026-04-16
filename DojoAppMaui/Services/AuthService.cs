@@ -91,6 +91,68 @@ namespace DojoAppMaui.Services
 			}
 		}
 
+		public async Task<LoginResponse> RegisterAsync(string username, string password)
+		{
+			var registerData = new
+			{
+				Username = username,
+				Password = password
+			};
+
+			var json = JsonSerializer.Serialize(registerData);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			try
+			{
+				var response = await _httpClient.PostAsync("api/auth/register", content);
+
+				var responseJson = await response.Content.ReadAsStringAsync();
+				Debug.WriteLine($"[AuthService] Register Response: {responseJson}");
+
+				if (!response.IsSuccessStatusCode)
+				{
+					Debug.WriteLine($"[AuthService] Register error: {response.StatusCode} - {responseJson}");
+
+					if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+					{
+						throw new Exception("Usuario debe tener mínimo 3 caracteres y contraseña mínimo 4");
+					}
+					else
+					{
+						throw new Exception($"Error al registrarse: {response.StatusCode}");
+					}
+				}
+
+				var result = JsonSerializer.Deserialize<LoginResponse>(
+					responseJson,
+					new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true
+					});
+
+				if (result?.Token != null)
+				{
+					Debug.WriteLine($"[AuthService] Registro exitoso, token recibido: {result.Token.Substring(0, Math.Min(20, result.Token.Length))}...");
+				}
+				else
+				{
+					throw new Exception("No se recibió token en la respuesta");
+				}
+
+				return result;
+			}
+			catch (HttpRequestException ex)
+			{
+				Debug.WriteLine($"[AuthService] Error de conexión en registro: {ex.Message}");
+				throw new Exception($"Error de conexión: {ex.Message}");
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"[AuthService] Exception en RegisterAsync: {ex.Message}");
+				throw;
+			}
+		}
+
 		private async Task AddAuthorizationHeader() 
 		{
 			var token = await TokenStorage.GetToken();
