@@ -382,27 +382,47 @@ public partial class HomePage : ContentPage
 		LoadProducts();
 		UpdateCartSummary();
 
-		// Verificar si el usuario es admin
-		await CheckAdminRole();
+		// Verificar si el usuario es admin (localmente)
+		await CheckAdminRoleLocally();
 	}
 
-	private async Task CheckAdminRole()
+	private async Task CheckAdminRoleLocally()
 	{
 		try
 		{
-			var role = await TokenStorage.GetRole();
-			Debug.WriteLine($"[HomePage] Rol del usuario: {role}");
+			// Verificar si es admin: solo si username es "test1"
+			var isAdmin = false;
 
-			// Buscar el botón por su contenido o parámetro
+			// Obtener el username usando TokenStorage (maneja SecureStorage correctamente)
+			var username = await TokenStorage.GetUsername();
+			Debug.WriteLine($"[HomePage] Username obtenido: '{username}'");
+
+			if (!string.IsNullOrEmpty(username))
+			{
+				isAdmin = username.Equals("test1", StringComparison.OrdinalIgnoreCase);
+				Debug.WriteLine($"[HomePage] Es admin: {isAdmin}");
+			}
+			else
+			{
+				Debug.WriteLine($"[HomePage] Username es vacío o null");
+			}
+
+			// Mostrar botón solo si es admin
 			var adminButton = this.FindByName<Button>("AdminReportButton");
 			if (adminButton != null)
 			{
-				adminButton.IsVisible = role?.Equals("admin", StringComparison.OrdinalIgnoreCase) == true;
+				adminButton.IsVisible = isAdmin;
+				Debug.WriteLine($"[HomePage] AdminButton visibility set to: {isAdmin}");
+			}
+			else
+			{
+				Debug.WriteLine($"[HomePage] AdminButton not found");
 			}
 		}
 		catch (Exception ex)
 		{
 			Debug.WriteLine($"[HomePage] Error verificando rol: {ex.Message}");
+			Debug.WriteLine($"[HomePage] Stack: {ex.StackTrace}");
 		}
 	}
 

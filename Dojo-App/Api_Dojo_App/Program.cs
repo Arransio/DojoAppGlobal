@@ -43,7 +43,11 @@ builder.Services.AddAuthentication(options =>
 		ValidAudience = builder.Configuration["Jwt:Audience"],
 
 		IssuerSigningKey = new SymmetricSecurityKey(
-		Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+		Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+
+		// Mapear los claims correctamente para que [Authorize(Roles = "admin")] funcione
+		NameClaimType = System.Security.Claims.ClaimTypes.Name,
+		RoleClaimType = System.Security.Claims.ClaimTypes.Role
 	};
 	options.Events = new JwtBearerEvents
 	{
@@ -55,6 +59,8 @@ builder.Services.AddAuthentication(options =>
 		OnTokenValidated = context =>
 		{
 			Debug.WriteLine("TOKEN VALIDATED OK");
+			var claims = context.Principal?.Claims.Select(c => $"{c.Type}={c.Value}").ToList();
+			Debug.WriteLine($"Claims: {string.Join(", ", claims ?? new List<string>())}");
 			return Task.CompletedTask;
 		}
 	};

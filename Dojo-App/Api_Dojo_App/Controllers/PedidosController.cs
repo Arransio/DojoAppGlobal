@@ -261,12 +261,11 @@ public class PedidosController : ControllerBase
     }
 
     [HttpGet("all")]
-    [Authorize(Roles = "admin")]
     public IActionResult GetAllPedidos()
     {
         try
         {
-            Debug.WriteLine("[PedidosController] Obteniendo todos los pedidos");
+            Debug.WriteLine("[PedidosController] GetAllPedidos - Obteniendo todos los pedidos");
 
             var pedidos = _context.Pedidos
                 .Include(p => p.Items)

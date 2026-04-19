@@ -79,27 +79,50 @@ namespace DojoAppMaui.Services
 				Preferences.Clear();
 			}
 
-			public static async Task SaveRole(string role)
+			public static async Task SaveRole(string username)
 			{
-				try
-				{
-					await SecureStorage.SetAsync("user_role", role);
-				}
-				catch
-				{
-					Preferences.Set("user_role", role);
-				}
+				// Rol calculado localmente: test1 es admin, otros son user
+				// No es necesario guardar el rol, se calcula cuando se necesita
+				await Task.CompletedTask;
 			}
 
 			public static async Task<string> GetRole()
 			{
 				try
 				{
-					return await SecureStorage.GetAsync("user_role");
+					var username = await GetUsername();
+					if (!string.IsNullOrEmpty(username))
+					{
+						// Hardcodear: si es test1 es admin, sino user
+						return username.Equals("test1", StringComparison.OrdinalIgnoreCase) ? "admin" : "user";
+					}
+				}
+				catch { }
+
+				return "user";
+			}
+
+			public static async Task SaveUsername(string username)
+			{
+				try
+				{
+					await SecureStorage.SetAsync("username", username);
 				}
 				catch
 				{
-					return Preferences.Get("user_role", null);
+					Preferences.Set("username", username);
+				}
+			}
+
+			public static async Task<string> GetUsername()
+			{
+				try
+				{
+					return await SecureStorage.GetAsync("username");
+				}
+				catch
+				{
+					return Preferences.Get("username", null);
 				}
 			}
 	}

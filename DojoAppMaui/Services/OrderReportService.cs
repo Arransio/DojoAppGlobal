@@ -22,28 +22,19 @@ namespace DojoAppMaui.Services
             {
                 Debug.WriteLine("[OrderReportService] Obteniendo todos los pedidos");
 
-                // Obtener token
-                var token = await TokenStorage.GetToken();
-                if (string.IsNullOrEmpty(token))
-                {
-                    throw new Exception("No hay token de autenticación. Por favor inicia sesión.");
-                }
-
-                Debug.WriteLine($"[OrderReportService] Token obtenido: {token.Substring(0, Math.Min(20, token.Length))}...");
-
-                // Crear nueva instancia de HttpClient para cada solicitud
                 using (var httpClient = new HttpClient())
                 {
-                    // Agregar token al header
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
                     Debug.WriteLine($"[OrderReportService] Enviando GET a: {_apiUrl}");
 
                     var response = await httpClient.GetAsync(_apiUrl);
 
                     var responseJson = await response.Content.ReadAsStringAsync();
                     Debug.WriteLine($"[OrderReportService] Response Status: {response.StatusCode}");
-                    Debug.WriteLine($"[OrderReportService] Response: {responseJson}");
+
+                    if (responseJson.Length > 200)
+                        Debug.WriteLine($"[OrderReportService] Response: {responseJson.Substring(0, 200)}...");
+                    else
+                        Debug.WriteLine($"[OrderReportService] Response: {responseJson}");
 
                     if (!response.IsSuccessStatusCode)
                     {

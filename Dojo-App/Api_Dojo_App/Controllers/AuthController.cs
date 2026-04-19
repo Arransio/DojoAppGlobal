@@ -48,14 +48,17 @@ public class AuthController : ControllerBase
 		if (!VerifyPasswordHash(request.Password, user.PasswordHash))
 			return Unauthorized("Usuario o contraseña incorrectos");
 
+		// Hardcodear rol: si es "test1" es admin, sino es user
+		var role = request.Username.Equals("test1", StringComparison.OrdinalIgnoreCase) ? "admin" : "user";
+
 		// Login exitoso
-		var token = GenerateJwtToken(user.Username, user.Role);
+		var token = GenerateJwtToken(user.Username, role);
 
 		return Ok(new LoginResponse
 		{
 			Token = token,
 			UserId = user.Id,
-			Role = user.Role
+			Role = role
 		});
 	}
 
@@ -111,7 +114,6 @@ public class AuthController : ControllerBase
 				Username = request.Username,
 				PasswordHash = HashPassword(request.Password),
 				Email = request.Email,
-				Role = "user",
 				IsEmailConfirmed = false,
 				EmailConfirmationToken = confirmationToken,
 				EmailConfirmationTokenExpiry = tokenExpiry

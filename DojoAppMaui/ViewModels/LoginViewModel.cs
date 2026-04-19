@@ -109,11 +109,11 @@ public class LoginViewModel : BaseViewModel
 					Debug.WriteLine($"[LoginViewModel] UserId guardado: {result.UserId}");
 				}
 
-				// Guardar Role
-				if (!string.IsNullOrEmpty(result.Role))
+				// Guardar Username para calcular rol localmente
+				if (!string.IsNullOrEmpty(Username))
 				{
-					await TokenStorage.SaveRole(result.Role);
-					Debug.WriteLine($"[LoginViewModel] Role guardado: {result.Role}");
+					await TokenStorage.SaveUsername(Username);
+					Debug.WriteLine($"[LoginViewModel] Username guardado: {Username}");
 				}
 
 			var storedToken = await TokenStorage.GetToken();
