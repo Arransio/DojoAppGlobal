@@ -10,76 +10,96 @@ namespace DojoAppMaui.Services
     public class PdfGeneratorService
     {
         /// <summary>
-        /// Genera un PDF con los datos de los pedidos y lo guarda en el almacenamiento local
+        /// Genera un reporte de pedidos en formato texto y lo guarda en el almacenamiento local
         /// </summary>
         public async Task<string> GenerateOrdersPdfAsync(List<PedidoDto> pedidos)
         {
             try
             {
-                Debug.WriteLine("[PdfGeneratorService] Generando PDF de pedidos");
+                Debug.WriteLine("[PdfGeneratorService] Generando reporte de pedidos");
 
-                var pdfContent = GeneratePdfContent(pedidos);
-                
-                // Guardar archivo
-                var fileName = $"Pedidos_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                if (pedidos == null || pedidos.Count == 0)
+                {
+                    throw new Exception("No hay pedidos para generar el reporte");
+                }
+
+                var textContent = GenerateTextContent(pedidos);
+
+                var fileName = $"Pedidos_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
                 var filePath = Path.Combine(FileSystem.AppDataDirectory, fileName);
 
-                // Por ahora, vamos a crear un archivo de texto como placeholder
-                // hasta que agreguemos la librería de PDF
-                await File.WriteAllTextAsync(filePath, pdfContent);
+                await File.WriteAllTextAsync(filePath, textContent, Encoding.UTF8);
 
-                Debug.WriteLine($"[PdfGeneratorService] PDF guardado en: {filePath}");
+                Debug.WriteLine($"[PdfGeneratorService] Archivo de reporte generado en: {filePath}");
                 return filePath;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[PdfGeneratorService] Error generando PDF: {ex.Message}");
+                Debug.WriteLine($"[PdfGeneratorService] Error generando reporte: {ex.Message}");
+                Debug.WriteLine($"[PdfGeneratorService] Stack: {ex.StackTrace}");
                 throw;
             }
         }
 
-        private string GeneratePdfContent(List<PedidoDto> pedidos)
+        private string GenerateTextContent(List<PedidoDto> pedidos)
         {
-            var sb = new StringBuilder();
+            var totalGeneral = pedidos.Sum(p => p.TotalPrice);
+            var fechaGeneracion = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
 
-            sb.AppendLine("═══════════════════════════════════════════════════════════════");
-            sb.AppendLine("                    REPORTE DE PEDIDOS");
-            sb.AppendLine("═══════════════════════════════════════════════════════════════");
-            sb.AppendLine($"Fecha de generación: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
-            sb.AppendLine($"Total de pedidos: {pedidos.Count}");
-            sb.AppendLine($"Total general: {pedidos.Sum(p => p.TotalPrice):F2}€");
-            sb.AppendLine("───────────────────────────────────────────────────────────────");
-            sb.AppendLine();
+            var text = new StringBuilder();
 
+            // Encabezado
+            text.AppendLine("═══════════════════════════════════════════════════════════════");
+            text.AppendLine("                    REPORTE DE PEDIDOS".PadRight(63));
+            text.AppendLine("═══════════════════════════════════════════════════════════════");
+            text.AppendLine();
+
+            // Información General
+            text.AppendLine($"Fecha de Generación: {fechaGeneracion}");
+            text.AppendLine($"Total de Pedidos:    {pedidos.Count}");
+            text.AppendLine($"Total General:       €{totalGeneral:F2}");
+            text.AppendLine();
+            text.AppendLine("═══════════════════════════════════════════════════════════════");
+            text.AppendLine();
+
+            // Detalle de cada pedido
             foreach (var pedido in pedidos)
             {
-                sb.AppendLine($"┌─ PEDIDO #{pedido.Id}");
-                sb.AppendLine($"│");
-                sb.AppendLine($"│  Usuario: {pedido.UserName} (ID: {pedido.UserId})");
-                sb.AppendLine($"│  Campaña: {pedido.CampaignId}");
-                sb.AppendLine($"│  Estado: {pedido.Status}");
-                sb.AppendLine($"│  Fecha: {pedido.CreatedAt:dd/MM/yyyy HH:mm:ss}");
-                sb.AppendLine($"│");
-                sb.AppendLine($"│  Items:");
-                
+                text.AppendLine($"PEDIDO #{pedido.Id}");
+                text.AppendLine($"─────────────────────────────────────────────────────────────");
+                text.AppendLine($"Usuario:        {pedido.UserName} (ID: {pedido.UserId})");
+                text.AppendLine($"Campaña:        {pedido.CampaignId}");
+                text.AppendLine($"Estado:         {pedido.Status}");
+                text.AppendLine($"Fecha:          {pedido.CreatedAt:dd/MM/yyyy HH:mm:ss}");
+                text.AppendLine();
+
+                // Tabla de items
+                text.AppendLine("ÍTEMS DEL PEDIDO:");
+                var headerRow = $"{"Producto",-30} {"Talla",-8} {"Cantidad",-8} {"P. Unit.",-10} {"Subtotal",-10}";
+                text.AppendLine(headerRow);
+                text.AppendLine(new string('─', 66));
+
                 foreach (var item in pedido.Items)
                 {
-                    sb.AppendLine($"│    • {item.ProductName}");
-                    sb.AppendLine($"│      Talla: {item.Size} | Cantidad: {item.Quantity} | Precio unitario: {item.UnitPrice:F2}€");
-                    sb.AppendLine($"│      Subtotal: {item.TotalPrice:F2}€");
+                    var productName = item.ProductName ?? "N/A";
+                    var size = item.Size ?? "N/A";
+                    text.AppendLine($"{productName,-30} {size,-8} {item.Quantity,8} €{item.UnitPrice,9:F2} €{item.TotalPrice,9:F2}");
                 }
 
-                sb.AppendLine($"│");
-                sb.AppendLine($"│  TOTAL PEDIDO: {pedido.TotalPrice:F2}€");
-                sb.AppendLine($"└" + new string('─', 60));
-                sb.AppendLine();
+                text.AppendLine(new string('─', 66));
+                text.AppendLine($"{"Total Pedido:",-56} €{pedido.TotalPrice,9:F2}");
+                text.AppendLine();
             }
 
-            sb.AppendLine("═══════════════════════════════════════════════════════════════");
-            sb.AppendLine($"TOTAL GENERAL: {pedidos.Sum(p => p.TotalPrice):F2}€");
-            sb.AppendLine("═══════════════════════════════════════════════════════════════");
+            // Total general
+            text.AppendLine("═══════════════════════════════════════════════════════════════");
+            text.AppendLine($"{"TOTAL GENERAL:",-56} €{totalGeneral,9:F2}");
+            text.AppendLine("═══════════════════════════════════════════════════════════════");
+            text.AppendLine();
+            text.AppendLine("Este documento contiene información confidencial");
+            text.AppendLine($"Generado: {fechaGeneracion}");
 
-            return sb.ToString();
+            return text.ToString();
         }
     }
 }
