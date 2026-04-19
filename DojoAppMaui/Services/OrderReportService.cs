@@ -48,6 +48,27 @@ namespace DojoAppMaui.Services
                     );
 
                     Debug.WriteLine($"[OrderReportService] Se obtuvieron {pedidos?.Count ?? 0} pedidos");
+
+                    // Debug: verificar si los colores llegaron
+                    if (pedidos != null)
+                    {
+                        foreach (var pedido in pedidos)
+                        {
+                            Debug.WriteLine($"[OrderReportService] Pedido #{pedido.Id} con {pedido.Items.Count} items");
+                            foreach (var item in pedido.Items)
+                            {
+                                Debug.WriteLine($"[OrderReportService]   - {item.ProductName} (Talla: {item.Size}, Colores recibidos: {item.Colors?.Count ?? 0})");
+                                if (item.Colors != null && item.Colors.Count > 0)
+                                {
+                                    foreach (var color in item.Colors)
+                                    {
+                                        Debug.WriteLine($"[OrderReportService]     * Color: {color.Name} (Role: {color.Role})");
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     return pedidos ?? new List<PedidoDto>();
                 }
             }
@@ -86,5 +107,12 @@ namespace DojoAppMaui.Services
         public string ProductName { get; set; }
         public int ProductVariantId { get; set; }
         public string Size { get; set; }
+        public List<ColorDto> Colors { get; set; } = new();
+    }
+
+    public class ColorDto
+    {
+        public string Name { get; set; }
+        public string Role { get; set; }
     }
 }
