@@ -10,9 +10,9 @@
             Spacing="15"
             VerticalOptions="Center">
 
-            <!-- Logo pendiente -->
+            <!-- Logo -->
             <Image 
-                Source="dotnet_bot.png"
+                Source="icono_image.png"
                 HeightRequest="120"
                 HorizontalOptions="Center"/>
 
