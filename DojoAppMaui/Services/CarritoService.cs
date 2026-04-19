@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace DojoAppMaui.Services;
 
 using DojoAppMaui.Models;
-using DojoAppMaui.Views;
 
 public class CarritoService
 {

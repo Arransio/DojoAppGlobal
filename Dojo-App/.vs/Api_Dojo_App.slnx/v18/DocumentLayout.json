@@ -105,7 +105,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 12,
+          "SelectedChildIndex": 11,
           "Children": [
             {
               "$type": "Bookmark",
@@ -145,19 +145,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ColorsController.cs",
-              "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\ColorsController.cs",
-              "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Controllers\\ColorsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T10:41:00.669Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 3,
               "Title": "CampaignsController.cs",
               "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Controllers\\CampaignsController.cs",
@@ -189,9 +176,22 @@
               "RelativeDocumentMoniker": "Api_Dojo_App\\appsettings.json",
               "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\appsettings.json",
               "RelativeToolTip": "Api_Dojo_App\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-04-07T14:12:43.979Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ColorsController.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Controllers\\ColorsController.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Controllers\\ColorsController.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Controllers\\ColorsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T10:41:00.669Z",
               "EditorCaption": ""
             },
             {

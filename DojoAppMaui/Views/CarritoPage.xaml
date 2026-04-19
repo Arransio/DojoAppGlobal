@@ -3,7 +3,7 @@
              x:Class="DojoAppMaui.Views.CarritoPage"
              Title="Carrito">
 
-    <Grid RowDefinitions="*,Auto">
+    <Grid RowDefinitions="*,Auto,Auto">
 
         <CollectionView x:Name="CartCollection">
             <CollectionView.ItemTemplate>
@@ -31,6 +31,17 @@
                FontAttributes="Bold"
                FontSize="18"
                HorizontalOptions="Center"/>
+
+        <Button x:Name="ConfirmOrderButton"
+                Grid.Row="2"
+                Text="Confirmar Pedido"
+                Clicked="OnConfirmOrderClicked"
+                Padding="15"
+                Margin="10"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="5"
+                FontAttributes="Bold"/>
 
     </Grid>
 

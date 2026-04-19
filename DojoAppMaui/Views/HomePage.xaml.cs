@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using DojoAppMaui.Models;
+using DojoAppMaui.Services;
 
 namespace DojoAppMaui.Views;
 
@@ -58,15 +59,15 @@ public partial class HomePage : ContentPage
 		ProductsCollectionView.ItemsSource = null;
 		ProductsCollectionView.ItemsSource = products;
 
-		foreach (var product in products)
-		{
-			Debug.WriteLine($"////////////Producto: {product.Name}");
+		//foreach (var product in products)
+		//{
+		//	Debug.WriteLine($"////////////Producto: {product.Name}");
 
-			foreach (var v in product.VariantsUI)
-			{
-				Debug.WriteLine($"  {v.Muestra}");
-			}
-		}
+		//	foreach (var v in product.VariantsUI)
+		//	{
+		//		Debug.WriteLine($"  {v.Muestra}");
+		//	}
+		//}
 	}
 
 	private void OnProductHeaderClicked(object sender, EventArgs e)
@@ -380,5 +381,92 @@ public partial class HomePage : ContentPage
 		await LoadVariants();
 		LoadProducts();
 		UpdateCartSummary();
+
+		// Verificar si el usuario es admin
+		await CheckAdminRole();
+	}
+
+	private async Task CheckAdminRole()
+	{
+		try
+		{
+			var role = await TokenStorage.GetRole();
+			Debug.WriteLine($"[HomePage] Rol del usuario: {role}");
+
+			// Buscar el botón por su contenido o parámetro
+			var adminButton = this.FindByName<Button>("AdminReportButton");
+			if (adminButton != null)
+			{
+				adminButton.IsVisible = role?.Equals("admin", StringComparison.OrdinalIgnoreCase) == true;
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"[HomePage] Error verificando rol: {ex.Message}");
+		}
+	}
+
+	private async void OnAdminReportClicked(object sender, EventArgs e)
+	{
+		try
+		{
+			Debug.WriteLine("[HomePage] Generando reporte de pedidos");
+
+			var button = sender as Button;
+			if (button == null) return;
+
+			button.IsEnabled = false;
+			var originalText = button.Text;
+			button.Text = "Generando...";
+
+			// Obtener pedidos
+			var orderReportService = new OrderReportService();
+			var pedidos = await orderReportService.GetAllPedidosAsync();
+
+			if (pedidos.Count == 0)
+			{
+				await DisplayAlert("Sin pedidos", "No hay pedidos para generar el reporte", "OK");
+				button.IsEnabled = true;
+				button.Text = originalText;
+				return;
+			}
+
+			// Generar PDF
+			var pdfService = new PdfGeneratorService();
+			var filePath = await pdfService.GenerateOrdersPdfAsync(pedidos);
+
+			button.IsEnabled = true;
+			button.Text = originalText;
+
+			// Mostrar opciones
+			var action = await DisplayActionSheet(
+				$"Reporte generado: {Path.GetFileName(filePath)}",
+				"Cerrar",
+				null,
+				"Compartir",
+				"Guardar en descargas"
+			);
+
+			if (action == "Compartir")
+			{
+				await Share.Default.RequestAsync(new ShareFileRequest
+				{
+					Title = "Reporte de pedidos",
+					File = new ShareFile(filePath)
+				});
+			}
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"[HomePage] Error generando reporte: {ex.Message}");
+			await DisplayAlert("Error", $"Error al generar reporte: {ex.Message}", "OK");
+
+			var button = sender as Button;
+			if (button != null)
+			{
+				button.IsEnabled = true;
+				button.Text = "📊 Reporte";
+			}
+		}
 	}
 }

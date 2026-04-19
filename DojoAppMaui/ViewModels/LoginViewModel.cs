@@ -99,8 +99,22 @@ public class LoginViewModel : BaseViewModel
 
 			Debug.WriteLine($"[LoginViewModel] Token recibido: {result.Token.Substring(0, Math.Min(20, result.Token.Length))}...");
 
-			// Guardar token
-			await TokenStorage.SaveToken(result.Token);
+				// Guardar token
+				await TokenStorage.SaveToken(result.Token);
+
+				// Guardar UserId
+				if (result.UserId > 0)
+				{
+					await TokenStorage.SaveUserId(result.UserId);
+					Debug.WriteLine($"[LoginViewModel] UserId guardado: {result.UserId}");
+				}
+
+				// Guardar Role
+				if (!string.IsNullOrEmpty(result.Role))
+				{
+					await TokenStorage.SaveRole(result.Role);
+					Debug.WriteLine($"[LoginViewModel] Role guardado: {result.Role}");
+				}
 
 			var storedToken = await TokenStorage.GetToken();
 			Debug.WriteLine($"[LoginViewModel] Token guardado correctamente");

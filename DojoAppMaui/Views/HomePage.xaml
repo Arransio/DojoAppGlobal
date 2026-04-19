@@ -124,7 +124,7 @@
 			</CollectionView.ItemTemplate>
 		</CollectionView>
 
-		<Grid Grid.Row="1" BackgroundColor="Black" Padding="10" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+		<Grid Grid.Row="1" BackgroundColor="Black" Padding="10" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
 
 			<Label 
 				x:Name="CartSummaryLabel"
@@ -135,8 +135,19 @@
 				FontAttributes="Bold"/>
 
 			<Button 
-				Text="🛒"
+				x:Name="AdminReportButton"
+				Text="📊 Reporte"
 				Grid.Column="1"
+				Clicked="OnAdminReportClicked"
+				BackgroundColor="#FF6F00"
+				TextColor="White"
+				Padding="15,10"
+				FontSize="12"
+				IsVisible="False"/>
+
+			<Button 
+				Text="🛒"
+				Grid.Column="2"
 				Clicked="OnCartClicked"
 				BackgroundColor="#424242"
 				TextColor="White"

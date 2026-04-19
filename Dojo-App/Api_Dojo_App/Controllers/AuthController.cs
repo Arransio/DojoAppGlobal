@@ -49,12 +49,13 @@ public class AuthController : ControllerBase
 			return Unauthorized("Usuario o contraseña incorrectos");
 
 		// Login exitoso
-		var token = GenerateJwtToken(user.Username);
+		var token = GenerateJwtToken(user.Username, user.Role);
 
 		return Ok(new LoginResponse
 		{
 			Token = token,
-			UserId = user.Id
+			UserId = user.Id,
+			Role = user.Role
 		});
 	}
 
@@ -156,11 +157,19 @@ public class AuthController : ControllerBase
 
 		Debug.WriteLine("RAW HEADER: [" + authHeader + "]");
 		Debug.WriteLine("LENGTH HEADER: " + authHeader.Length);
+		Debug.WriteLine($"User.Identity.Name: {User.Identity?.Name}");
+		Debug.WriteLine($"User.IsInRole('admin'): {User.IsInRole("admin")}");
+
+		var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "No role found";
+		Debug.WriteLine($"Role from claims: {role}");
 
 		return Ok(new
 		{
 			Message = "Acceso autorizado",
-			User = User.Identity.Name
+			User = User.Identity.Name,
+			Role = role,
+			IsAdmin = User.IsInRole("admin"),
+			AllClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList()
 		});
 	}
 
@@ -263,7 +272,7 @@ public class AuthController : ControllerBase
 		}
 	}
 
-	private string GenerateJwtToken(string username)
+	private string GenerateJwtToken(string username, string role = "user")
 	{
 		var jwtSettings = _config.GetSection("Jwt");
 
@@ -281,7 +290,8 @@ public class AuthController : ControllerBase
 
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, username)
+			new Claim(ClaimTypes.Name, username),
+			new Claim(ClaimTypes.Role, role)
 		};
 
 		var token = new JwtSecurityToken(
