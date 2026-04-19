@@ -91,11 +91,12 @@ namespace DojoAppMaui.Services
 			}
 		}
 
-		public async Task<LoginResponse> RegisterAsync(string username, string password)
+		public async Task<RegisterResponse> RegisterAsync(string username, string email, string password)
 		{
 			var registerData = new
 			{
 				Username = username,
+				Email = email,
 				Password = password
 			};
 
@@ -115,7 +116,7 @@ namespace DojoAppMaui.Services
 
 					if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
 					{
-						throw new Exception("Usuario debe tener mínimo 3 caracteres y contraseña mínimo 4");
+						throw new Exception("Por favor verifica: usuario (mín 3 caracteres), contraseña (mín 4 caracteres), email válido");
 					}
 					else
 					{
@@ -123,21 +124,14 @@ namespace DojoAppMaui.Services
 					}
 				}
 
-				var result = JsonSerializer.Deserialize<LoginResponse>(
+				var result = JsonSerializer.Deserialize<RegisterResponse>(
 					responseJson,
 					new JsonSerializerOptions
 					{
 						PropertyNameCaseInsensitive = true
 					});
 
-				if (result?.Token != null)
-				{
-					Debug.WriteLine($"[AuthService] Registro exitoso, token recibido: {result.Token.Substring(0, Math.Min(20, result.Token.Length))}...");
-				}
-				else
-				{
-					throw new Exception("No se recibió token en la respuesta");
-				}
+				Debug.WriteLine($"[AuthService] Registro exitoso. Se envió email de confirmación a: {email}");
 
 				return result;
 			}
@@ -149,6 +143,45 @@ namespace DojoAppMaui.Services
 			catch (Exception ex)
 			{
 				Debug.WriteLine($"[AuthService] Exception en RegisterAsync: {ex.Message}");
+				throw;
+			}
+		}
+
+		public async Task<bool> ConfirmEmailAsync(string email, string token)
+		{
+			var confirmData = new
+			{
+				Email = email,
+				Token = token
+			};
+
+			var json = JsonSerializer.Serialize(confirmData);
+			var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+			try
+			{
+				var response = await _httpClient.PostAsync("api/auth/confirm-email", content);
+
+				var responseJson = await response.Content.ReadAsStringAsync();
+				Debug.WriteLine($"[AuthService] Confirm Email Response: {responseJson}");
+
+				if (!response.IsSuccessStatusCode)
+				{
+					Debug.WriteLine($"[AuthService] Confirm email error: {response.StatusCode} - {responseJson}");
+					throw new Exception("No se pudo confirmar el email. El token puede ser inválido o estar expirado.");
+				}
+
+				Debug.WriteLine($"[AuthService] Email confirmado exitosamente para: {email}");
+				return true;
+			}
+			catch (HttpRequestException ex)
+			{
+				Debug.WriteLine($"[AuthService] Error de conexión al confirmar email: {ex.Message}");
+				throw new Exception($"Error de conexión: {ex.Message}");
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"[AuthService] Exception en ConfirmEmailAsync: {ex.Message}");
 				throw;
 			}
 		}

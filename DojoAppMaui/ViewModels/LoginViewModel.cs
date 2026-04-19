@@ -21,6 +21,14 @@ public class LoginViewModel : BaseViewModel
 		set => SetProperty(ref username, value);
 	}
 
+	// Email
+	private string email;
+	public string Email
+	{
+		get => email;
+		set => SetProperty(ref email, value);
+	}
+
 	// Contraseña
 	private string password;
 	public string Password
@@ -103,6 +111,7 @@ public class LoginViewModel : BaseViewModel
 
 			// Limpiar campos de credenciales
 			Username = string.Empty;
+			Email = string.Empty;
 			Password = string.Empty;
 		}
 		catch (Exception ex)
@@ -190,6 +199,27 @@ public class LoginViewModel : BaseViewModel
 			return;
 		}
 
+		// Mostrar diálogo de entrada para email
+		var newEmail = await Application.Current.MainPage.DisplayPromptAsync(
+			"Email",
+			"Ingresa tu email",
+			placeholder: "correo@ejemplo.com",
+			maxLength: 100);
+
+		if (string.IsNullOrWhiteSpace(newEmail))
+		{
+			return;
+		}
+
+		if (!IsValidEmail(newEmail))
+		{
+			await Application.Current.MainPage.DisplayAlert(
+				"Error",
+				"Por favor ingresa un email válido",
+				"OK");
+			return;
+		}
+
 		// Mostrar diálogo de entrada para nueva contraseña
 		var newPassword = await Application.Current.MainPage.DisplayPromptAsync(
 			"Nueva Contraseña",
@@ -212,10 +242,10 @@ public class LoginViewModel : BaseViewModel
 		}
 
 		// Intentar registrar
-		await AttemptRegister(newUsername, newPassword);
+		await AttemptRegister(newUsername, newEmail, newPassword);
 	}
 
-	private async Task AttemptRegister(string newUsername, string newPassword)
+	private async Task AttemptRegister(string newUsername, string newEmail, string newPassword)
 	{
 		if (IsBusy) return;
 
@@ -225,30 +255,16 @@ public class LoginViewModel : BaseViewModel
 		{
 			Debug.WriteLine("[LoginViewModel] Iniciando registro...");
 
-			var result = await _authService.RegisterAsync(newUsername, newPassword);
-
-			if (result?.Token == null)
-			{
-				await Application.Current.MainPage.DisplayAlert(
-					"Error",
-					"No se recibió token del servidor",
-					"OK");
-				return;
-			}
-
-			// Registro exitoso - guardar token y navegar
-			await TokenStorage.SaveToken(result.Token);
+			var result = await _authService.RegisterAsync(newUsername, newEmail, newPassword);
 
 			await Application.Current.MainPage.DisplayAlert(
-				"Éxito",
-				"Usuario registrado y autenticado",
+				"Registro exitoso",
+				$"Se ha enviado un email de confirmación a {newEmail}. Por favor revisa tu bandeja de entrada y haz clic en el link para confirmar tu cuenta.",
 				"OK");
-
-			// Navegar a HomePage
-			await Application.Current.MainPage.Navigation.PushAsync(new HomePage());
 
 			// Limpiar campos
 			Username = string.Empty;
+			Email = string.Empty;
 			Password = string.Empty;
 		}
 		catch (Exception ex)
@@ -276,5 +292,18 @@ public class LoginViewModel : BaseViewModel
 
 		IsRegisterButtonEnabled = true;
 		RegisterButtonText = "¿No tienes cuenta? Registrarse";
+	}
+
+	private bool IsValidEmail(string email)
+	{
+		try
+		{
+			var addr = new System.Net.Mail.MailAddress(email);
+			return addr.Address == email;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 }

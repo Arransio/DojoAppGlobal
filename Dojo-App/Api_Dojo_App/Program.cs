@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using Api_Dojo_App.Data;
+using Api_Dojo_App.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -61,21 +62,25 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 // Add services to the container.
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
+	options.UseSqlite("Data Source=app.db"));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
+
+// Servir archivos estáticos (wwwroot)
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
