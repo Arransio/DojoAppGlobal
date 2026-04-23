@@ -26,7 +26,7 @@ namespace DojoAppMaui.Services
             {
                 Debug.WriteLine($"[PedidosService] Creando pedido con {items.Count} items");
 
-                // Validar que todos los items tengan una variante seleccionada
+                // Validar que todos los pordcutos tengan una variante seleccionada
                 var itemsSinVariante = items.Where(item => item.Product.SelectedVariant?.Id == null || item.Product.SelectedVariant.Id <= 0).ToList();
                 if (itemsSinVariante.Any())
                 {
