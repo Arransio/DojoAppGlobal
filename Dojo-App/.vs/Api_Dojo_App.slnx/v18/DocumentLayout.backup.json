@@ -105,7 +105,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 17,
+          "SelectedChildIndex": 14,
           "Children": [
             {
               "$type": "Bookmark",
@@ -142,18 +142,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "User.cs",
-              "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\User.cs",
-              "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Models\\User.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T11:56:58.366Z"
             },
             {
               "$type": "Document",
@@ -217,6 +205,31 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Product.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Models\\Product.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T10:27:49.973Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
+              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\User.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\User.cs",
+              "RelativeToolTip": "Api_Dojo_App\\Models\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-31T11:56:58.366Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 13,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Data\\AppDbContext.cs",
@@ -238,19 +251,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-01T10:50:12.468Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Product.cs",
-              "DocumentMoniker": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
-              "RelativeDocumentMoniker": "Api_Dojo_App\\Models\\Product.cs",
-              "ToolTip": "C:\\Users\\User\\Desktop\\DojoAppGlobal\\Dojo-App\\Api_Dojo_App\\Models\\Product.cs",
-              "RelativeToolTip": "Api_Dojo_App\\Models\\Product.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-31T10:27:49.973Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
