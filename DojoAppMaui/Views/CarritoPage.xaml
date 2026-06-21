@@ -12,7 +12,9 @@
 
                         <VerticalStackLayout>
                             <Label Text="{Binding Product.Name}" FontAttributes="Bold" FontSize="14"/>
-                            <Label Text="{Binding Size}" />
+                            <Label Text="{Binding Size, StringFormat='Talla: {0}'}" />
+                            <Label Text="{Binding PrimaryColorName, StringFormat='Color principal: {0}'}" FontSize="12" TextColor="Gray"/>
+                            <Label Text="{Binding SecondaryColorName, StringFormat='Color secundario: {0}'}" FontSize="12" TextColor="Gray"/>
                             <Label Text="{Binding Product.Price, StringFormat='{}{0:F2} €'}"/>
                         </VerticalStackLayout>
 

@@ -17,13 +17,9 @@ public class CarritoService
         return cart;
     }
 
-    public void AddItem(Product product, string size)
+    public void AddItem(CartItem item)
     {
-        cart.Add(new CartItem
-        {
-            Product = product,
-            Size = size
-        });
+        cart.Add(item);
     }
 
     public void RemoveItem(CartItem item)

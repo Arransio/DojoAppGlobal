@@ -8,12 +8,10 @@ namespace DojoAppMaui.Models
 {
     public class ProductVariantUI
     {
+        // Una variante es ahora solo talla. El color se elige en el pedido.
         public int Id { get; set; }
         public string Size { get; set; }
 
-        public string PrimaryColor { get; set; }
-        public string SecondaryColor { get; set; }
-
-        public string Muestra => $"{Size} - {PrimaryColor} / {SecondaryColor}";
+        public string Muestra => Size;
     }
 }

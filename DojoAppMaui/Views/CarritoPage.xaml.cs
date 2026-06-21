@@ -58,13 +58,16 @@ public partial class CarritoPage : ContentPage
                 return;
             }
 
-            // Validar que todos los items tengan variante seleccionada
-            var itemsSinVariante = items.Where(item => item.Product.SelectedVariant == null || item.Product.SelectedVariant.Id <= 0).ToList();
-            if (itemsSinVariante.Any())
+            // Validar que todos los items tengan talla (variante) y colores seleccionados
+            var itemsIncompletos = items.Where(item =>
+                item.ProductVariantId <= 0 ||
+                item.PrimaryColorId <= 0 ||
+                item.SecondaryColorId <= 0).ToList();
+            if (itemsIncompletos.Any())
             {
-                var productosAffectados = string.Join("\n• ", itemsSinVariante.Select(i => i.Product.Name));
-                await DisplayAlert("Selección incompleta", 
-                    $"Debes seleccionar una variante (talla/color) para:\n• {productosAffectados}", 
+                var productosAffectados = string.Join("\n• ", itemsIncompletos.Select(i => i.Product.Name));
+                await DisplayAlert("Selección incompleta",
+                    $"Debes seleccionar talla y colores para:\n• {productosAffectados}",
                     "OK");
                 return;
             }

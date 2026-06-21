@@ -26,19 +26,24 @@ namespace DojoAppMaui.Services
             {
                 Debug.WriteLine($"[PedidosService] Creando pedido con {items.Count} items");
 
-                // Validar que todos los pordcutos tengan una variante seleccionada
-                var itemsSinVariante = items.Where(item => item.Product.SelectedVariant?.Id == null || item.Product.SelectedVariant.Id <= 0).ToList();
-                if (itemsSinVariante.Any())
+                // Validar que todos los items tengan variante (talla) y colores seleccionados
+                var itemsIncompletos = items.Where(item =>
+                    item.ProductVariantId <= 0 ||
+                    item.PrimaryColorId <= 0 ||
+                    item.SecondaryColorId <= 0).ToList();
+                if (itemsIncompletos.Any())
                 {
-                    var productosAffectados = string.Join(", ", itemsSinVariante.Select(i => i.Product.Name));
-                    Debug.WriteLine($"[PedidosService] ❌ Los siguientes productos no tienen variante seleccionada: {productosAffectados}");
-                    throw new Exception($"Los siguientes productos no tienen variante seleccionada: {productosAffectados}");
+                    var productosAffectados = string.Join(", ", itemsIncompletos.Select(i => i.Product.Name));
+                    Debug.WriteLine($"[PedidosService] ❌ Items sin talla/color completos: {productosAffectados}");
+                    throw new Exception($"Los siguientes productos no tienen talla o color seleccionados: {productosAffectados}");
                 }
 
-                // Preparar items del pedido
+                // Preparar items del pedido (el color se manda en el pedido)
                 var pedidoItems = items.Select(item => new PedidoItemRequest
                 {
-                    ProductVariantId = item.Product.SelectedVariant.Id,
+                    ProductVariantId = item.ProductVariantId,
+                    PrimaryColorId = item.PrimaryColorId,
+                    SecondaryColorId = item.SecondaryColorId,
                     Quantity = 1,
                     UnitPrice = (decimal)item.Product.Price
                 }).ToList();
@@ -112,6 +117,8 @@ namespace DojoAppMaui.Services
     public class PedidoItemRequest
     {
         public int ProductVariantId { get; set; }
+        public int PrimaryColorId { get; set; }
+        public int SecondaryColorId { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
     }

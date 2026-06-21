@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
 using DojoAppMaui.Models;
@@ -102,47 +103,19 @@ public partial class HomePage : ContentPage
 		if (product != null)
 		{
 			product.SelectedSizeStep = selectedSize;
-			product.SelectedVariant = null;
 			product.SelectedPrimaryColor = null;
 			product.SelectedSecondaryColor = null;
+			product.SelectedPrimaryColorId = 0;
+			product.SelectedSecondaryColorId = 0;
 			product.AvailablePrimaryColors.Clear();
 			product.AvailableSecondaryColors.Clear();
 
-			// Load primary colors for selected size
-			LoadPrimaryColorsForSize(product, selectedSize);
-		}
-	}
+			// La variante = talla. Buscamos la variante de esa talla.
+			product.SelectedVariant = product.VariantsUI
+				.FirstOrDefault(v => v.Size == selectedSize);
 
-	private void LoadPrimaryColorsForSize(Product product, string selectedSize)
-	{
-		var variantsForSize = product.VariantsUI
-			.Where(v => v.Size == selectedSize)
-			.ToList();
-
-		var primaryColors = new HashSet<string>();
-
-		foreach (var variant in variantsForSize)
-		{
-			var apiVariant = allVariants.FirstOrDefault(av => av.Id == variant.Id);
-			if (apiVariant != null)
-			{
-				var primaryColorId = apiVariant.Colors
-					.FirstOrDefault(c => c.Role.ToLower() == "primary")
-					?.ColorId;
-
-				if (primaryColorId.HasValue)
-				{
-					var colorName = GetColorsName(primaryColorId.Value);
-					primaryColors.Add(colorName);
-				}
-			}
-		}
-
-		product.AvailablePrimaryColors.Clear();
-		foreach (var colorName in primaryColors.OrderBy(c => c))
-		{
-			var colorId = colors.FirstOrDefault(c => c.Name == colorName)?.Id ?? 0;
-			product.AvailablePrimaryColors.Add(new ColorOption { Id = colorId, Name = colorName });
+			// Los colores ya no dependen de la variante: ofrecemos todos.
+			FillColorOptions(product.AvailablePrimaryColors);
 		}
 	}
 
@@ -159,47 +132,13 @@ public partial class HomePage : ContentPage
 		if (product != null)
 		{
 			product.SelectedPrimaryColor = colorOption.Name;
+			product.SelectedPrimaryColorId = colorOption.Id;
 			product.SelectedSecondaryColor = null;
+			product.SelectedSecondaryColorId = 0;
 			product.AvailableSecondaryColors.Clear();
 
-			// Load secondary colors for selected size and primary color
-			LoadSecondaryColorsForSizeAndPrimaryColor(product, product.SelectedSizeStep, colorOption.Name);
-		}
-	}
-
-	private void LoadSecondaryColorsForSizeAndPrimaryColor(Product product, string? selectedSize, string primaryColorName)
-	{
-		if (string.IsNullOrEmpty(selectedSize))
-			return;
-
-		var matchingVariants = product.VariantsUI
-			.Where(v => v.Size == selectedSize && v.PrimaryColor == primaryColorName)
-			.ToList();
-
-		var secondaryColors = new HashSet<string>();
-
-		foreach (var variant in matchingVariants)
-		{
-			var apiVariant = allVariants.FirstOrDefault(av => av.Id == variant.Id);
-			if (apiVariant != null)
-			{
-				var secondaryColorId = apiVariant.Colors
-					.FirstOrDefault(c => c.Role.ToLower() == "secondary")
-					?.ColorId;
-
-				if (secondaryColorId.HasValue)
-				{
-					var colorName = GetColorsName(secondaryColorId.Value);
-					secondaryColors.Add(colorName);
-				}
-			}
-		}
-
-		product.AvailableSecondaryColors.Clear();
-		foreach (var colorName in secondaryColors.OrderBy(c => c))
-		{
-			var colorId = colors.FirstOrDefault(c => c.Name == colorName)?.Id ?? 0;
-			product.AvailableSecondaryColors.Add(new ColorOption { Id = colorId, Name = colorName });
+			// El color secundario también es libre: ofrecemos todos.
+			FillColorOptions(product.AvailableSecondaryColors);
 		}
 	}
 
@@ -216,14 +155,7 @@ public partial class HomePage : ContentPage
 		if (product != null)
 		{
 			product.SelectedSecondaryColor = colorOption.Name;
-
-			// Find and store the selected variant
-			var selectedVariant = product.VariantsUI.FirstOrDefault(v =>
-				v.Size == product.SelectedSizeStep &&
-				v.PrimaryColor == product.SelectedPrimaryColor &&
-				v.SecondaryColor == product.SelectedSecondaryColor);
-
-			product.SelectedVariant = selectedVariant;
+			product.SelectedSecondaryColorId = colorOption.Id;
 		}
 	}
 
@@ -232,7 +164,8 @@ public partial class HomePage : ContentPage
 		var button = sender as Button;
 		var product = button?.CommandParameter as Product;
 
-		if (product?.SelectedVariant == null || string.IsNullOrEmpty(product.SelectedSizeStep))
+		if (product?.SelectedVariant == null || string.IsNullOrEmpty(product.SelectedSizeStep)
+			|| product.SelectedPrimaryColorId <= 0 || product.SelectedSecondaryColorId <= 0)
 		{
 			Console.WriteLine("Selecciona talla y colores primero");
 			return;
@@ -248,7 +181,16 @@ public partial class HomePage : ContentPage
 			SelectedVariant = product.SelectedVariant
 		};
 
-		App.CarritoService.AddItem(cartProduct, product.SelectedSizeStep);
+		App.CarritoService.AddItem(new CartItem
+		{
+			Product = cartProduct,
+			Size = product.SelectedSizeStep,
+			ProductVariantId = product.SelectedVariant.Id,
+			PrimaryColorId = product.SelectedPrimaryColorId,
+			SecondaryColorId = product.SelectedSecondaryColorId,
+			PrimaryColorName = product.SelectedPrimaryColor,
+			SecondaryColorName = product.SelectedSecondaryColor
+		});
 
 		// Visual feedback
 		var originalColor = button.BackgroundColor;
@@ -278,6 +220,8 @@ public partial class HomePage : ContentPage
 		product.SelectedSizeStep = null;
 		product.SelectedPrimaryColor = null;
 		product.SelectedSecondaryColor = null;
+		product.SelectedPrimaryColorId = 0;
+		product.SelectedSecondaryColorId = 0;
 		product.SelectedVariant = null;
 		product.AvailablePrimaryColors.Clear();
 		product.AvailableSecondaryColors.Clear();
@@ -327,25 +271,22 @@ public partial class HomePage : ContentPage
 
 	private ProductVariantUI MapVariantToUI(ProductVariant variant)
 	{
-		string primary = "";
-		string secondary = "";
-
-		foreach (var color in variant.Colors)
-		{
-			if (color.Role.ToLower() == "primary")
-				primary = GetColorsName(color.ColorId);
-
-			if (color.Role.ToLower() == "secondary")
-				secondary = GetColorsName(color.ColorId);
-		}
-
+		// Una variante es ahora solo talla.
 		return new ProductVariantUI
 		{
 			Id = variant.Id,
-			Size = variant.Size,
-			PrimaryColor = primary,
-			SecondaryColor = secondary
+			Size = variant.Size
 		};
+	}
+
+	// Vuelca la lista global de colores en una colección de opciones.
+	private void FillColorOptions(ObservableCollection<ColorOption> target)
+	{
+		target.Clear();
+		foreach (var color in colors.OrderBy(c => c.Name))
+		{
+			target.Add(new ColorOption { Id = color.Id, Name = color.Name });
+		}
 	}
 
 	private async Task LoadVariants()

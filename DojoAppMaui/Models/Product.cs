@@ -51,6 +51,10 @@ namespace DojoAppMaui.Models
             }
         }
 
+        // IDs de los colores elegidos (se mandan al pedido).
+        public int SelectedPrimaryColorId { get; set; }
+        public int SelectedSecondaryColorId { get; set; }
+
         public ObservableCollection<ColorOption> AvailablePrimaryColors { get; set; } = new();
 
         public string? SelectedPrimaryColor
