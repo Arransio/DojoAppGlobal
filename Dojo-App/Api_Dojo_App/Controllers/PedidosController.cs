@@ -108,7 +108,9 @@ public class PedidosController : ControllerBase
                     ProductVariantId = itemRequest.ProductVariantId,
                     Quantity = itemRequest.Quantity,
                     UnitPrice = itemRequest.UnitPrice,
-                    TotalPrice = itemRequest.UnitPrice * itemRequest.Quantity
+                    TotalPrice = itemRequest.UnitPrice * itemRequest.Quantity,
+                    PrimaryColorId = itemRequest.PrimaryColorId,
+                    SecondaryColorId = itemRequest.SecondaryColorId
                 };
 
                 pedidoItems.Add(pedidoItem);
@@ -267,6 +269,8 @@ public class PedidosController : ControllerBase
         {
             Debug.WriteLine("[PedidosController] GetAllPedidos - Obteniendo todos los pedidos");
 
+            var colorsDict = _context.Colors.ToDictionary(c => c.Id, c => c.Name);
+
             var pedidos = _context.Pedidos
                 .Include(p => p.Items)
                     .ThenInclude(pi => pi.ProductVariant)
@@ -291,7 +295,8 @@ public class PedidosController : ControllerBase
                         item.TotalPrice,
                         ProductName = item.ProductVariant.Product.Name,
                         ProductVariantId = item.ProductVariantId,
-                        Size = item.ProductVariant.Size
+                        Size = item.ProductVariant.Size,
+                        Colors = BuildColorList(item.PrimaryColorId, item.SecondaryColorId, colorsDict)
                     }).ToList()
                 })
                 .ToList();
@@ -305,4 +310,20 @@ public class PedidosController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
+
+    private static List<ColorEntry> BuildColorList(int primaryId, int secondaryId, Dictionary<int, string> colorsDict)
+    {
+        var list = new List<ColorEntry>();
+        if (primaryId > 0 && colorsDict.TryGetValue(primaryId, out var primaryName))
+            list.Add(new ColorEntry { Name = primaryName, Role = "Primary" });
+        if (secondaryId > 0 && colorsDict.TryGetValue(secondaryId, out var secondaryName))
+            list.Add(new ColorEntry { Name = secondaryName, Role = "Secondary" });
+        return list;
+    }
+}
+
+public class ColorEntry
+{
+    public string Name { get; set; }
+    public string Role { get; set; }
 }

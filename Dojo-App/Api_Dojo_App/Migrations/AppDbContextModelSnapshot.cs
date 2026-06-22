@@ -96,10 +96,16 @@ namespace Api_Dojo_App.Migrations
                     b.Property<int>("PedidoId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("PrimaryColorId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("ProductVariantId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SecondaryColorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal>("TotalPrice")

@@ -19,6 +19,8 @@ namespace Api_Dojo_App.Models
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
+        public int PrimaryColorId { get; set; }
+        public int SecondaryColorId { get; set; }
     }
 }
 
