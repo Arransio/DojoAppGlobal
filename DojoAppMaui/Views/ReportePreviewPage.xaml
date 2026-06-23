@@ -2,21 +2,23 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DojoAppMaui.Views.ReportePreviewPage"
-             Title="Reporte de Pedidos">
+             Title="Reporte de Pedidos"
+             BackgroundColor="{StaticResource ObsidianBg}">
 
     <Grid RowDefinitions="Auto,*">
 
-        <Grid Grid.Row="0" BackgroundColor="#FF6F00" Padding="8" ColumnDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource SurfaceLowest}" Padding="8" ColumnDefinitions="Auto,*,Auto">
             <Button Grid.Column="0"
                     Text="← Cerrar"
                     Clicked="OnCerrarClicked"
                     BackgroundColor="Transparent"
-                    TextColor="White"
+                    TextColor="{StaticResource AccentSalmon}"
                     FontAttributes="Bold"
                     Padding="8,6"/>
             <Label Grid.Column="1"
                    Text="Reporte de Pedidos"
-                   TextColor="White"
+                   TextColor="{StaticResource TextPrimary}"
+                   FontFamily="Sora"
                    FontAttributes="Bold"
                    FontSize="15"
                    HorizontalOptions="Center"
@@ -25,10 +27,11 @@
                     x:Name="DescargarButton"
                     Text="💾 PDF"
                     Clicked="OnDescargarClicked"
-                    BackgroundColor="Transparent"
-                    TextColor="White"
+                    BackgroundColor="{StaticResource AccentRed}"
+                    TextColor="{StaticResource OnAccent}"
                     FontAttributes="Bold"
-                    Padding="8,6"/>
+                    CornerRadius="8"
+                    Padding="12,6"/>
         </Grid>
 
         <WebView x:Name="ReporteWebView" Grid.Row="1"/>

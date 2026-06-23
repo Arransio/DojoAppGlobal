@@ -6,18 +6,52 @@
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
-    <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <!-- ======================================================== -->
+    <!--  OBSIDIAN REDUX  —  paleta de la app (modo oscuro)        -->
+    <!--  Lujo tecnológico: negro absorbente + energía roja        -->
+    <!-- ======================================================== -->
+
+    <!-- Superficies (de la más profunda a la más elevada) -->
+    <Color x:Key="ObsidianBg">#131313</Color>
+    <Color x:Key="SurfaceLowest">#0e0e0e</Color>
+    <Color x:Key="SurfaceLow">#1c1b1b</Color>
+    <Color x:Key="SurfaceContainer">#20201f</Color>
+    <Color x:Key="SurfaceHigh">#2a2a2a</Color>
+    <Color x:Key="SurfaceHighest">#353535</Color>
+    <Color x:Key="SurfaceBright">#393939</Color>
+
+    <!-- Texto -->
+    <Color x:Key="TextPrimary">#e5e2e1</Color>
+    <Color x:Key="TextSecondary">#c6c6c6</Color>
+    <Color x:Key="TextWarmVariant">#e4beba</Color>
+
+    <!-- Acento rojo (la "energía visceral") -->
+    <Color x:Key="AccentRed">#d32f2f</Color>
+    <Color x:Key="AccentRedHover">#ba1a20</Color>
+    <Color x:Key="AccentSalmon">#ffb3ac</Color>
+    <Color x:Key="OnAccent">#fff2f0</Color>
+    <Color x:Key="ErrorRed">#ffb4ab</Color>
+
+    <!-- Contornos / divisores -->
+    <Color x:Key="OutlineWarm">#ab8985</Color>
+    <Color x:Key="OutlineDim">#5b403d</Color>
+    <Color x:Key="Hairline">#1AFFFFFF</Color>   <!-- blanco 10% -->
+    <Color x:Key="HairlineSoft">#0DFFFFFF</Color> <!-- blanco 5%  -->
+    <Color x:Key="GlassFill">#99131313</Color>   <!-- panel translúcido -->
+
+    <!-- Compatibilidad: claves MAUI originales reapuntadas al nuevo sistema -->
+    <Color x:Key="Primary">#d32f2f</Color>
+    <Color x:Key="PrimaryDark">#d32f2f</Color>
+    <Color x:Key="PrimaryDarkText">#fff2f0</Color>
+    <Color x:Key="Secondary">#c6c6c6</Color>
+    <Color x:Key="SecondaryDarkText">#ffb3ac</Color>
+    <Color x:Key="Tertiary">#ffb3ac</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Magenta">#D600AA</Color>
     <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#1f1f1f</Color>
+    <Color x:Key="OffBlack">#131313</Color>
 
     <Color x:Key="Gray100">#E1E1E1</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>
@@ -42,4 +76,13 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- Obsidian Redux brushes -->
+    <SolidColorBrush x:Key="ObsidianBgBrush" Color="{StaticResource ObsidianBg}"/>
+    <SolidColorBrush x:Key="SurfaceContainerBrush" Color="{StaticResource SurfaceContainer}"/>
+    <SolidColorBrush x:Key="GlassFillBrush" Color="{StaticResource GlassFill}"/>
+    <SolidColorBrush x:Key="AccentRedBrush" Color="{StaticResource AccentRed}"/>
+    <SolidColorBrush x:Key="AccentSalmonBrush" Color="{StaticResource AccentSalmon}"/>
+    <SolidColorBrush x:Key="HairlineBrush" Color="{StaticResource Hairline}"/>
+    <SolidColorBrush x:Key="HairlineSoftBrush" Color="{StaticResource HairlineSoft}"/>
 </ResourceDictionary>

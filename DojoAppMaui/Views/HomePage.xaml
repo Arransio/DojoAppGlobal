@@ -1,199 +1,215 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:local="clr-namespace:DojoAppMaui.Models"
-			 x:Class="DojoAppMaui.Views.HomePage">
+			 x:Class="DojoAppMaui.Views.HomePage"
+			 BackgroundColor="{StaticResource ObsidianBg}">
 
-	<Grid RowDefinitions="*,Auto,Auto">
+	<Grid RowDefinitions="Auto,*,Auto,Auto">
 
-		<CollectionView x:Name="ProductsCollectionView" Grid.Row="0">
+		<!-- Cabecera -->
+		<VerticalStackLayout Grid.Row="0" Padding="20,18,20,8" Spacing="2">
+			<Label Text="CATÁLOGO" Style="{StaticResource ChipLabel}"/>
+			<Label Text="Productos" Style="{StaticResource DisplayTitle}"/>
+		</VerticalStackLayout>
+
+		<CollectionView x:Name="ProductsCollectionView" Grid.Row="1">
 			<CollectionView.ItemTemplate>
 				<DataTemplate x:DataType="local:Product">
-					<Frame Padding="10" Margin="0,5,0,5" BorderColor="LightGray" CornerRadius="10" HasShadow="True">
+					<Border Style="{StaticResource GlassCard}" Margin="16,6">
 						<VerticalStackLayout Spacing="10">
 							<!-- Header: Product Name, Price and Expand/Collapse Button -->
-							<Grid ColumnDefinitions="*,50" Padding="0" ColumnSpacing="10">
-								<VerticalStackLayout Grid.Column="0" Spacing="2">
-									<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
-									<Label Text="{Binding Price, StringFormat='{0:F2}€'}" FontSize="14" TextColor="Gray" />
+							<Grid ColumnDefinitions="*,44" Padding="0" ColumnSpacing="10">
+								<VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+									<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+									<Label Text="{Binding Price, StringFormat='{0:F2}€'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentSalmon}" />
 								</VerticalStackLayout>
-								<Button 
+								<Button
 									Grid.Column="1"
 									Text="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
-									Padding="10"
+									Padding="0"
 									Clicked="OnProductHeaderClicked"
 									CommandParameter="{Binding .}"
-									BackgroundColor="Transparent"
-									TextColor="Black"
-									FontSize="20"
+									BackgroundColor="{StaticResource SurfaceHigh}"
+									TextColor="{StaticResource AccentSalmon}"
+									CornerRadius="8"
+									FontSize="18"
+									WidthRequest="44"
+									HeightRequest="44"
 									HorizontalOptions="End"
 									VerticalOptions="Center"/>
 							</Grid>
 
 							<!-- Accordion Steps -->
-							<VerticalStackLayout Spacing="6" Padding="0,8,0,0" IsVisible="{Binding IsExpanded, FallbackValue=False}">
+							<VerticalStackLayout Spacing="8" Padding="0,6,0,0" IsVisible="{Binding IsExpanded, FallbackValue=False}">
 
 								<!-- Step 1: Talla -->
-								<Frame Padding="10" CornerRadius="8" BorderColor="#BBDEFB" BackgroundColor="#F8FBFF" HasShadow="False">
-									<VerticalStackLayout Spacing="8">
+								<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12">
+									<VerticalStackLayout Spacing="10">
 										<Grid ColumnDefinitions="*,Auto">
-											<Label Text="Talla" FontSize="13" FontAttributes="Bold" TextColor="#1976D2" VerticalOptions="Center"/>
+											<Label Text="TALLA" Style="{StaticResource ChipLabel}" TextColor="{StaticResource AccentSalmon}" VerticalOptions="Center"/>
 											<Label Grid.Column="1"
 												   Text="{Binding SelectedSizeStep, StringFormat='✓ {0}'}"
-												   FontSize="13" TextColor="#1976D2" FontAttributes="Bold" VerticalOptions="Center"
+												   FontSize="13" TextColor="{StaticResource AccentSalmon}" FontAttributes="Bold" VerticalOptions="Center"
 												   IsVisible="{Binding SelectedSizeStep, Converter={StaticResource IsNotNullConverter}}"/>
 										</Grid>
 										<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableSizes}"
 													IsVisible="{Binding IsSelectingSize, FallbackValue=True}">
 											<BindableLayout.ItemTemplate>
 												<DataTemplate x:DataType="x:String">
-													<Button Text="{Binding .}" Padding="10,8" Margin="4"
-															Clicked="OnSizeStepClicked" CornerRadius="5"
-															BackgroundColor="#2196F3" TextColor="White"
-															FontSize="12" FontAttributes="Bold"/>
+													<Button Text="{Binding .}" Padding="14,8" Margin="3"
+															Clicked="OnSizeStepClicked" CornerRadius="8"
+															BackgroundColor="{StaticResource SurfaceHigh}" TextColor="{StaticResource TextPrimary}"
+															FontSize="13" FontAttributes="Bold"/>
 												</DataTemplate>
 											</BindableLayout.ItemTemplate>
 										</FlexLayout>
 									</VerticalStackLayout>
-								</Frame>
+								</Border>
 
 								<!-- Step 2: Color Principal -->
-								<Frame Padding="10" CornerRadius="8" BorderColor="#FFE0B2" BackgroundColor="#FFFBF5" HasShadow="False"
+								<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12"
 									   IsVisible="{Binding CanSelectPrimaryColor, FallbackValue=False}">
-									<VerticalStackLayout Spacing="8">
+									<VerticalStackLayout Spacing="10">
 										<Grid ColumnDefinitions="*,Auto">
-											<Label Text="Color principal" FontSize="13" FontAttributes="Bold" TextColor="#F57C00" VerticalOptions="Center"/>
+											<Label Text="COLOR PRINCIPAL" Style="{StaticResource ChipLabel}" TextColor="{StaticResource TextWarmVariant}" VerticalOptions="Center"/>
 											<Label Grid.Column="1"
 												   Text="{Binding SelectedPrimaryColor, StringFormat='✓ {0}'}"
-												   FontSize="13" TextColor="#F57C00" FontAttributes="Bold" VerticalOptions="Center"
+												   FontSize="13" TextColor="{StaticResource TextWarmVariant}" FontAttributes="Bold" VerticalOptions="Center"
 												   IsVisible="{Binding SelectedPrimaryColor, Converter={StaticResource IsNotNullConverter}}"/>
 										</Grid>
 										<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailablePrimaryColors}"
 													IsVisible="{Binding IsSelectingPrimaryColor, FallbackValue=False}">
 											<BindableLayout.ItemTemplate>
 												<DataTemplate x:DataType="local:ColorOption">
-													<VerticalStackLayout Margin="4" Spacing="2" WidthRequest="52">
-														<Frame WidthRequest="44" HeightRequest="44" CornerRadius="8" Padding="0"
-															   BackgroundColor="{Binding DisplayColor}" BorderColor="#BDBDBD"
-															   HasShadow="False" HorizontalOptions="Center">
-															<Frame.GestureRecognizers>
+													<VerticalStackLayout Margin="4" Spacing="3" WidthRequest="52">
+														<Border WidthRequest="44" HeightRequest="44" StrokeShape="RoundRectangle 10" Padding="0"
+															   BackgroundColor="{Binding DisplayColor}" Stroke="{StaticResource Hairline}" StrokeThickness="1"
+															   HorizontalOptions="Center">
+															<Border.GestureRecognizers>
 																<TapGestureRecognizer Tapped="OnPrimaryColorClicked"/>
-															</Frame.GestureRecognizers>
-														</Frame>
+															</Border.GestureRecognizers>
+														</Border>
 														<Label Text="{Binding Name}" FontSize="9" HorizontalOptions="Center"
-															   HorizontalTextAlignment="Center" TextColor="#424242"
+															   HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}"
 															   LineBreakMode="TailTruncation" MaxLines="1"/>
 													</VerticalStackLayout>
 												</DataTemplate>
 											</BindableLayout.ItemTemplate>
 										</FlexLayout>
 									</VerticalStackLayout>
-								</Frame>
+								</Border>
 
 								<!-- Step 3: Color Secundario -->
-								<Frame Padding="10" CornerRadius="8" BorderColor="#FFCDD2" BackgroundColor="#FFF8F8" HasShadow="False"
+								<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12"
 									   IsVisible="{Binding CanSelectSecondaryColor, FallbackValue=False}">
-									<VerticalStackLayout Spacing="8">
+									<VerticalStackLayout Spacing="10">
 										<Grid ColumnDefinitions="*,Auto">
-											<Label Text="Color secundario" FontSize="13" FontAttributes="Bold" TextColor="#C62828" VerticalOptions="Center"/>
+											<Label Text="COLOR SECUNDARIO" Style="{StaticResource ChipLabel}" TextColor="{StaticResource AccentSalmon}" VerticalOptions="Center"/>
 											<Label Grid.Column="1"
 												   Text="{Binding SelectedSecondaryColor, StringFormat='✓ {0}'}"
-												   FontSize="13" TextColor="#C62828" FontAttributes="Bold" VerticalOptions="Center"
+												   FontSize="13" TextColor="{StaticResource AccentSalmon}" FontAttributes="Bold" VerticalOptions="Center"
 												   IsVisible="{Binding SelectedSecondaryColor, Converter={StaticResource IsNotNullConverter}}"/>
 										</Grid>
 										<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableSecondaryColors}"
 													IsVisible="{Binding IsSelectingSecondaryColor, FallbackValue=False}">
 											<BindableLayout.ItemTemplate>
 												<DataTemplate x:DataType="local:ColorOption">
-													<VerticalStackLayout Margin="4" Spacing="2" WidthRequest="52">
-														<Frame WidthRequest="44" HeightRequest="44" CornerRadius="8" Padding="0"
-															   BackgroundColor="{Binding DisplayColor}" BorderColor="#BDBDBD"
-															   HasShadow="False" HorizontalOptions="Center">
-															<Frame.GestureRecognizers>
+													<VerticalStackLayout Margin="4" Spacing="3" WidthRequest="52">
+														<Border WidthRequest="44" HeightRequest="44" StrokeShape="RoundRectangle 10" Padding="0"
+															   BackgroundColor="{Binding DisplayColor}" Stroke="{StaticResource Hairline}" StrokeThickness="1"
+															   HorizontalOptions="Center">
+															<Border.GestureRecognizers>
 																<TapGestureRecognizer Tapped="OnSecondaryColorClicked"/>
-															</Frame.GestureRecognizers>
-														</Frame>
+															</Border.GestureRecognizers>
+														</Border>
 														<Label Text="{Binding Name}" FontSize="9" HorizontalOptions="Center"
-															   HorizontalTextAlignment="Center" TextColor="#424242"
+															   HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}"
 															   LineBreakMode="TailTruncation" MaxLines="1"/>
 													</VerticalStackLayout>
 												</DataTemplate>
 											</BindableLayout.ItemTemplate>
 										</FlexLayout>
 									</VerticalStackLayout>
-								</Frame>
+								</Border>
 
 								<!-- Resumen + Añadir al carrito -->
-								<VerticalStackLayout Spacing="6" IsVisible="{Binding CanAddToCart, FallbackValue=False}">
-									<Frame Padding="10" BackgroundColor="#F1F8E9" CornerRadius="8" BorderColor="#C8E6C9" HasShadow="False">
-										<VerticalStackLayout Spacing="3">
-											<Label Text="Resumen del pedido" FontSize="12" FontAttributes="Bold" TextColor="#2E7D32"/>
-											<Label Text="{Binding SelectedSizeStep, StringFormat='   Talla: {0}'}" FontSize="11" TextColor="#424242"/>
-											<Label Text="{Binding SelectedPrimaryColor, StringFormat='   Color principal: {0}'}" FontSize="11" TextColor="#424242"/>
-											<Label Text="{Binding SelectedSecondaryColor, StringFormat='   Color secundario: {0}'}" FontSize="11" TextColor="#424242"/>
+								<VerticalStackLayout Spacing="8" IsVisible="{Binding CanAddToCart, FallbackValue=False}">
+									<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource OutlineDim}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12">
+										<VerticalStackLayout Spacing="4">
+											<Label Text="RESUMEN DEL PEDIDO" Style="{StaticResource ChipLabel}" TextColor="{StaticResource AccentSalmon}"/>
+											<Label Text="{Binding SelectedSizeStep, StringFormat='Talla: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+											<Label Text="{Binding SelectedPrimaryColor, StringFormat='Color principal: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+											<Label Text="{Binding SelectedSecondaryColor, StringFormat='Color secundario: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
 										</VerticalStackLayout>
-									</Frame>
-									<Button Text="Añadir al carrito"
+									</Border>
+									<Button Text="AÑADIR AL CARRITO"
 											Clicked="OnAddToCartClicked"
 											CommandParameter="{Binding .}"
-											Padding="10,12"
-											BackgroundColor="#4CAF50"
-											TextColor="White"
-											FontSize="14"
-											FontAttributes="Bold"
-											CornerRadius="5"/>
+											CharacterSpacing="1.5">
+										<Button.Shadow>
+											<Shadow Brush="{StaticResource AccentRed}" Radius="22" Opacity="0.4" Offset="0,0"/>
+										</Button.Shadow>
+									</Button>
 								</VerticalStackLayout>
 
 							</VerticalStackLayout>
 
 						</VerticalStackLayout>
-					</Frame>
+					</Border>
 				</DataTemplate>
 			</CollectionView.ItemTemplate>
 		</CollectionView>
 
 		<Button
 			x:Name="AdminPreviewButton"
-			Grid.Row="1"
-			Text="👁 Visualizar Reporte"
+			Grid.Row="2"
+			Text="👁  VISUALIZAR REPORTE"
 			Clicked="OnVisualizarReporteClicked"
-			BackgroundColor="#E65100"
-			TextColor="White"
-			Padding="15,10"
-			FontSize="13"
-			FontAttributes="Bold"
+			Style="{StaticResource GhostButton}"
+			Margin="16,0,16,6"
+			CharacterSpacing="1"
 			IsVisible="False"/>
 
-		<Grid Grid.Row="2" BackgroundColor="Black" Padding="10" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+		<!-- Barra de carrito -->
+		<Border Grid.Row="3" BackgroundColor="{StaticResource SurfaceLowest}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 16,16,0,0" Padding="16,12">
+			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
 
-			<Label 
-				x:Name="CartSummaryLabel"
-				Text="0 items - 0€"
-				TextColor="White"
-				VerticalOptions="Center"
-				FontSize="14"
-				FontAttributes="Bold"/>
+				<VerticalStackLayout VerticalOptions="Center">
+					<Label Text="TU CARRITO" Style="{StaticResource ChipLabel}"/>
+					<Label
+						x:Name="CartSummaryLabel"
+						Text="0 items - 0€"
+						TextColor="{StaticResource TextPrimary}"
+						FontFamily="Sora"
+						FontSize="16"
+						FontAttributes="Bold"/>
+				</VerticalStackLayout>
 
-			<Button 
-				x:Name="AdminReportButton"
-				Text="📊 Reporte"
-				Grid.Column="1"
-				Clicked="OnAdminReportClicked"
-				BackgroundColor="#FF6F00"
-				TextColor="White"
-				Padding="15,10"
-				FontSize="12"
-				IsVisible="False"/>
+				<Button
+					x:Name="AdminReportButton"
+					Text="📊 Reporte"
+					Grid.Column="1"
+					Clicked="OnAdminReportClicked"
+					Style="{StaticResource GhostButton}"
+					Padding="14,10"
+					FontSize="12"
+					IsVisible="False"/>
 
-			<Button 
-				Text="🛒"
-				Grid.Column="2"
-				Clicked="OnCartClicked"
-				BackgroundColor="#424242"
-				TextColor="White"
-				Padding="15,10"
-				FontSize="16"/>
+				<Button
+					Text="🛒"
+					Grid.Column="2"
+					Clicked="OnCartClicked"
+					BackgroundColor="{StaticResource AccentRed}"
+					CornerRadius="12"
+					Padding="16,10"
+					FontSize="18">
+					<Button.Shadow>
+						<Shadow Brush="{StaticResource AccentRed}" Radius="20" Opacity="0.4" Offset="0,0"/>
+					</Button.Shadow>
+				</Button>
 
-		</Grid>
+			</Grid>
+		</Border>
 
 	</Grid>
 

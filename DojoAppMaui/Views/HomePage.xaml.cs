@@ -153,13 +153,13 @@ public partial class HomePage : ContentPage
 
 	private void OnPrimaryColorClicked(object sender, TappedEventArgs e)
 	{
-		var frame = sender as Frame;
-		var colorOption = frame?.BindingContext as ColorOption;
+		var border = sender as Border;
+		var colorOption = border?.BindingContext as ColorOption;
 
 		if (colorOption == null)
 			return;
 
-		var product = FindProductInHierarchy(frame);
+		var product = FindProductInHierarchy(border);
 
 		if (product != null)
 		{
@@ -176,13 +176,13 @@ public partial class HomePage : ContentPage
 
 	private void OnSecondaryColorClicked(object sender, TappedEventArgs e)
 	{
-		var frame = sender as Frame;
-		var colorOption = frame?.BindingContext as ColorOption;
+		var border = sender as Border;
+		var colorOption = border?.BindingContext as ColorOption;
 
 		if (colorOption == null)
 			return;
 
-		var product = FindProductInHierarchy(frame);
+		var product = FindProductInHierarchy(border);
 
 		if (product != null)
 		{
@@ -265,7 +265,7 @@ public partial class HomePage : ContentPage
 
 		while (current != null)
 		{
-			if (current is Frame frame && frame.BindingContext is Product product)
+			if (current is Border border && border.BindingContext is Product product)
 			{
 				return product;
 			}
