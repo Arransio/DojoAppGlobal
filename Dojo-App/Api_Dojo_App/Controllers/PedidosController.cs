@@ -1,4 +1,4 @@
-﻿using Api_Dojo_App.Data;
+using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -101,11 +101,28 @@ public class PedidosController : ControllerBase
                     return BadRequest(new { error = "La cantidad debe ser mayor que 0" });
                 }
 
-                Debug.WriteLine($"[PedidosController]   ✅ Variante encontrada: {variant.Product.Name} - {variant.Size}");
+                // Validar colores (se eligen en el pedido, ya no en la variante)
+                var primaryColor = _context.Colors.FirstOrDefault(c => c.Id == itemRequest.PrimaryColorId);
+                if (primaryColor == null)
+                {
+                    Debug.WriteLine($"[PedidosController] ❌ Color primario {itemRequest.PrimaryColorId} no existe");
+                    return NotFound(new { error = $"Color primario con ID {itemRequest.PrimaryColorId} no existe" });
+                }
+
+                var secondaryColor = _context.Colors.FirstOrDefault(c => c.Id == itemRequest.SecondaryColorId);
+                if (secondaryColor == null)
+                {
+                    Debug.WriteLine($"[PedidosController] ❌ Color secundario {itemRequest.SecondaryColorId} no existe");
+                    return NotFound(new { error = $"Color secundario con ID {itemRequest.SecondaryColorId} no existe" });
+                }
+
+                Debug.WriteLine($"[PedidosController]   ✅ Variante encontrada: {variant.Product.Name} - {variant.Size} ({primaryColor.Name}/{secondaryColor.Name})");
 
                 var pedidoItem = new PedidoItem
                 {
                     ProductVariantId = itemRequest.ProductVariantId,
+                    PrimaryColorId = itemRequest.PrimaryColorId,
+                    SecondaryColorId = itemRequest.SecondaryColorId,
                     Quantity = itemRequest.Quantity,
                     UnitPrice = itemRequest.UnitPrice,
                     TotalPrice = itemRequest.UnitPrice * itemRequest.Quantity
@@ -188,6 +205,8 @@ public class PedidosController : ControllerBase
             var pedidoItem = new PedidoItem
             {
                 ProductVariantId = item.ProductVariantId,
+                PrimaryColorId = item.PrimaryColorId,
+                SecondaryColorId = item.SecondaryColorId,
                 Quantity = item.Quantity,
                 UnitPrice = variant.Product.Price
             };
@@ -234,17 +253,15 @@ public class PedidosController : ControllerBase
             .Where(pi => pi.Pedido.CampaignId == campaignId)
             .Include(pi => pi.ProductVariant)
                 .ThenInclude(v => v.Product)
-            .Include(pi => pi.ProductVariant)
-                .ThenInclude(v => v.Colors)
-                    .ThenInclude(vc => vc.Color)
+            .Include(pi => pi.PrimaryColor)
+            .Include(pi => pi.SecondaryColor)
             .ToList()
             .GroupBy(pi => new
             {
                 Product = pi.ProductVariant.Product.Name,
                 Size = pi.ProductVariant.Size,
-                Colors = string.Join(", ",
-                    pi.ProductVariant.Colors
-                        .Select(c => c.Color.Name + " (" + c.Role + ")"))
+                Colors = (pi.PrimaryColor != null ? pi.PrimaryColor.Name : "?") + " (Primary), "
+                       + (pi.SecondaryColor != null ? pi.SecondaryColor.Name : "?") + " (Secondary)"
             })
             .Select(g => new
             {
@@ -271,6 +288,10 @@ public class PedidosController : ControllerBase
                 .Include(p => p.Items)
                     .ThenInclude(pi => pi.ProductVariant)
                         .ThenInclude(pv => pv.Product)
+                .Include(p => p.Items)
+                    .ThenInclude(pi => pi.PrimaryColor)
+                .Include(p => p.Items)
+                    .ThenInclude(pi => pi.SecondaryColor)
                 .Include(p => p.User)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToList()
@@ -291,7 +312,9 @@ public class PedidosController : ControllerBase
                         item.TotalPrice,
                         ProductName = item.ProductVariant.Product.Name,
                         ProductVariantId = item.ProductVariantId,
-                        Size = item.ProductVariant.Size
+                        Size = item.ProductVariant.Size,
+                        PrimaryColor = item.PrimaryColor != null ? item.PrimaryColor.Name : null,
+                        SecondaryColor = item.SecondaryColor != null ? item.SecondaryColor.Name : null
                     }).ToList()
                 })
                 .ToList();

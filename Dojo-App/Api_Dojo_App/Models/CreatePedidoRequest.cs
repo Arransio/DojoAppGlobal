@@ -11,6 +11,8 @@ namespace Api_Dojo_App.Models
     public class PedidoItemRequest
     {
         public int ProductVariantId { get; set; }
+        public int PrimaryColorId { get; set; }
+        public int SecondaryColorId { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
     }

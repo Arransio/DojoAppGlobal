@@ -20,8 +20,6 @@ public class CampaignsController : ControllerBase
         var campaign = _context.Campaigns
             .Include(c => c.Products)
                 .ThenInclude(p => p.ProductVariants)
-                    .ThenInclude(v => v.Colors)
-                        .ThenInclude(vc => vc.Color)
             .FirstOrDefault(c => c.IsActive);
 
         if (campaign == null)

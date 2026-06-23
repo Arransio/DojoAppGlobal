@@ -1,4 +1,4 @@
-﻿using Api_Dojo_App.Data;
+using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +20,6 @@ public class ProductVariantsController : ControllerBase
     {
         var variants = _context.ProductVariants
             .Include(v => v.Product)
-            .Include(v => v.Colors)
-                .ThenInclude(vc => vc.Color)
             .ToList();
 
         return Ok(variants);

@@ -1,4 +1,4 @@
-﻿using Api_Dojo_App.Data;
+using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +32,6 @@ public class ProductsController : ControllerBase
         var products = _context.Products
             .Where(p => p.CampaignId == campaignId)
             .Include(p => p.ProductVariants)
-            .ThenInclude(v => v.Colors)
             .ToList();
 
         return Ok(products);
@@ -54,7 +53,6 @@ public class ProductsController : ControllerBase
     {
         var product = _context.Products
             .Include(p => p.ProductVariants)
-            .ThenInclude(v => v.Colors)
             .FirstOrDefault(p => p.Id == id);
 
         if (product == null)
