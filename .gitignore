@@ -12,6 +12,11 @@ obj/
 # MAUI / .NET
 *.log
 
+# SQLite (sidecars transitorios; la BD app.db sí se versiona)
+*.db-wal
+*.db-shm
+*.db-journal
+
 # OS
 .DS_Store
 Thumbs.db
