@@ -1,61 +1,95 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage 
+<ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="DojoAppMaui.Views.LoginPage">
+    x:Class="DojoAppMaui.Views.LoginPage"
+    BackgroundColor="{StaticResource ObsidianBg}">
 
     <ScrollView>
-        <VerticalStackLayout 
-            Padding="30"
-            Spacing="15"
-            VerticalOptions="Center">
+        <Grid>
+            <!-- Halo rojo de fondo (energía "engine") -->
+            <Ellipse
+                WidthRequest="520" HeightRequest="520"
+                Fill="{StaticResource AccentRed}"
+                Opacity="0.12"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                Margin="0,-180,0,0" />
 
-            <!-- Logo -->
-            <Image 
-                Source="icono_image.png"
-                HeightRequest="120"
-                HorizontalOptions="Center"/>
+            <VerticalStackLayout
+                Padding="28,60"
+                Spacing="18"
+                VerticalOptions="Center">
 
-            <!-- Credenciales del utuario -->
-			<Entry 
-                Placeholder="Usuario"
-                Text="{Binding Username}" />
+                <!-- Logo -->
+                <Image
+                    Source="icono_image.png"
+                    HeightRequest="110"
+                    HorizontalOptions="Center"/>
 
-		    <Entry 
-                Placeholder="Contraseña"
-                IsPassword="True"
-                Text="{Binding Password}" />
+                <VerticalStackLayout Spacing="2" Margin="0,4,0,16">
+                    <Label Text="BIENVENIDO" Style="{StaticResource ChipLabel}" HorizontalOptions="Center"/>
+                    <Label Text="Inicia sesión" Style="{StaticResource DisplayTitle}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
 
-			<Button 
-				Text="Iniciar sesión"
-				Command="{Binding LoginCommand}" />
+                <!-- Tarjeta glass con el formulario -->
+                <Border Style="{StaticResource GlassCard}">
+                    <VerticalStackLayout Spacing="14">
 
-			<!-- Botón de registro -->
-			<Button 
-				Text="{Binding RegisterButtonText}"
-				Command="{Binding RegisterCommand}"
-				IsEnabled="{Binding IsRegisterButtonEnabled}"
-				BackgroundColor="Transparent"
-				TextColor="Blue"
-				FontSize="14"/>
+                        <Label Text="USUARIO" Style="{StaticResource ChipLabel}"/>
+                        <Border Style="{StaticResource FieldBorder}">
+                            <Entry
+                                Placeholder="Tu usuario"
+                                Text="{Binding Username}" />
+                        </Border>
 
-			<!-- botonsito de recordar usuario -->
-            <HorizontalStackLayout>
-                <CheckBox />
-                <Label Text="Recordar usuario"
-                       VerticalOptions="Center"/>
-            </HorizontalStackLayout>
+                        <Label Text="CONTRASEÑA" Style="{StaticResource ChipLabel}" Margin="0,4,0,0"/>
+                        <Border Style="{StaticResource FieldBorder}">
+                            <Entry
+                                Placeholder="••••••••"
+                                IsPassword="True"
+                                Text="{Binding Password}" />
+                        </Border>
 
-            <!-- Olvidaste contraseña¿?¿? -->
-            <Label 
-                Text="¿Olvidaste tu contraseña?"
-                TextColor="Blue">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer />
-                </Label.GestureRecognizers>
-            </Label>
+                        <HorizontalStackLayout Spacing="6" Margin="0,4,0,0">
+                            <CheckBox Color="{StaticResource AccentRed}" VerticalOptions="Center"/>
+                            <Label Text="Recordar usuario"
+                                   Style="{StaticResource MutedLabel}"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
 
-        </VerticalStackLayout>
+                        <Button
+                            Text="INICIAR SESIÓN"
+                            CharacterSpacing="1.5"
+                            Command="{Binding LoginCommand}">
+                            <Button.Shadow>
+                                <Shadow Brush="{StaticResource AccentRed}" Radius="28" Opacity="0.45" Offset="0,0"/>
+                            </Button.Shadow>
+                        </Button>
+
+                        <Button
+                            Text="{Binding RegisterButtonText}"
+                            Command="{Binding RegisterCommand}"
+                            IsEnabled="{Binding IsRegisterButtonEnabled}"
+                            Style="{StaticResource GhostButton}"/>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Olvidaste contraseña -->
+                <Label
+                    Text="¿Olvidaste tu contraseña?"
+                    TextColor="{StaticResource AccentSalmon}"
+                    FontFamily="Sora"
+                    HorizontalOptions="Center"
+                    Margin="0,4,0,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer />
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 
 </ContentPage>

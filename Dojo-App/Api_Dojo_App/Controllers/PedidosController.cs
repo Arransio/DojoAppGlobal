@@ -284,14 +284,12 @@ public class PedidosController : ControllerBase
         {
             Debug.WriteLine("[PedidosController] GetAllPedidos - Obteniendo todos los pedidos");
 
+            var colorsDict = _context.Colors.ToDictionary(c => c.Id, c => c.Name);
+
             var pedidos = _context.Pedidos
                 .Include(p => p.Items)
                     .ThenInclude(pi => pi.ProductVariant)
                         .ThenInclude(pv => pv.Product)
-                .Include(p => p.Items)
-                    .ThenInclude(pi => pi.PrimaryColor)
-                .Include(p => p.Items)
-                    .ThenInclude(pi => pi.SecondaryColor)
                 .Include(p => p.User)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToList()
@@ -313,8 +311,7 @@ public class PedidosController : ControllerBase
                         ProductName = item.ProductVariant.Product.Name,
                         ProductVariantId = item.ProductVariantId,
                         Size = item.ProductVariant.Size,
-                        PrimaryColor = item.PrimaryColor != null ? item.PrimaryColor.Name : null,
-                        SecondaryColor = item.SecondaryColor != null ? item.SecondaryColor.Name : null
+                        Colors = BuildColorList(item.PrimaryColorId, item.SecondaryColorId, colorsDict)
                     }).ToList()
                 })
                 .ToList();
@@ -328,4 +325,20 @@ public class PedidosController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
+
+    private static List<ColorEntry> BuildColorList(int primaryId, int secondaryId, Dictionary<int, string> colorsDict)
+    {
+        var list = new List<ColorEntry>();
+        if (primaryId > 0 && colorsDict.TryGetValue(primaryId, out var primaryName))
+            list.Add(new ColorEntry { Name = primaryName, Role = "Primary" });
+        if (secondaryId > 0 && colorsDict.TryGetValue(secondaryId, out var secondaryName))
+            list.Add(new ColorEntry { Name = secondaryName, Role = "Secondary" });
+        return list;
+    }
+}
+
+public class ColorEntry
+{
+    public string Name { get; set; }
+    public string Role { get; set; }
 }

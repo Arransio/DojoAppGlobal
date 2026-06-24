@@ -34,4 +34,25 @@ public class ProductVariantsController : ControllerBase
 
         return Ok(variant);
     }
+
+    // Obtiene o crea una variante para un producto y talla dados
+    [HttpGet("ensure/{productId}/{size}")]
+    public IActionResult EnsureVariant(int productId, string size)
+    {
+        var productExists = _context.Products.Any(p => p.Id == productId);
+        if (!productExists)
+            return NotFound(new { error = $"Producto {productId} no existe" });
+
+        var variant = _context.ProductVariants
+            .FirstOrDefault(v => v.ProductId == productId && v.Size == size);
+
+        if (variant == null)
+        {
+            variant = new ProductVariant { ProductId = productId, Size = size };
+            _context.ProductVariants.Add(variant);
+            _context.SaveChanges();
+        }
+
+        return Ok(variant);
+    }
 }

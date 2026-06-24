@@ -43,6 +43,7 @@ public partial class HomePage : ContentPage
 			// Set available sizes
 			var uniqueSizes = variantsForProduct
 				.Select(v => v.Size)
+				.Where(s => !string.IsNullOrWhiteSpace(s))
 				.Distinct()
 				.OrderBy(s => s)
 				.ToList();
@@ -50,7 +51,7 @@ public partial class HomePage : ContentPage
 			if (product.Name.ToLower().Contains("kimono"))
 				product.AvailableSizes = new(new List<string> { "A1", "A2", "A3", "A4" });
 			else
-				product.AvailableSizes = new(uniqueSizes.Count > 0 ? uniqueSizes : new List<string> { "XS", "S", "M", "L", "XL" });
+				product.AvailableSizes = new(new List<string> { "XS", "S", "M", "L", "XL" });
 
 			// Keep old properties for compatibility
 			product.Sizes = product.AvailableSizes.ToList();
@@ -89,7 +90,7 @@ public partial class HomePage : ContentPage
 		}
 	}
 
-	private void OnSizeStepClicked(object sender, EventArgs e)
+	private async void OnSizeStepClicked(object sender, EventArgs e)
 	{
 		var button = sender as Button;
 		var selectedSize = button?.BindingContext as string;
@@ -114,20 +115,51 @@ public partial class HomePage : ContentPage
 			product.SelectedVariant = product.VariantsUI
 				.FirstOrDefault(v => v.Size == selectedSize);
 
+			// Si no hay variante local, la creamos en el servidor para este producto y talla.
+			if (product.SelectedVariant == null)
+			{
+				product.SelectedVariant = await EnsureVariantAsync(product.Id, selectedSize);
+			}
+
 			// Los colores ya no dependen de la variante: ofrecemos todos.
 			FillColorOptions(product.AvailablePrimaryColors);
 		}
 	}
 
-	private void OnPrimaryColorClicked(object sender, EventArgs e)
+	private async Task<ProductVariantUI?> EnsureVariantAsync(int productId, string size)
 	{
-		var button = sender as Button;
-		var colorOption = button?.BindingContext as ColorOption;
+		try
+		{
+			var client = new HttpClient();
+			var response = await client.GetAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}");
+			if (!response.IsSuccessStatusCode)
+				return null;
+
+			var json = await response.Content.ReadAsStringAsync();
+			var variant = JsonSerializer.Deserialize<ProductVariant>(json, new JsonSerializerOptions
+			{
+				PropertyNameCaseInsensitive = true
+			});
+
+			if (variant != null)
+				return new ProductVariantUI { Id = variant.Id, Size = variant.Size };
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"[HomePage] Error al crear variante: {ex.Message}");
+		}
+		return null;
+	}
+
+	private void OnPrimaryColorClicked(object sender, TappedEventArgs e)
+	{
+		var border = sender as Border;
+		var colorOption = border?.BindingContext as ColorOption;
 
 		if (colorOption == null)
 			return;
 
-		var product = FindProductInHierarchy(button);
+		var product = FindProductInHierarchy(border);
 
 		if (product != null)
 		{
@@ -142,15 +174,15 @@ public partial class HomePage : ContentPage
 		}
 	}
 
-	private void OnSecondaryColorClicked(object sender, EventArgs e)
+	private void OnSecondaryColorClicked(object sender, TappedEventArgs e)
 	{
-		var button = sender as Button;
-		var colorOption = button?.BindingContext as ColorOption;
+		var border = sender as Border;
+		var colorOption = border?.BindingContext as ColorOption;
 
 		if (colorOption == null)
 			return;
 
-		var product = FindProductInHierarchy(button);
+		var product = FindProductInHierarchy(border);
 
 		if (product != null)
 		{
@@ -233,7 +265,7 @@ public partial class HomePage : ContentPage
 
 		while (current != null)
 		{
-			if (current is Frame frame && frame.BindingContext is Product product)
+			if (current is Border border && border.BindingContext is Product product)
 			{
 				return product;
 			}
@@ -348,13 +380,17 @@ public partial class HomePage : ContentPage
 				Debug.WriteLine($"[HomePage] Username es vacío o null");
 			}
 
-			// Mostrar botón solo si es admin
+			// Mostrar botones solo si es admin
 			var adminButton = this.FindByName<Button>("AdminReportButton");
 			if (adminButton != null)
 			{
 				adminButton.IsVisible = isAdmin;
 				Debug.WriteLine($"[HomePage] AdminButton visibility set to: {isAdmin}");
 			}
+
+			var previewButton = this.FindByName<Button>("AdminPreviewButton");
+			if (previewButton != null)
+				previewButton.IsVisible = isAdmin;
 			else
 			{
 				Debug.WriteLine($"[HomePage] AdminButton not found");
@@ -364,6 +400,42 @@ public partial class HomePage : ContentPage
 		{
 			Debug.WriteLine($"[HomePage] Error verificando rol: {ex.Message}");
 			Debug.WriteLine($"[HomePage] Stack: {ex.StackTrace}");
+		}
+	}
+
+	private async void OnVisualizarReporteClicked(object sender, EventArgs e)
+	{
+		var button = sender as Button;
+		if (button == null) return;
+
+		try
+		{
+			button.IsEnabled = false;
+			var originalText = button.Text;
+			button.Text = "Cargando...";
+
+			var orderReportService = new OrderReportService();
+			var pedidos = await orderReportService.GetAllPedidosAsync();
+
+			button.IsEnabled = true;
+			button.Text = originalText;
+
+			if (pedidos.Count == 0)
+			{
+				await DisplayAlert("Sin pedidos", "No hay pedidos para mostrar", "OK");
+				return;
+			}
+
+			var pdfService = new PdfGeneratorService();
+			var html = pdfService.GenerateHtmlPreview(pedidos);
+			await Navigation.PushAsync(new ReportePreviewPage(html, pedidos));
+		}
+		catch (Exception ex)
+		{
+			button.IsEnabled = true;
+			button.Text = "👁 Visualizar Reporte";
+			Debug.WriteLine($"[HomePage] Error visualizando reporte: {ex.Message}");
+			await DisplayAlert("Error", $"Error al cargar el reporte: {ex.Message}", "OK");
 		}
 	}
 
