@@ -12,10 +12,12 @@ obj/
 # MAUI / .NET
 *.log
 
-# SQLite (sidecars transitorios; la BD app.db sí se versiona)
+# SQLite (la BD es un dato, no se versiona; se comparte aparte y se regenera con migraciones)
+*.db
 *.db-wal
 *.db-shm
 *.db-journal
+*.sqbpro
 
 # OS
 .DS_Store
