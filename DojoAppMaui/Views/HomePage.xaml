@@ -4,15 +4,43 @@
 			 x:Class="DojoAppMaui.Views.HomePage"
 			 BackgroundColor="{StaticResource ObsidianBg}">
 
-	<Grid RowDefinitions="Auto,*,Auto,Auto">
+	<Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+		<!-- Banner de usuario logueado (ancho completo) -->
+		<Border Grid.Row="0"
+				BackgroundColor="{StaticResource GlassFill}"
+				Stroke="{StaticResource Hairline}" StrokeThickness="1"
+				StrokeShape="RoundRectangle 0,0,20,20" Padding="20,16">
+			<HorizontalStackLayout Spacing="14" HorizontalOptions="Start" VerticalOptions="Center">
+				<!-- Avatar circular con la inicial -->
+				<Border WidthRequest="48" HeightRequest="48" Padding="0"
+						BackgroundColor="{StaticResource SurfaceHigh}"
+						Stroke="{StaticResource Hairline}" StrokeThickness="1"
+						StrokeShape="RoundRectangle 24"
+						VerticalOptions="Center">
+					<Label x:Name="UserInitialLabel" Text="·"
+						   FontFamily="Sora" FontAttributes="Bold" FontSize="20"
+						   TextColor="{StaticResource AccentSalmon}"
+						   HorizontalOptions="Center" VerticalOptions="Center"
+						   HorizontalTextAlignment="Center"/>
+				</Border>
+				<VerticalStackLayout Spacing="1" VerticalOptions="Center">
+					<Label Text="SESIÓN INICIADA" Style="{StaticResource ChipLabel}" FontSize="10"/>
+					<Label x:Name="UsernameLabel" Text="—"
+						   FontFamily="Sora" FontAttributes="Bold" FontSize="20"
+						   TextColor="{StaticResource TextPrimary}"
+						   LineBreakMode="TailTruncation" MaxLines="1"/>
+				</VerticalStackLayout>
+			</HorizontalStackLayout>
+		</Border>
 
 		<!-- Cabecera -->
-		<VerticalStackLayout Grid.Row="0" Padding="20,18,20,8" Spacing="2">
+		<VerticalStackLayout Grid.Row="1" Padding="20,18,20,8" Spacing="2">
 			<Label Text="CATÁLOGO" Style="{StaticResource ChipLabel}"/>
 			<Label Text="Productos" Style="{StaticResource DisplayTitle}"/>
 		</VerticalStackLayout>
 
-		<CollectionView x:Name="ProductsCollectionView" Grid.Row="1">
+		<CollectionView x:Name="ProductsCollectionView" Grid.Row="2">
 			<CollectionView.ItemTemplate>
 				<DataTemplate x:DataType="local:Product">
 					<Border Style="{StaticResource GlassCard}" Margin="16,6">
@@ -162,7 +190,7 @@
 
 		<Button
 			x:Name="AdminPreviewButton"
-			Grid.Row="2"
+			Grid.Row="3"
 			Text="👁  VISUALIZAR REPORTE"
 			Clicked="OnVisualizarReporteClicked"
 			Style="{StaticResource GhostButton}"
@@ -171,7 +199,7 @@
 			IsVisible="False"/>
 
 		<!-- Barra de carrito -->
-		<Border Grid.Row="3" BackgroundColor="{StaticResource SurfaceLowest}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 16,16,0,0" Padding="16,12">
+		<Border Grid.Row="4" BackgroundColor="{StaticResource SurfaceLowest}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 16,16,0,0" Padding="16,12">
 			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
 
 				<VerticalStackLayout VerticalOptions="Center">

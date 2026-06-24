@@ -355,8 +355,29 @@ public partial class HomePage : ContentPage
 		LoadProducts();
 		UpdateCartSummary();
 
+		// Cargar datos del usuario logueado en la cabecera
+		await LoadUserInfo();
+
 		// Verificar si el usuario es admin (localmente)
 		await CheckAdminRoleLocally();
+	}
+
+	private async Task LoadUserInfo()
+	{
+		try
+		{
+			var username = await TokenStorage.GetUsername();
+
+			if (string.IsNullOrWhiteSpace(username))
+				username = "Invitado";
+
+			UsernameLabel.Text = username;
+			UserInitialLabel.Text = char.ToUpper(username.Trim()[0]).ToString();
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"[HomePage] Error cargando usuario: {ex.Message}");
+		}
 	}
 
 	private async Task CheckAdminRoleLocally()
