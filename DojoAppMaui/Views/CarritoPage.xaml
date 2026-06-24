@@ -1,10 +1,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DojoAppMaui.Controls"
              x:Class="DojoAppMaui.Views.CarritoPage"
              Title="Carrito"
+             NavigationPage.HasNavigationBar="False"
              BackgroundColor="{StaticResource ObsidianBg}">
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
 
         <!-- Cabecera -->
         <VerticalStackLayout Grid.Row="0" Padding="20,16,20,4" Spacing="2">
@@ -70,6 +72,9 @@
                        HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </Border>
+
+        <!-- Banner de navegación global -->
+        <controls:BottomNavBar x:Name="NavBar" Grid.Row="3" ActiveTab="Carrito"/>
 
     </Grid>
 

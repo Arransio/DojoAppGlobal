@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DojoAppMaui.Controls"
              x:Class="DojoAppMaui.Views.ReportePreviewPage"
              Title="Reporte de Pedidos"
+             NavigationPage.HasNavigationBar="False"
              BackgroundColor="{StaticResource ObsidianBg}">
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
 
-        <Grid Grid.Row="0" BackgroundColor="{StaticResource SurfaceLowest}" Padding="8" ColumnDefinitions="Auto,*,Auto">
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource SurfaceLowest}" Padding="8" ColumnDefinitions="Auto,*">
             <Button Grid.Column="0"
                     Text="← Cerrar"
                     Clicked="OnCerrarClicked"
@@ -22,19 +24,35 @@
                    FontAttributes="Bold"
                    FontSize="15"
                    HorizontalOptions="Center"
-                   VerticalOptions="Center"/>
-            <Button Grid.Column="2"
-                    x:Name="DescargarButton"
-                    Text="💾 PDF"
-                    Clicked="OnDescargarClicked"
-                    BackgroundColor="{StaticResource AccentRed}"
-                    TextColor="{StaticResource OnAccent}"
-                    FontAttributes="Bold"
-                    CornerRadius="8"
-                    Padding="12,6"/>
+                   VerticalOptions="Center"
+                   Margin="0,0,70,0"/>
         </Grid>
 
         <WebView x:Name="ReporteWebView" Grid.Row="1"/>
+
+        <!-- Barra de acciones del reporte -->
+        <Border Grid.Row="2" BackgroundColor="{StaticResource SurfaceLowest}"
+                Stroke="{StaticResource Hairline}" StrokeThickness="1"
+                StrokeShape="Rectangle" Padding="16,12">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        x:Name="EnviarButton"
+                        Text="📤 ENVIAR"
+                        Clicked="OnEnviarClicked"
+                        CharacterSpacing="1"
+                        FontSize="13"/>
+                <Button Grid.Column="1"
+                        x:Name="GuardarButton"
+                        Text="💾 GUARDAR"
+                        Clicked="OnGuardarClicked"
+                        Style="{StaticResource GhostButton}"
+                        CharacterSpacing="1"
+                        FontSize="13"/>
+            </Grid>
+        </Border>
+
+        <!-- Banner de navegación global -->
+        <controls:BottomNavBar Grid.Row="3" ActiveTab="Reporte"/>
 
     </Grid>
 

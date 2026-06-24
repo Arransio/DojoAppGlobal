@@ -1,10 +1,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:local="clr-namespace:DojoAppMaui.Models"
+			 xmlns:controls="clr-namespace:DojoAppMaui.Controls"
 			 x:Class="DojoAppMaui.Views.HomePage"
+			 NavigationPage.HasNavigationBar="False"
 			 BackgroundColor="{StaticResource ObsidianBg}">
 
-	<Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+	<Grid RowDefinitions="Auto,Auto,*,Auto">
 
 		<!-- Banner de usuario logueado (ancho completo) -->
 		<Border Grid.Row="0"
@@ -188,56 +190,8 @@
 			</CollectionView.ItemTemplate>
 		</CollectionView>
 
-		<Button
-			x:Name="AdminPreviewButton"
-			Grid.Row="3"
-			Text="👁  VISUALIZAR REPORTE"
-			Clicked="OnVisualizarReporteClicked"
-			Style="{StaticResource GhostButton}"
-			Margin="16,0,16,6"
-			CharacterSpacing="1"
-			IsVisible="False"/>
-
-		<!-- Barra de carrito -->
-		<Border Grid.Row="4" BackgroundColor="{StaticResource SurfaceLowest}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 16,16,0,0" Padding="16,12">
-			<Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-
-				<VerticalStackLayout VerticalOptions="Center">
-					<Label Text="TU CARRITO" Style="{StaticResource ChipLabel}"/>
-					<Label
-						x:Name="CartSummaryLabel"
-						Text="0 items - 0€"
-						TextColor="{StaticResource TextPrimary}"
-						FontFamily="Sora"
-						FontSize="16"
-						FontAttributes="Bold"/>
-				</VerticalStackLayout>
-
-				<Button
-					x:Name="AdminReportButton"
-					Text="📊 Reporte"
-					Grid.Column="1"
-					Clicked="OnAdminReportClicked"
-					Style="{StaticResource GhostButton}"
-					Padding="14,10"
-					FontSize="12"
-					IsVisible="False"/>
-
-				<Button
-					Text="🛒"
-					Grid.Column="2"
-					Clicked="OnCartClicked"
-					BackgroundColor="{StaticResource AccentRed}"
-					CornerRadius="12"
-					Padding="16,10"
-					FontSize="18">
-					<Button.Shadow>
-						<Shadow Brush="{StaticResource AccentRed}" Radius="20" Opacity="0.4" Offset="0,0"/>
-					</Button.Shadow>
-				</Button>
-
-			</Grid>
-		</Border>
+		<!-- Banner de navegación global -->
+		<controls:BottomNavBar x:Name="NavBar" Grid.Row="3" ActiveTab="Inicio"/>
 
 	</Grid>
 

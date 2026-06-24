@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DojoAppMaui.Controls.BottomNavBar">
+
+    <!-- Banner de navegación global (Obsidian Redux) -->
+    <Border BackgroundColor="{StaticResource SurfaceLowest}"
+            Stroke="{StaticResource Hairline}" StrokeThickness="1"
+            StrokeShape="RoundRectangle 18,18,0,0"
+            Padding="6,10,6,12">
+        <Grid x:Name="NavGrid" ColumnDefinitions="*,*,*,*,*">
+
+            <!-- Inicio -->
+            <VerticalStackLayout x:Name="ItemInicio" Grid.Column="0" Spacing="4" Padding="0,4" BackgroundColor="Transparent">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Inicio"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Path x:Name="IconInicio" HeightRequest="24" WidthRequest="24" Scale="1.15"
+                      Fill="{StaticResource AccentSalmonBrush}" HorizontalOptions="Center"
+                      Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                <Label Text="Inicio" FontFamily="Sora" FontSize="10" CharacterSpacing="0.5"
+                       TextColor="{StaticResource AccentSalmon}"
+                       HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Usuario -->
+            <VerticalStackLayout x:Name="ItemUsuario" Grid.Column="1" Spacing="4" Padding="0,4" BackgroundColor="Transparent">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Usuario"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Path x:Name="IconUsuario" HeightRequest="24" WidthRequest="24" Scale="1.15"
+                      Fill="{StaticResource AccentSalmonBrush}" HorizontalOptions="Center"
+                      Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                <Label Text="Usuario" FontFamily="Sora" FontSize="10" CharacterSpacing="0.5"
+                       TextColor="{StaticResource AccentSalmon}"
+                       HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Pedidos -->
+            <VerticalStackLayout x:Name="ItemPedidos" Grid.Column="2" Spacing="4" Padding="0,4" BackgroundColor="Transparent">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Pedidos"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Path x:Name="IconPedidos" HeightRequest="24" WidthRequest="24" Scale="1.15"
+                      Fill="{StaticResource AccentSalmonBrush}" HorizontalOptions="Center"
+                      Data="M20 2H4c-1.1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-.9-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4h16v3z"/>
+                <Label Text="Pedidos" FontFamily="Sora" FontSize="10" CharacterSpacing="0.5"
+                       TextColor="{StaticResource AccentSalmon}"
+                       HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Reporte (solo admin) -->
+            <VerticalStackLayout x:Name="ItemReporte" Grid.Column="3" Spacing="4" Padding="0,4" BackgroundColor="Transparent">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Reporte"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Path x:Name="IconReporte" HeightRequest="24" WidthRequest="24" Scale="1.15"
+                      Fill="{StaticResource AccentSalmonBrush}" HorizontalOptions="Center"
+                      Data="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>
+                <Label Text="Reporte" FontFamily="Sora" FontSize="10" CharacterSpacing="0.5"
+                       TextColor="{StaticResource AccentSalmon}"
+                       HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Carrito -->
+            <VerticalStackLayout x:Name="ItemCarrito" Grid.Column="4" Spacing="4" Padding="0,4" BackgroundColor="Transparent">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Carrito"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <!-- Icono con badge de nº de items -->
+                <Grid HorizontalOptions="Center" WidthRequest="34" HeightRequest="24">
+                    <Path x:Name="IconCarrito" HeightRequest="24" WidthRequest="24" Scale="1.15"
+                          Fill="{StaticResource AccentSalmonBrush}"
+                          HorizontalOptions="Center" VerticalOptions="Center"
+                          Data="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    <Border x:Name="CartBadge" IsVisible="False"
+                            BackgroundColor="{StaticResource AccentRed}"
+                            Stroke="{StaticResource SurfaceLowest}" StrokeThickness="1.5"
+                            StrokeShape="RoundRectangle 9"
+                            Padding="3,0" MinimumWidthRequest="18" HeightRequest="18"
+                            HorizontalOptions="End" VerticalOptions="Start"
+                            TranslationX="6" TranslationY="-5">
+                        <Label x:Name="CartBadgeLabel" Text="0"
+                               FontFamily="Sora" FontSize="10" FontAttributes="Bold"
+                               TextColor="{StaticResource OnAccent}"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               HorizontalTextAlignment="Center"/>
+                    </Border>
+                </Grid>
+                <Label Text="Carrito" FontFamily="Sora" FontSize="10" CharacterSpacing="0.5"
+                       TextColor="{StaticResource AccentSalmon}"
+                       HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+        </Grid>
+    </Border>
+</ContentView>

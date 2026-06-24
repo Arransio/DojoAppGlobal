@@ -244,7 +244,7 @@ public partial class HomePage : ContentPage
 
 		// Reset selection
 		ResetProductSelection(product);
-		UpdateCartSummary();
+		NavBar.RefreshBadge();
 	}
 
 	private void ResetProductSelection(Product product)
@@ -333,19 +333,6 @@ public partial class HomePage : ContentPage
 		}) ?? new List<ProductVariant>();
 	}
 
-	private void UpdateCartSummary()
-	{
-		int count = App.CarritoService.GetCount();
-		double total = App.CarritoService.GetTotal();
-
-		CartSummaryLabel.Text = $"{count} items - {total}€";
-	}
-
-	private async void OnCartClicked(object sender, EventArgs e)
-	{
-		await Navigation.PushAsync(new CarritoPage());
-	}
-
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
@@ -353,7 +340,6 @@ public partial class HomePage : ContentPage
 		await LoadColors();
 		await LoadVariants();
 		LoadProducts();
-		UpdateCartSummary();
 
 		// Cargar datos del usuario logueado en la cabecera
 		await LoadUserInfo();

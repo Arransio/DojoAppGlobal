@@ -30,6 +30,8 @@ public partial class CarritoPage : ContentPage
         // Habilitar/deshabilitar botón de confirmar
         if (ConfirmOrderButton != null)
             ConfirmOrderButton.IsEnabled = items.Count > 0;
+
+        NavBar?.RefreshBadge();
     }
 
     private void OnRemoveClicked(object sender, EventArgs e)
@@ -101,8 +103,8 @@ public partial class CarritoPage : ContentPage
                 $"Pedido creado exitosamente\n\nID: {response.PedidoId}\nTotal: {response.TotalPrice:F2} €", 
                 "OK");
 
-            // Volver a la página anterior
-            await Navigation.PopAsync();
+            // Volver al catálogo (Inicio) tras confirmar el pedido
+            Controls.BottomNavBar.SetRoot(new HomePage());
         }
         catch (Exception ex)
         {

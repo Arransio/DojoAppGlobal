@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DojoAppMaui.Controls"
+             x:Class="DojoAppMaui.Views.UsuarioPage"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource ObsidianBg}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Cabecera -->
+        <VerticalStackLayout Grid.Row="0" Padding="20,18,20,8" Spacing="2">
+            <Label Text="PERFIL" Style="{StaticResource ChipLabel}"/>
+            <Label Text="Usuario" Style="{StaticResource DisplayTitle}"/>
+        </VerticalStackLayout>
+
+        <!-- Contenido (placeholder por ahora) -->
+        <VerticalStackLayout Grid.Row="1" Spacing="8" Padding="24"
+                             HorizontalOptions="Center" VerticalOptions="Center">
+            <Label Text="&#x1F464;" FontSize="56" HorizontalOptions="Center"
+                   TextColor="{StaticResource SurfaceHighest}"/>
+            <Label Text="Próximamente" Style="{StaticResource MutedLabel}"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Banner de navegación global -->
+        <controls:BottomNavBar Grid.Row="2" ActiveTab="Usuario"/>
+
+    </Grid>
+
+</ContentPage>
