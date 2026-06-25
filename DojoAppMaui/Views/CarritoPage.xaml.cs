@@ -103,8 +103,8 @@ public partial class CarritoPage : ContentPage
                 $"Pedido creado exitosamente\n\nID: {response.PedidoId}\nTotal: {response.TotalPrice:F2} €", 
                 "OK");
 
-            // Volver al catálogo (Inicio) tras confirmar el pedido
-            Controls.BottomNavBar.SetRoot(new HomePage());
+            // Volver al catálogo de pedidos tras confirmar el pedido
+            Controls.BottomNavBar.SetRoot(new PedidosPage());
         }
         catch (Exception ex)
         {

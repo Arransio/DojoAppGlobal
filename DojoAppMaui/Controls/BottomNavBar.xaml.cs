@@ -112,10 +112,12 @@ public partial class BottomNavBar : ContentView
 
         switch (tab)
         {
-            // "Inicio" y "Pedidos" comparten el catálogo de pedido (HomePage).
+            // Inicio: horario/tips. Pedidos: catálogo y alta de pedidos.
             case "Inicio":
-            case "Pedidos":
                 SetRoot(new HomePage());
+                break;
+            case "Pedidos":
+                SetRoot(new PedidosPage());
                 break;
             case "Usuario":
                 SetRoot(new UsuarioPage());

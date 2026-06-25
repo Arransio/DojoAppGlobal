@@ -1,12 +1,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:local="clr-namespace:DojoAppMaui.Models"
 			 xmlns:controls="clr-namespace:DojoAppMaui.Controls"
 			 x:Class="DojoAppMaui.Views.HomePage"
 			 NavigationPage.HasNavigationBar="False"
 			 BackgroundColor="{StaticResource ObsidianBg}">
 
-	<Grid RowDefinitions="Auto,Auto,*,Auto">
+	<Grid RowDefinitions="Auto,*,Auto">
 
 		<!-- Banner de usuario logueado (ancho completo) -->
 		<Border Grid.Row="0"
@@ -14,17 +13,14 @@
 				Stroke="{StaticResource Hairline}" StrokeThickness="1"
 				StrokeShape="RoundRectangle 0,0,20,20" Padding="20,16">
 			<HorizontalStackLayout Spacing="14" HorizontalOptions="Start" VerticalOptions="Center">
-				<!-- Avatar circular con la inicial -->
-				<Border WidthRequest="48" HeightRequest="48" Padding="0"
+				<!-- Avatar circular: color del cinturón + franjas por grado -->
+				<Border x:Name="AvatarBorder" WidthRequest="48" HeightRequest="48" Padding="0"
 						BackgroundColor="{StaticResource SurfaceHigh}"
 						Stroke="{StaticResource Hairline}" StrokeThickness="1"
 						StrokeShape="RoundRectangle 24"
 						VerticalOptions="Center">
-					<Label x:Name="UserInitialLabel" Text="·"
-						   FontFamily="Sora" FontAttributes="Bold" FontSize="20"
-						   TextColor="{StaticResource AccentSalmon}"
-						   HorizontalOptions="Center" VerticalOptions="Center"
-						   HorizontalTextAlignment="Center"/>
+					<VerticalStackLayout x:Name="AvatarStripes" Spacing="4"
+						   VerticalOptions="Center" HorizontalOptions="Fill"/>
 				</Border>
 				<VerticalStackLayout Spacing="1" VerticalOptions="Center">
 					<Label Text="SESIÓN INICIADA" Style="{StaticResource ChipLabel}" FontSize="10"/>
@@ -36,162 +32,60 @@
 			</HorizontalStackLayout>
 		</Border>
 
-		<!-- Cabecera -->
-		<VerticalStackLayout Grid.Row="1" Padding="20,18,20,8" Spacing="2">
-			<Label Text="CATÁLOGO" Style="{StaticResource ChipLabel}"/>
-			<Label Text="Productos" Style="{StaticResource DisplayTitle}"/>
-		</VerticalStackLayout>
+		<!-- Contenido principal con Kanji de fondo -->
+		<Grid Grid.Row="1">
 
-		<CollectionView x:Name="ProductsCollectionView" Grid.Row="2">
-			<CollectionView.ItemTemplate>
-				<DataTemplate x:DataType="local:Product">
-					<Border Style="{StaticResource GlassCard}" Margin="16,6">
-						<VerticalStackLayout Spacing="10">
-							<!-- Header: Product Name, Price and Expand/Collapse Button -->
-							<Grid ColumnDefinitions="*,44" Padding="0" ColumnSpacing="10">
-								<VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
-									<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-									<Label Text="{Binding Price, StringFormat='{0:F2}€'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentSalmon}" />
-								</VerticalStackLayout>
-								<Button
-									Grid.Column="1"
-									Text="{Binding IsExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
-									Padding="0"
-									Clicked="OnProductHeaderClicked"
-									CommandParameter="{Binding .}"
-									BackgroundColor="{StaticResource SurfaceHigh}"
-									TextColor="{StaticResource AccentSalmon}"
-									CornerRadius="8"
-									FontSize="18"
-									WidthRequest="44"
-									HeightRequest="44"
-									HorizontalOptions="End"
-									VerticalOptions="Center"/>
-							</Grid>
+			<!-- Kanji 柔 ("ju": flexibilidad/suavidad, principio del Jiu-Jitsu) como marca de agua -->
+			<Label Text="柔"
+				   FontSize="360"
+				   FontAttributes="Bold"
+				   TextColor="{StaticResource AccentSalmon}"
+				   Opacity="0.10"
+				   HorizontalOptions="Center" VerticalOptions="Center"
+				   HorizontalTextAlignment="Center"
+				   InputTransparent="True"/>
 
-							<!-- Accordion Steps -->
-							<VerticalStackLayout Spacing="8" Padding="0,6,0,0" IsVisible="{Binding IsExpanded, FallbackValue=False}">
+			<ScrollView>
+				<VerticalStackLayout Padding="20,18,20,24" Spacing="18">
 
-								<!-- Step 1: Talla -->
-								<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12">
-									<VerticalStackLayout Spacing="10">
-										<Grid ColumnDefinitions="*,Auto">
-											<Label Text="TALLA" Style="{StaticResource ChipLabel}" TextColor="{StaticResource AccentSalmon}" VerticalOptions="Center"/>
-											<Label Grid.Column="1"
-												   Text="{Binding SelectedSizeStep, StringFormat='✓ {0}'}"
-												   FontSize="13" TextColor="{StaticResource AccentSalmon}" FontAttributes="Bold" VerticalOptions="Center"
-												   IsVisible="{Binding SelectedSizeStep, Converter={StaticResource IsNotNullConverter}}"/>
-										</Grid>
-										<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableSizes}"
-													IsVisible="{Binding IsSelectingSize, FallbackValue=True}">
-											<BindableLayout.ItemTemplate>
-												<DataTemplate x:DataType="x:String">
-													<Button Text="{Binding .}" Padding="14,8" Margin="3"
-															Clicked="OnSizeStepClicked" CornerRadius="8"
-															BackgroundColor="{StaticResource SurfaceHigh}" TextColor="{StaticResource TextPrimary}"
-															FontSize="13" FontAttributes="Bold"/>
-												</DataTemplate>
-											</BindableLayout.ItemTemplate>
-										</FlexLayout>
-									</VerticalStackLayout>
-								</Border>
+					<!-- Cabecera -->
+					<VerticalStackLayout Spacing="2">
+						<Label Text="CLASES" Style="{StaticResource ChipLabel}"/>
+						<Label Text="Horario" Style="{StaticResource DisplayTitle}"/>
+					</VerticalStackLayout>
 
-								<!-- Step 2: Color Principal -->
-								<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12"
-									   IsVisible="{Binding CanSelectPrimaryColor, FallbackValue=False}">
-									<VerticalStackLayout Spacing="10">
-										<Grid ColumnDefinitions="*,Auto">
-											<Label Text="COLOR PRINCIPAL" Style="{StaticResource ChipLabel}" TextColor="{StaticResource TextWarmVariant}" VerticalOptions="Center"/>
-											<Label Grid.Column="1"
-												   Text="{Binding SelectedPrimaryColor, StringFormat='✓ {0}'}"
-												   FontSize="13" TextColor="{StaticResource TextWarmVariant}" FontAttributes="Bold" VerticalOptions="Center"
-												   IsVisible="{Binding SelectedPrimaryColor, Converter={StaticResource IsNotNullConverter}}"/>
-										</Grid>
-										<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailablePrimaryColors}"
-													IsVisible="{Binding IsSelectingPrimaryColor, FallbackValue=False}">
-											<BindableLayout.ItemTemplate>
-												<DataTemplate x:DataType="local:ColorOption">
-													<VerticalStackLayout Margin="4" Spacing="3" WidthRequest="52">
-														<Border WidthRequest="44" HeightRequest="44" StrokeShape="RoundRectangle 10" Padding="0"
-															   BackgroundColor="{Binding DisplayColor}" Stroke="{StaticResource Hairline}" StrokeThickness="1"
-															   HorizontalOptions="Center">
-															<Border.GestureRecognizers>
-																<TapGestureRecognizer Tapped="OnPrimaryColorClicked"/>
-															</Border.GestureRecognizers>
-														</Border>
-														<Label Text="{Binding Name}" FontSize="9" HorizontalOptions="Center"
-															   HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}"
-															   LineBreakMode="TailTruncation" MaxLines="1"/>
-													</VerticalStackLayout>
-												</DataTemplate>
-											</BindableLayout.ItemTemplate>
-										</FlexLayout>
-									</VerticalStackLayout>
-								</Border>
-
-								<!-- Step 3: Color Secundario -->
-								<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12"
-									   IsVisible="{Binding CanSelectSecondaryColor, FallbackValue=False}">
-									<VerticalStackLayout Spacing="10">
-										<Grid ColumnDefinitions="*,Auto">
-											<Label Text="COLOR SECUNDARIO" Style="{StaticResource ChipLabel}" TextColor="{StaticResource AccentSalmon}" VerticalOptions="Center"/>
-											<Label Grid.Column="1"
-												   Text="{Binding SelectedSecondaryColor, StringFormat='✓ {0}'}"
-												   FontSize="13" TextColor="{StaticResource AccentSalmon}" FontAttributes="Bold" VerticalOptions="Center"
-												   IsVisible="{Binding SelectedSecondaryColor, Converter={StaticResource IsNotNullConverter}}"/>
-										</Grid>
-										<FlexLayout Direction="Row" Wrap="Wrap" BindableLayout.ItemsSource="{Binding AvailableSecondaryColors}"
-													IsVisible="{Binding IsSelectingSecondaryColor, FallbackValue=False}">
-											<BindableLayout.ItemTemplate>
-												<DataTemplate x:DataType="local:ColorOption">
-													<VerticalStackLayout Margin="4" Spacing="3" WidthRequest="52">
-														<Border WidthRequest="44" HeightRequest="44" StrokeShape="RoundRectangle 10" Padding="0"
-															   BackgroundColor="{Binding DisplayColor}" Stroke="{StaticResource Hairline}" StrokeThickness="1"
-															   HorizontalOptions="Center">
-															<Border.GestureRecognizers>
-																<TapGestureRecognizer Tapped="OnSecondaryColorClicked"/>
-															</Border.GestureRecognizers>
-														</Border>
-														<Label Text="{Binding Name}" FontSize="9" HorizontalOptions="Center"
-															   HorizontalTextAlignment="Center" TextColor="{StaticResource TextSecondary}"
-															   LineBreakMode="TailTruncation" MaxLines="1"/>
-													</VerticalStackLayout>
-												</DataTemplate>
-											</BindableLayout.ItemTemplate>
-										</FlexLayout>
-									</VerticalStackLayout>
-								</Border>
-
-								<!-- Resumen + Añadir al carrito -->
-								<VerticalStackLayout Spacing="8" IsVisible="{Binding CanAddToCart, FallbackValue=False}">
-									<Border BackgroundColor="{StaticResource SurfaceLow}" Stroke="{StaticResource OutlineDim}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12">
-										<VerticalStackLayout Spacing="4">
-											<Label Text="RESUMEN DEL PEDIDO" Style="{StaticResource ChipLabel}" TextColor="{StaticResource AccentSalmon}"/>
-											<Label Text="{Binding SelectedSizeStep, StringFormat='Talla: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-											<Label Text="{Binding SelectedPrimaryColor, StringFormat='Color principal: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-											<Label Text="{Binding SelectedSecondaryColor, StringFormat='Color secundario: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-										</VerticalStackLayout>
-									</Border>
-									<Button Text="AÑADIR AL CARRITO"
-											Clicked="OnAddToCartClicked"
-											CommandParameter="{Binding .}"
-											CharacterSpacing="1.5">
-										<Button.Shadow>
-											<Shadow Brush="{StaticResource AccentRed}" Radius="22" Opacity="0.4" Offset="0,0"/>
-										</Button.Shadow>
-									</Button>
-								</VerticalStackLayout>
-
-							</VerticalStackLayout>
-
+					<!-- Placeholder: calendario de clases -->
+					<Border Style="{StaticResource GlassCard}" HeightRequest="300">
+						<VerticalStackLayout Spacing="10"
+											 HorizontalOptions="Center" VerticalOptions="Center">
+							<Label Text="&#x1F4C5;" FontSize="52" HorizontalOptions="Center"
+								   TextColor="{StaticResource SurfaceHighest}"/>
+							<Label Text="Calendario de clases"
+								   FontFamily="Sora" FontAttributes="Bold" FontSize="16"
+								   TextColor="{StaticResource TextPrimary}"
+								   HorizontalOptions="Center"/>
+							<Label Text="Próximamente" Style="{StaticResource MutedLabel}"
+								   HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
 						</VerticalStackLayout>
 					</Border>
-				</DataTemplate>
-			</CollectionView.ItemTemplate>
-		</CollectionView>
+
+					<!-- Placeholder: tips / frases de Jiu-Jitsu -->
+					<Border Style="{StaticResource GlassCard}">
+						<VerticalStackLayout Spacing="6">
+							<Label Text="TIP DEL DÍA" Style="{StaticResource ChipLabel}"
+								   TextColor="{StaticResource AccentSalmon}"/>
+							<Label Text="Aquí aparecerán frases importantes del Jiu-Jitsu a modo de recordatorios."
+								   Style="{StaticResource MutedLabel}"/>
+						</VerticalStackLayout>
+					</Border>
+
+				</VerticalStackLayout>
+			</ScrollView>
+
+		</Grid>
 
 		<!-- Banner de navegación global -->
-		<controls:BottomNavBar x:Name="NavBar" Grid.Row="3" ActiveTab="Inicio"/>
+		<controls:BottomNavBar x:Name="NavBar" Grid.Row="2" ActiveTab="Inicio"/>
 
 	</Grid>
 
