@@ -74,6 +74,26 @@ public class LoginViewModel : BaseViewModel
 
 		try
 		{
+			// --- Modo demo / offline ---
+			// Si el usuario es "demo", entramos sin pasar por la BBDD para poder enseñar
+			// la app visualmente sin conexión al backend. Las funciones que dependen de la
+			// API (catálogo de Pedidos, carrito, reportes) no estarán disponibles.
+			if (string.Equals(Username?.Trim(), "demo", StringComparison.OrdinalIgnoreCase))
+			{
+				Debug.WriteLine("[LoginViewModel] Entrando en modo demo (sin backend)");
+
+				await TokenStorage.SaveToken("demo-offline-token");
+				await TokenStorage.SaveUserId(0);
+				await TokenStorage.SaveUsername("demo");
+
+				await Application.Current.MainPage.Navigation.PushAsync(new HomePage());
+
+				Username = string.Empty;
+				Email = string.Empty;
+				Password = string.Empty;
+				return;
+			}
+
 			// Validar que los campos no estén vacíos
 			if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
 			{
