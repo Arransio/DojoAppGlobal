@@ -60,11 +60,7 @@
                 <Button x:Name="ConfirmOrderButton"
                         Text="CONFIRMAR PEDIDO"
                         Clicked="OnConfirmOrderClicked"
-                        CharacterSpacing="1.5">
-                    <Button.Shadow>
-                        <Shadow Brush="{StaticResource AccentRed}" Radius="26" Opacity="0.45" Offset="0,0"/>
-                    </Button.Shadow>
-                </Button>
+                        CharacterSpacing="1.5" />
 
                 <Label Text="🔒  Pago seguro"
                        Style="{StaticResource MutedLabel}"
