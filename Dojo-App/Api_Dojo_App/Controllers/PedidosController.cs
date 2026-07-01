@@ -159,11 +159,16 @@ public class PedidosController : ControllerBase
         }
         catch (Exception ex)
         {
+            // La causa real de un fallo en SaveChanges suele venir en la inner exception
+            // (p. ej. errores de SQLite como "database disk image is malformed").
+            var innerMessage = ex.InnerException?.Message;
             Debug.WriteLine($"[PedidosController] ❌❌❌ EXCEPCIÓN: {ex.Message}");
+            if (innerMessage != null)
+                Debug.WriteLine($"[PedidosController] ↳ Inner: {innerMessage}");
             Debug.WriteLine($"[PedidosController] Stack: {ex.StackTrace}");
             Debug.WriteLine($"========== [PedidosController] FIN CON ERROR ==========\n");
 
-            return StatusCode(500, new { error = ex.Message, stackTrace = ex.StackTrace });
+            return StatusCode(500, new { error = ex.Message, innerError = innerMessage, stackTrace = ex.StackTrace });
         }
     }
 
@@ -322,7 +327,9 @@ public class PedidosController : ControllerBase
         catch (Exception ex)
         {
             Debug.WriteLine($"[PedidosController] Error al obtener pedidos: {ex.Message}");
-            return StatusCode(500, new { error = ex.Message });
+            if (ex.InnerException != null)
+                Debug.WriteLine($"[PedidosController] ↳ Inner: {ex.InnerException.Message}");
+            return StatusCode(500, new { error = ex.Message, innerError = ex.InnerException?.Message });
         }
     }
 
