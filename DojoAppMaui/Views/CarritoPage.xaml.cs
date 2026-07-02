@@ -84,13 +84,22 @@ public partial class CarritoPage : ContentPage
 
             Debug.WriteLine($"[CarritoPage] UserId: {userId}");
 
+            // El pedido se asocia al nombre completo del perfil; es obligatorio tenerlo.
+            var customerName = PerfilService.GetNombre()?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(customerName))
+            {
+                await DisplayAlert("Perfil incompleto",
+                    "Para hacer un pedido, es necesario completar tu perfil", "OK");
+                return;
+            }
+
             // TODO: Obtener la campaña activa - por ahora usamos 1 como default
             int campaignId = 1;
 
             ConfirmOrderButton.IsEnabled = false;
             ConfirmOrderButton.Text = "Procesando...";
 
-            var response = await _pedidosService.CreatePedidoAsync(items, userId.Value, campaignId);
+            var response = await _pedidosService.CreatePedidoAsync(items, userId.Value, campaignId, customerName);
 
             // Limpiar carrito
             App.CarritoService.GetItems().Clear();

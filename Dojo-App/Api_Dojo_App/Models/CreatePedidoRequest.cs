@@ -6,6 +6,9 @@ namespace Api_Dojo_App.Models
         public int CampaignId { get; set; }
         public List<PedidoItemRequest> Items { get; set; } = new();
         public decimal TotalPrice { get; set; }
+
+        // Nombre completo del perfil del usuario que realiza el pedido.
+        public string CustomerName { get; set; } = string.Empty;
     }
 
     public class PedidoItemRequest

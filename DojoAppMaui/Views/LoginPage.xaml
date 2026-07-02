@@ -7,14 +7,15 @@
 
     <ScrollView>
         <Grid>
-            <!-- Halo rojo de fondo (energía "engine") -->
-            <Ellipse
-                WidthRequest="520" HeightRequest="520"
-                Fill="{StaticResource AccentRed}"
-                Opacity="0.12"
-                HorizontalOptions="Center"
-                VerticalOptions="Start"
-                Margin="0,-180,0,0" />
+            <!-- Kanji 柔 ("ju": flexibilidad/suavidad, principio del Jiu-Jitsu) como marca de agua -->
+            <Label Text="柔"
+                   FontSize="360"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentSalmon}"
+                   Opacity="0.10"
+                   HorizontalOptions="Center" VerticalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   InputTransparent="True"/>
 
             <VerticalStackLayout
                 Padding="28,60"

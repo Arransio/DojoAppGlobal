@@ -48,6 +48,13 @@ public class PedidosController : ControllerBase
             }
             Debug.WriteLine($"[PedidosController] ✅ Usuario encontrado: {user.Username}");
 
+            // El pedido debe ir asociado al nombre completo del perfil del usuario.
+            if (string.IsNullOrWhiteSpace(request.CustomerName))
+            {
+                Debug.WriteLine("[PedidosController] ❌ CustomerName vacío: perfil incompleto");
+                return BadRequest(new { error = "Para hacer un pedido, es necesario completar tu perfil" });
+            }
+
             // Validar campaña
             Debug.WriteLine($"[PedidosController] Buscando campaña con ID: {request.CampaignId}");
             var campaign = _context.Campaigns
@@ -136,6 +143,7 @@ public class PedidosController : ControllerBase
             var newPedido = new Pedido
             {
                 UserId = request.UserId,
+                CustomerName = request.CustomerName.Trim(),
                 CampaignId = request.CampaignId,
                 CreatedAt = DateTime.UtcNow,
                 Status = "Pendiente",
@@ -302,7 +310,9 @@ public class PedidosController : ControllerBase
                 {
                     p.Id,
                     p.UserId,
-                    UserName = p.User.Username,
+                    // Se identifica por el nombre de perfil; si el pedido es antiguo y no lo
+                    // tiene, se recurre al username como respaldo.
+                    UserName = string.IsNullOrWhiteSpace(p.CustomerName) ? p.User.Username : p.CustomerName,
                     p.CampaignId,
                     p.Status,
                     p.TotalPrice,
@@ -333,6 +343,65 @@ public class PedidosController : ControllerBase
         }
     }
 
+    // Pedidos de un usuario concreto. Se usa para mostrar avisos de pago pendiente
+    // en la pantalla de inicio del propio usuario.
+    [HttpGet("user/{userId}")]
+    public IActionResult GetPedidosByUser(int userId)
+    {
+        try
+        {
+            var pedidos = _context.Pedidos
+                .Where(p => p.UserId == userId)
+                .OrderByDescending(p => p.CreatedAt)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Status,
+                    p.TotalPrice,
+                    p.CreatedAt
+                })
+                .ToList();
+
+            return Ok(pedidos);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[PedidosController] Error al obtener pedidos del usuario {userId}: {ex.Message}");
+            return StatusCode(500, new { error = ex.Message, innerError = ex.InnerException?.Message });
+        }
+    }
+
+    // Actualiza en lote el estado de pago de varios pedidos (marcar/desmarcar "Pagado").
+    // Lo usa el administrador desde la pantalla de Pagos.
+    [HttpPost("payments")]
+    public IActionResult UpdatePayments([FromBody] List<PaymentUpdate> updates)
+    {
+        try
+        {
+            if (updates == null || updates.Count == 0)
+                return BadRequest(new { error = "No hay cambios que guardar" });
+
+            var ids = updates.Select(u => u.PedidoId).ToList();
+            var pedidos = _context.Pedidos.Where(p => ids.Contains(p.Id)).ToList();
+
+            foreach (var pedido in pedidos)
+            {
+                var update = updates.First(u => u.PedidoId == pedido.Id);
+                pedido.Status = update.IsPaid ? "Pagado" : "Pendiente";
+            }
+
+            _context.SaveChanges();
+
+            Debug.WriteLine($"[PedidosController] Estado de pago actualizado en {pedidos.Count} pedidos");
+            return Ok(new { updated = pedidos.Count });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[PedidosController] Error al actualizar pagos: {ex.Message}");
+            return StatusCode(500, new { error = ex.Message, innerError = ex.InnerException?.Message });
+        }
+    }
+
     private static List<ColorEntry> BuildColorList(int primaryId, int secondaryId, Dictionary<int, string> colorsDict)
     {
         var list = new List<ColorEntry>();
@@ -348,4 +417,11 @@ public class ColorEntry
 {
     public string Name { get; set; }
     public string Role { get; set; }
+}
+
+// Cambio de estado de pago de un pedido enviado desde la pantalla de Pagos.
+public class PaymentUpdate
+{
+    public int PedidoId { get; set; }
+    public bool IsPaid { get; set; }
 }

@@ -104,7 +104,7 @@ public partial class BottomNavBar : ContentView
         return fallback;
     }
 
-    private async void OnTabTapped(object sender, TappedEventArgs e)
+    private void OnTabTapped(object sender, TappedEventArgs e)
     {
         var tab = e.Parameter as string;
         if (string.IsNullOrEmpty(tab) || tab == ActiveTab)
@@ -126,7 +126,7 @@ public partial class BottomNavBar : ContentView
                 SetRoot(new CarritoPage());
                 break;
             case "Reporte":
-                await OpenReporteAsync();
+                SetRoot(new ReporteMenuPage());
                 break;
         }
     }
@@ -140,30 +140,4 @@ public partial class BottomNavBar : ContentView
             Application.Current.MainPage = new NavigationPage(page);
     }
 
-    private async Task OpenReporteAsync()
-    {
-        var current = Application.Current?.MainPage;
-        if (current == null)
-            return;
-
-        try
-        {
-            var orderReportService = new OrderReportService();
-            var pedidos = await orderReportService.GetAllPedidosAsync();
-
-            if (pedidos.Count == 0)
-            {
-                await current.DisplayAlert("Sin pedidos", "No hay pedidos para mostrar", "OK");
-                return;
-            }
-
-            var pdfService = new PdfGeneratorService();
-            var html = pdfService.GenerateHtmlPreview(pedidos);
-            SetRoot(new ReportePreviewPage(html, pedidos));
-        }
-        catch (Exception ex)
-        {
-            await current.DisplayAlert("Error", $"Error al cargar el reporte: {ex.Message}", "OK");
-        }
-    }
 }

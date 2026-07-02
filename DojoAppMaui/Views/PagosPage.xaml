@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DojoAppMaui.Controls"
+             x:Class="DojoAppMaui.Views.PagosPage"
+             Title="Pagos"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource ObsidianBg}">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+        <!-- Cabecera -->
+        <Grid Grid.Row="0" BackgroundColor="{StaticResource SurfaceLowest}" Padding="8" ColumnDefinitions="Auto,*">
+            <Button Grid.Column="0"
+                    Text="← Volver"
+                    Clicked="OnVolverClicked"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource AccentSalmon}"
+                    FontAttributes="Bold"
+                    Padding="8,6"/>
+            <Label Grid.Column="1"
+                   Text="Pagos"
+                   TextColor="{StaticResource TextPrimary}"
+                   FontFamily="Sora"
+                   FontAttributes="Bold"
+                   FontSize="15"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   Margin="0,0,70,0"/>
+        </Grid>
+
+        <!-- Lista de pedidos con su check de pago -->
+        <RefreshView Grid.Row="1" x:Name="PagosRefresh" Refreshing="OnRefreshing">
+            <CollectionView x:Name="PagosCollection"
+                            Margin="16,12">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="24" Spacing="8" VerticalOptions="Center">
+                        <Label Text="Sin pedidos"
+                               Style="{StaticResource SectionTitle}"
+                               HorizontalOptions="Center"/>
+                        <Label Text="No hay pedidos registrados todavía."
+                               Style="{StaticResource MutedLabel}"
+                               HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource GlassCard}" Margin="0,0,0,10" Padding="16,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                    <Label Text="{Binding UserName}"
+                                           FontFamily="Sora" FontAttributes="Bold" FontSize="15"
+                                           TextColor="{StaticResource TextPrimary}"/>
+                                    <Label Text="{Binding Subtitulo}"
+                                           Style="{StaticResource MutedLabel}"/>
+                                </VerticalStackLayout>
+                                <CheckBox Grid.Column="1"
+                                          IsChecked="{Binding IsPaid, Mode=TwoWay}"
+                                          Color="{StaticResource AccentSalmon}"
+                                          VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <!-- Botón Guardar: solo visible cuando hay cambios sin guardar -->
+        <Border Grid.Row="2" x:Name="GuardarBar"
+                IsVisible="False"
+                BackgroundColor="{StaticResource SurfaceLowest}"
+                Stroke="{StaticResource Hairline}" StrokeThickness="1"
+                StrokeShape="Rectangle" Padding="16,12">
+            <Button x:Name="GuardarButton"
+                    Text="💾 GUARDAR CAMBIOS"
+                    Clicked="OnGuardarClicked"
+                    CharacterSpacing="1"
+                    FontSize="13"/>
+        </Border>
+
+        <!-- Banner de navegación global -->
+        <controls:BottomNavBar Grid.Row="3" ActiveTab="Reporte"/>
+
+    </Grid>
+
+</ContentPage>

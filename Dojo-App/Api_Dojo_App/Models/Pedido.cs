@@ -11,6 +11,10 @@ namespace Api_Dojo_App.Models
         [JsonIgnore]
         public User? User { get; set; }
 
+        // Nombre completo elegido por el usuario en su perfil en el momento del pedido.
+        // Es el nombre con el que se identifica el pedido en reportes y pagos.
+        public string CustomerName { get; set; } = string.Empty;
+
         public DateTime CreatedAt { get; set; }
         public string Status { get; set; } = string.Empty;
 

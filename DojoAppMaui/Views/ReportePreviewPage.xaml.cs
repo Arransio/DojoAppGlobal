@@ -15,8 +15,8 @@ public partial class ReportePreviewPage : ContentPage
 
     private void OnCerrarClicked(object sender, EventArgs e)
     {
-        // El reporte se abre como raíz desde el banner, así que volvemos al catálogo (Inicio).
-        Controls.BottomNavBar.SetRoot(new HomePage());
+        // Volvemos al menú de Reporte, desde donde se abrió la vista previa.
+        Controls.BottomNavBar.SetRoot(new ReporteMenuPage());
     }
 
     // Enviar: comparte el PDF por el sistema (email, mensajería, etc.).

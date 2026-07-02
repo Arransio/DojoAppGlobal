@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DojoAppMaui.Controls"
+             x:Class="DojoAppMaui.Views.ReporteMenuPage"
+             Title="Reporte"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource ObsidianBg}">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <Grid Grid.Row="0">
+
+            <!-- Kanji 柔 de fondo, como en las demás pantallas -->
+            <Label Text="柔"
+                   FontSize="360"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentSalmon}"
+                   Opacity="0.10"
+                   HorizontalOptions="Center" VerticalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   InputTransparent="True"/>
+
+            <ScrollView>
+                <VerticalStackLayout Padding="20,32,20,24" Spacing="18">
+
+                    <!-- Cabecera -->
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="ADMINISTRACIÓN" Style="{StaticResource ChipLabel}"/>
+                        <Label Text="Reporte" Style="{StaticResource DisplayTitle}"/>
+                    </VerticalStackLayout>
+
+                    <!-- Botón: reporte de pedidos -->
+                    <Border Style="{StaticResource GlassCard}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="📋 Reporte de pedidos"
+                                   FontFamily="Sora" FontAttributes="Bold" FontSize="16"
+                                   TextColor="{StaticResource TextPrimary}"/>
+                            <Label Text="Genera y consulta el resumen de todos los pedidos, con opción de enviar o guardar el PDF."
+                                   Style="{StaticResource MutedLabel}"/>
+                            <Button x:Name="ReporteButton"
+                                    Text="VER REPORTE"
+                                    Clicked="OnReporteClicked"
+                                    CharacterSpacing="1"
+                                    FontSize="13"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Botón: pagos -->
+                    <Border Style="{StaticResource GlassCard}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="💳 Pagos"
+                                   FontFamily="Sora" FontAttributes="Bold" FontSize="16"
+                                   TextColor="{StaticResource TextPrimary}"/>
+                            <Label Text="Marca qué usuarios han pagado su pedido y guarda los cambios."
+                                   Style="{StaticResource MutedLabel}"/>
+                            <Button Text="GESTIONAR PAGOS"
+                                    Clicked="OnPagosClicked"
+                                    Style="{StaticResource GhostButton}"
+                                    CharacterSpacing="1"
+                                    FontSize="13"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+        </Grid>
+
+        <!-- Banner de navegación global -->
+        <controls:BottomNavBar Grid.Row="1" ActiveTab="Reporte"/>
+
+    </Grid>
+
+</ContentPage>

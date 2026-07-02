@@ -20,7 +20,7 @@ namespace DojoAppMaui.Services
             _httpClient = new HttpClient();
         }
 
-        public async Task<CreatePedidoResponse> CreatePedidoAsync(List<CartItem> items, int userId, int campaignId)
+        public async Task<CreatePedidoResponse> CreatePedidoAsync(List<CartItem> items, int userId, int campaignId, string customerName)
         {
             try
             {
@@ -55,6 +55,7 @@ namespace DojoAppMaui.Services
                 var request = new CreatePedidoRequestMAUI
                 {
                     UserId = userId,
+                    CustomerName = customerName,
                     CampaignId = campaignId,
                     Items = pedidoItems,
                     TotalPrice = totalPrice
@@ -109,6 +110,7 @@ namespace DojoAppMaui.Services
     public class CreatePedidoRequestMAUI
     {
         public int UserId { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
         public int CampaignId { get; set; }
         public List<PedidoItemRequest> Items { get; set; } = new();
         public decimal TotalPrice { get; set; }

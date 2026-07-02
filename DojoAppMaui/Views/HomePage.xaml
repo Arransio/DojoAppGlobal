@@ -79,6 +79,35 @@
 						</VerticalStackLayout>
 					</Border>
 
+					<!-- Desplegable de pedidos pendientes de pago (solo visible si hay alguno) -->
+					<Border x:Name="PagosSection" Style="{StaticResource GlassCard}" IsVisible="False" Padding="16,12">
+						<VerticalStackLayout Spacing="10">
+
+							<!-- Cabecera clicable del desplegable -->
+							<Grid ColumnDefinitions="*,Auto">
+								<Grid.GestureRecognizers>
+									<TapGestureRecognizer Tapped="OnTogglePagosClicked"/>
+								</Grid.GestureRecognizers>
+								<Label Grid.Column="0"
+									   x:Name="PagosHeaderLabel"
+									   Text="Pedidos por pagar"
+									   FontFamily="Sora" FontAttributes="Bold" FontSize="15"
+									   TextColor="{StaticResource AccentSalmon}"
+									   VerticalOptions="Center"/>
+								<Label Grid.Column="1"
+									   x:Name="PagosChevron"
+									   Text="▾"
+									   FontSize="16"
+									   TextColor="{StaticResource AccentSalmon}"
+									   VerticalOptions="Center"/>
+							</Grid>
+
+							<!-- Lista de pedidos pendientes (se rellena dinámicamente) -->
+							<VerticalStackLayout x:Name="AvisosPagoContainer" Spacing="10" IsVisible="False"/>
+
+						</VerticalStackLayout>
+					</Border>
+
 				</VerticalStackLayout>
 			</ScrollView>
 
