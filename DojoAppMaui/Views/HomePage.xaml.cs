@@ -132,6 +132,19 @@ public partial class HomePage : ContentPage
 
 	private void RenderBeltAvatar()
 	{
+		// Si el usuario ha guardado una foto, la usamos como avatar.
+		if (PerfilService.TieneFoto())
+		{
+			AvatarFoto.Source = ImageSource.FromFile(PerfilService.GetFotoPath());
+			AvatarFoto.IsVisible = true;
+			AvatarStripes.IsVisible = false;
+			AvatarBorder.BackgroundColor = Colors.Transparent;
+			return;
+		}
+
+		AvatarFoto.IsVisible = false;
+		AvatarStripes.IsVisible = true;
+
 		var cinturon = PerfilService.GetCinturon();
 		var grados = PerfilService.GetGrado();
 

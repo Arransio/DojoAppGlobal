@@ -25,7 +25,27 @@ public partial class BottomNavBar : ContentView
         InitializeComponent();
         ApplyActiveState();
         RefreshBadge();
+        RefreshUsuarioAvatar();
         _ = ApplyAdminGatingAsync();
+    }
+
+    /// <summary>
+    /// Muestra la foto de perfil en la pestaña "Usuario" si el usuario ha guardado una;
+    /// en caso contrario deja el icono por defecto. Llamar tras cambiar la foto.
+    /// </summary>
+    public void RefreshUsuarioAvatar()
+    {
+        if (PerfilService.TieneFoto())
+        {
+            AvatarUsuarioImage.Source = ImageSource.FromFile(PerfilService.GetFotoPath());
+            AvatarUsuario.IsVisible = true;
+            IconUsuario.IsVisible = false;
+        }
+        else
+        {
+            AvatarUsuario.IsVisible = false;
+            IconUsuario.IsVisible = true;
+        }
     }
 
     /// <summary>

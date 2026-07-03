@@ -19,8 +19,11 @@
 						Stroke="{StaticResource Hairline}" StrokeThickness="1"
 						StrokeShape="RoundRectangle 24"
 						VerticalOptions="Center">
-					<VerticalStackLayout x:Name="AvatarStripes" Spacing="4"
-						   VerticalOptions="Center" HorizontalOptions="Fill"/>
+					<Grid>
+						<VerticalStackLayout x:Name="AvatarStripes" Spacing="4"
+							   VerticalOptions="Center" HorizontalOptions="Fill"/>
+						<Image x:Name="AvatarFoto" Aspect="AspectFill" IsVisible="False"/>
+					</Grid>
 				</Border>
 				<VerticalStackLayout Spacing="1" VerticalOptions="Center">
 					<Label Text="SESIÓN INICIADA" Style="{StaticResource ChipLabel}" FontSize="10"/>

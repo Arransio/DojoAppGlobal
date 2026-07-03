@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using DojoAppMaui.Services;
 
 namespace DojoAppMaui.Views;
@@ -57,6 +58,8 @@ public partial class UsuarioPage : ContentPage
         base.OnAppearing();
 
         _cargando = true;
+
+        RenderAvatar();
 
         NombreEntry.Text = PerfilService.GetNombre();
 
@@ -203,6 +206,78 @@ public partial class UsuarioPage : ContentPage
     private async void OnHistorialClicked(object sender, EventArgs e)
     {
         await DisplayAlert("Historial de pedidos", "Esta sección estará disponible próximamente.", "OK");
+    }
+
+    // ---------- Foto de perfil ----------
+
+    private void RenderAvatar()
+    {
+        if (PerfilService.TieneFoto())
+        {
+            AvatarImage.Source = ImageSource.FromFile(PerfilService.GetFotoPath());
+            AvatarImage.IsVisible = true;
+            AvatarPlaceholder.IsVisible = false;
+            AvatarHintLabel.Text = "Toca para cambiar la foto";
+        }
+        else
+        {
+            AvatarImage.Source = null;
+            AvatarImage.IsVisible = false;
+            AvatarPlaceholder.IsVisible = true;
+            AvatarHintLabel.Text = "Toca para añadir foto";
+        }
+    }
+
+    private async void OnAvatarTapped(object sender, TappedEventArgs e)
+    {
+        var opciones = PerfilService.TieneFoto()
+            ? new[] { "Hacer foto", "Elegir de galería", "Quitar foto" }
+            : new[] { "Hacer foto", "Elegir de galería" };
+
+        var accion = await DisplayActionSheet("Foto de perfil", "Cancelar", null, opciones);
+
+        try
+        {
+            FileResult foto = null;
+
+            switch (accion)
+            {
+                case "Hacer foto":
+                    if (!MediaPicker.Default.IsCaptureSupported)
+                    {
+                        await DisplayAlert("Foto de perfil", "Este dispositivo no permite hacer fotos.", "OK");
+                        return;
+                    }
+                    foto = await MediaPicker.Default.CapturePhotoAsync();
+                    break;
+
+                case "Elegir de galería":
+                    foto = await MediaPicker.Default.PickPhotoAsync();
+                    break;
+
+                case "Quitar foto":
+                    PerfilService.BorrarFoto();
+                    RenderAvatar();
+                    NavBar.RefreshUsuarioAvatar();
+                    return;
+
+                default:
+                    return; // Cancelar
+            }
+
+            // El usuario canceló la cámara o el selector.
+            if (foto == null)
+                return;
+
+            await PerfilService.SaveFotoAsync(foto);
+            RenderAvatar();
+            NavBar.RefreshUsuarioAvatar();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[UsuarioPage] Error con la foto de perfil: {ex.Message}");
+            await DisplayAlert("Foto de perfil", "No se pudo guardar la foto.", "OK");
+        }
     }
 
     private static Color Res(string key)

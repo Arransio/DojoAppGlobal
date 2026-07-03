@@ -28,9 +28,20 @@
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Usuario"/>
                 </VerticalStackLayout.GestureRecognizers>
-                <Path x:Name="IconUsuario" HeightRequest="24" WidthRequest="24" Scale="1.15"
-                      Fill="{StaticResource AccentSalmonBrush}" HorizontalOptions="Center"
-                      Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                <Grid HorizontalOptions="Center" WidthRequest="28" HeightRequest="28">
+                    <Path x:Name="IconUsuario" HeightRequest="24" WidthRequest="24" Scale="1.15"
+                          Fill="{StaticResource AccentSalmonBrush}"
+                          HorizontalOptions="Center" VerticalOptions="Center"
+                          Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    <!-- Foto de perfil (sustituye al icono si el usuario ha guardado una) -->
+                    <Border x:Name="AvatarUsuario" IsVisible="False"
+                            WidthRequest="28" HeightRequest="28" Padding="0"
+                            Stroke="{StaticResource AccentSalmon}" StrokeThickness="1.5"
+                            StrokeShape="RoundRectangle 14"
+                            HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image x:Name="AvatarUsuarioImage" Aspect="AspectFill"/>
+                    </Border>
+                </Grid>
                 <Label Text="Usuario" FontFamily="Sora" FontSize="10" CharacterSpacing="0.5"
                        TextColor="{StaticResource AccentSalmon}"
                        HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
