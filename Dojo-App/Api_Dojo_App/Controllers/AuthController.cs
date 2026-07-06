@@ -9,6 +9,7 @@ using Api_Dojo_App.Models;
 using Api_Dojo_App.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -27,6 +28,7 @@ public class AuthController : ControllerBase
 		_emailService = emailService;
 	}
 
+	[EnableRateLimiting("auth")]
 	[HttpPost("login")]
 	public IActionResult Login([FromBody] LoginRequest request)
 	{
@@ -48,11 +50,11 @@ public class AuthController : ControllerBase
 		if (!VerifyPasswordHash(request.Password, user.PasswordHash))
 			return Unauthorized("Usuario o contraseña incorrectos");
 
-		// Hardcodear rol: si es "test1" es admin, sino es user
-		var role = request.Username.Equals("test1", StringComparison.OrdinalIgnoreCase) ? "admin" : "user";
+		// El rol se lee de la BD (se asigna en el registro / seed de arranque)
+		var role = string.IsNullOrWhiteSpace(user.Role) ? "user" : user.Role;
 
 		// Login exitoso
-		var token = GenerateJwtToken(user.Username, role);
+		var token = GenerateJwtToken(user.Id, user.Username, role);
 
 		return Ok(new LoginResponse
 		{
@@ -62,6 +64,7 @@ public class AuthController : ControllerBase
 		});
 	}
 
+	[EnableRateLimiting("auth")]
 	[HttpPost("register")]
 	public async Task<IActionResult> Register([FromBody] RegisterRequest request)
 	{
@@ -114,6 +117,7 @@ public class AuthController : ControllerBase
 				Username = request.Username,
 				PasswordHash = HashPassword(request.Password),
 				Email = request.Email,
+				Role = "user",
 				IsEmailConfirmed = false,
 				EmailConfirmationToken = confirmationToken,
 				EmailConfirmationTokenExpiry = tokenExpiry
@@ -175,6 +179,7 @@ public class AuthController : ControllerBase
 		});
 	}
 
+	[EnableRateLimiting("auth")]
 	[HttpGet("confirm-email")]
 	public async Task<IActionResult> ConfirmEmailLink(string token, string email)
 	{
@@ -225,6 +230,7 @@ public class AuthController : ControllerBase
 		}
 	}
 
+	[EnableRateLimiting("auth")]
 	[HttpPost("confirm-email")]
 	public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
 	{
@@ -274,24 +280,20 @@ public class AuthController : ControllerBase
 		}
 	}
 
-	private string GenerateJwtToken(string username, string role = "user")
+	private string GenerateJwtToken(int userId, string username, string role = "user")
 	{
 		var jwtSettings = _config.GetSection("Jwt");
 
-		Debug.WriteLine("KEY GENERATE: " + jwtSettings["Key"]);
-		Debug.WriteLine("ISSUER GENERATE: " + jwtSettings["Issuer"]);
-		Debug.WriteLine("AUDIENCE GENERATE: " + jwtSettings["Audience"]);
-
 		var key = new SymmetricSecurityKey(
 			Encoding.UTF8.GetBytes(jwtSettings["Key"]));
-
-
 
 		var credentials = new SigningCredentials(
 			key, SecurityAlgorithms.HmacSha256);
 
 		var claims = new[]
 		{
+			// El id permite validar en el servidor que el usuario solo accede a sus recursos
+			new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
 			new Claim(ClaimTypes.Name, username),
 			new Claim(ClaimTypes.Role, role)
 		};

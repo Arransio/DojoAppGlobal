@@ -1,5 +1,6 @@
 using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +38,8 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
-    // Crear producto
+    // Crear producto (solo admin)
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public IActionResult Create(Product product)
     {
@@ -61,7 +63,8 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    // Eliminar producto
+    // Eliminar producto (solo admin)
+    [Authorize(Roles = "admin")]
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {

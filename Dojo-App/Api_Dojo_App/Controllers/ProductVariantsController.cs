@@ -1,5 +1,6 @@
 using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +26,8 @@ public class ProductVariantsController : ControllerBase
         return Ok(variants);
     }
 
-    // Crear variante (simple)
+    // Crear variante (solo admin)
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public IActionResult Create(ProductVariant variant)
     {
@@ -35,7 +37,8 @@ public class ProductVariantsController : ControllerBase
         return Ok(variant);
     }
 
-    // Obtiene o crea una variante para un producto y talla dados
+    // Obtiene o crea una variante para un producto y talla dados (requiere sesión: crea datos)
+    [Authorize]
     [HttpGet("ensure/{productId}/{size}")]
     public IActionResult EnsureVariant(int productId, string size)
     {

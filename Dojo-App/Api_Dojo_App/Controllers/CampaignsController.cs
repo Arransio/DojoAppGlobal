@@ -1,5 +1,6 @@
 using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,8 @@ public class CampaignsController : ControllerBase
         return Ok(campaign);
     }
 
+    // Crear campaña (solo admin)
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public IActionResult CreateCampaign(Campaign campaign)
     {

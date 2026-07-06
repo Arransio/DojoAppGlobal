@@ -17,12 +17,23 @@ namespace DojoAppMaui.Services
         {
         }
 
+        // Estos endpoints ahora requieren autenticación en el backend:
+        // el token se añade siempre al header.
+        private static async Task<HttpClient> CreateAuthorizedClientAsync()
+        {
+            var client = new HttpClient();
+            var token = await TokenStorage.GetToken();
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return client;
+        }
+
         // Pedidos de un usuario concreto (para los avisos de pago en su pantalla de inicio).
         public async Task<List<PedidoUsuarioDto>> GetPedidosByUserAsync(int userId)
         {
             try
             {
-                using var httpClient = new HttpClient();
+                using var httpClient = await CreateAuthorizedClientAsync();
                 var url = $"{_baseUrl}/user/{userId}";
                 Debug.WriteLine($"[OrderReportService] GET {url}");
 
@@ -50,7 +61,7 @@ namespace DojoAppMaui.Services
         {
             try
             {
-                using var httpClient = new HttpClient();
+                using var httpClient = await CreateAuthorizedClientAsync();
                 var url = $"{_baseUrl}/payments";
                 var json = JsonSerializer.Serialize(updates);
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
@@ -76,7 +87,7 @@ namespace DojoAppMaui.Services
             {
                 Debug.WriteLine("[OrderReportService] Obteniendo todos los pedidos");
 
-                using (var httpClient = new HttpClient())
+                using (var httpClient = await CreateAuthorizedClientAsync())
                 {
                     Debug.WriteLine($"[OrderReportService] Enviando GET a: {_apiUrl}");
 

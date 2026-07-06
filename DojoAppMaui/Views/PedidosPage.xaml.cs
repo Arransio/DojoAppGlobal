@@ -118,7 +118,12 @@ public partial class PedidosPage : ContentPage
 	{
 		try
 		{
+			// Endpoint protegido en el backend (crea datos): requiere token
 			var client = new HttpClient();
+			var token = await TokenStorage.GetToken();
+			if (!string.IsNullOrEmpty(token))
+				client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
 			var response = await client.GetAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}");
 			if (!response.IsSuccessStatusCode)
 				return null;

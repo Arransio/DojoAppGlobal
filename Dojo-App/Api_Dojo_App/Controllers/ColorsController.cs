@@ -1,5 +1,6 @@
 ﻿using Api_Dojo_App.Data;
 using Api_Dojo_App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -13,7 +14,8 @@ public class ColorsController : ControllerBase
         _context = context;
     }
 
-    // Crear color
+    // Crear color (solo admin)
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public IActionResult Create(Color color)
     {

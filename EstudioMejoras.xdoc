@@ -1,0 +1,127 @@
+# 📋 Estudio de Mejoras — DojoApp (MAUI + API)
+
+**Fecha:** 06/07/2026
+**Alcance:** App .NET MAUI (`DojoAppMaui`) + Backend ASP.NET Core (`Dojo-App/Api_Dojo_App`)
+**Nota:** Análisis de solo lectura — no se modificó ninguna línea de código. Se omite deliberadamente el tema de pasarelas de pago (la app gestiona pedidos, no cobros).
+
+---
+
+## Visión general
+
+La app tiene un **flujo funcional completo y una capa visual cuidada** (tema oscuro "Obsidian", estilos coherentes, kanji 柔): login/registro con confirmación por email, catálogo con selección talla/colores, carrito, pedidos, panel admin de pagos manuales y reportes PDF exportables. La base funciona — los problemas están en los cimientos, no en la fachada.
+
+**Stack detectado:**
+- **App:** .NET 8 MAUI multiplataforma (Android/iOS/MacCatalyst/Windows), PdfSharpCore para reportes.
+- **Backend:** ASP.NET Core 8, controllers clásicos, EF Core 8 + SQLite (`app.db`), JWT HS256, BCrypt, SMTP Gmail para confirmación de email.
+
+---
+
+## 🔴 CRÍTICO — Seguridad (lo más urgente antes de cualquier despliegue real)
+
+| # | Problema | Dónde |
+|---|----------|-------|
+| 1 | **Solo 1 de ~24 endpoints requiere autenticación** (`GET api/Auth/profile`). Cualquiera sin login puede: crear/borrar productos, crear campañas, **marcar pedidos como pagados** y ver todos los pedidos | Todos los controllers |
+| 2 | **`GET api/Users` devuelve TODOS los usuarios con sus `PasswordHash`, emails y tokens de confirmación, sin auth** | `UsersController.cs:26` |
+| 3 | **Secretos versionados en git**: clave JWT y app-password de Gmail en claro en `appsettings.json` (líneas 10, 23-24). Están en el historial → hay que **rotarlos**, no solo moverlos | `appsettings.json` |
+| 4 | **Rol admin hardcodeado por username `test1`** — en el backend (`AuthController.cs:52`) y duplicado en el cliente (`StaticServices.cs:82-103`). El campo `User.Role` de la BD se ignora. Trivial de saltar | Ambos lados |
+| 5 | **Stack traces y datos internos devueltos al cliente** en errores (`ex.StackTrace`, listas de usuarios de la BD en respuestas de error) | `PedidosController.cs:179,342,370,401` |
+| 6 | **Precio confiado al cliente**: `POST api/pedidos/create` usa el `UnitPrice`/`TotalPrice` que envía la app en vez de leerlo de la BD (el otro método de creación sí lo hace bien) | `PedidosController.cs:134-151` |
+| 7 | `POST api/Users` crea usuarios **sin hashear la contraseña** y sin validación | `UsersController.cs:18` |
+| 8 | Sin HTTPS forzado, sin CORS configurado, sin rate limiting en login/register (fuerza bruta + spam de emails de confirmación) | `Program.cs` |
+
+> Nada de esto requiere rediseñar: es añadir `[Authorize]`/`[Authorize(Roles="admin")]`, persistir el rol en BD, mover secretos a user-secrets/variables de entorno, y un middleware global de excepciones.
+
+**Puntos positivos de seguridad ya existentes:**
+- BCrypt para contraseñas en login/register (correcto).
+- Todo el acceso a datos vía EF Core/LINQ → sin riesgo de SQL injection.
+- Confirmación de email obligatoria antes de poder hacer login.
+- Token JWT con validación de issuer, audience, lifetime y firma.
+
+---
+
+## 🟠 ESENCIAL que falta (funcionalidad)
+
+### Sesión y autenticación
+- **No hay logout** — existe `TokenStorage.ClearAll()` pero ningún botón lo llama.
+- **No hay auto-login** — el token se guarda en SecureStorage pero nunca se reutiliza; siempre se pide login.
+- **No hay refresh token ni manejo de expiración (401)** — el JWT caduca a los 60 min y las llamadas fallan en silencio. Ideal: un `DelegatingHandler` centralizado que detecte 401 y redirija a login (o renueve).
+- El "¿Olvidaste tu contraseña?" y "Recordar usuario" del login **existen visualmente pero no hacen nada** — o se implementan o se retiran (generan expectativa falsa).
+- No existe endpoint de **reenviar email de confirmación** aunque los mensajes lo prometen.
+
+### Pedidos
+- **Cantidad fija a 1 por ítem** (`PedidosService.cs:47`) — no se pueden pedir 2 kimonos iguales salvo añadiéndolos uno a uno.
+- **El carrito es solo en memoria** — se pierde al cerrar la app. Persistirlo (Preferences/SQLite) es barato y mejora mucho la experiencia.
+- **Historial de pedidos del usuario**: el botón existe en UsuarioPage pero muestra "Próximamente". El endpoint `GET api/pedidos/user/{id}` ya existe — es de lo más rentable de completar.
+- Posibilidad de **cancelar/editar un pedido** mientras la campaña siga activa (el backend ya tiene el "upsert", pero la app no lo expone).
+
+### Robustez backend
+- **Sin transacciones** en operaciones multi-paso (borrado+reinserción de items del pedido) — un fallo a medias deja datos inconsistentes.
+- Las migraciones EF existen (8) pero **no se aplican automáticamente** (`db.Database.Migrate()` ausente en `Program.cs`).
+- Sin control de concurrencia optimista (`RowVersion`) — el "upsert" de pedidos es susceptible a condiciones de carrera.
+
+---
+
+## 🟡 Arquitectura y calidad (deuda que frenará el desarrollo)
+
+### App MAUI
+- **MVVM solo en el login**; el resto de pantallas meten HTTP + lógica de negocio + manipulación del árbol visual en code-behind (`PedidosPage.xaml.cs`: 310 líneas con `new HttpClient()` dentro de bucles).
+- **DI casi sin usar**: los servicios se instancian con `new` por todas partes; `MainPage`/`ProductsPage`/`MainViewModel` son código muerto que nunca se navega.
+- **`HttpClient` mal gestionado**: instancias nuevas por operación → riesgo de agotamiento de sockets. Falta `IHttpClientFactory` con `BaseAddress` y auth-header centralizados.
+- **URLs hardcodeadas e inconsistentes**: casi todos los servicios usan `http://10.0.2.2:5221` incluso en iOS/Windows (donde esa IP no existe) — **la app hoy solo funciona bien en el emulador Android**. Falta configuración por entorno (dev/prod).
+- **Duplicación**: `LoadUserInfo()`/`RenderBeltAvatar()` copiados entre HomePage y PedidosPage; `CreatePedidoResponse` definido dos veces; mapa de colores hex duplicado con valores distintos; el header de auth replicado en 4-5 servicios.
+- **`async void` peligrosos** en cargas de datos (excepciones incapturables), errores tragados en silencio (`LoadColors` deja el catálogo sin colores sin avisar).
+- **Navegación por reemplazo de raíz** (`Application.Current.MainPage = new NavigationPage(...)` en cada pestaña) — reconstruye y recarga todo en cada cambio; el Shell existe pero está desactivado. Unificar en Shell con rutas simplificaría mucho.
+- **Fuga de datos en logs**: fragmentos del token JWT escritos con `Debug.WriteLine` en varios servicios.
+- Fallback de SecureStorage a Preferences guarda el token **en claro** (`StaticServices.cs:15-39`).
+- Lógica frágil por strings: tallas por `Name.Contains("kimono")`, estado de pago por `"Pagado"`, rol por `"test1"`.
+
+### Backend
+- Logging con `Debug.WriteLine` (invisible en producción) en vez de `ILogger` — sin trazas persistentes de nada.
+- Entidades EF expuestas directamente (over-posting) en la mitad de los controllers; DTOs solo en Auth y Pedidos.
+- Dos flujos de creación de pedido casi idénticos duplicados; lógica de confirm-email duplicada (GET y POST).
+- Connection string hardcodeada en `Program.cs:77` en vez de leerla de configuración.
+- Validación de entrada manual y dispersa (sin Data Annotations / FluentValidation).
+- `WeatherForecast.cs` residual del template.
+
+---
+
+## 🟢 Mejoras de UX interesantes (no esenciales, alto impacto)
+
+1. **Indicadores de carga** — no hay ni un `ActivityIndicator` vinculado; las pantallas aparecen vacías hasta que responde la API. Probablemente la mejora visible más barata.
+2. **Estados vacíos** en el catálogo (si la API devuelve lista vacía, queda en blanco; PagosPage sí lo tiene bien con `EmptyView`).
+3. **Pull-to-refresh** en catálogo y Home (hoy solo en PagosPage).
+4. **Detección de conectividad** (`Connectivity.NetworkAccess`) + timeouts razonables (hoy 100 s por defecto) + mensaje "sin conexión" amigable.
+5. **Fotos de producto** en el catálogo — hoy solo nombre y precio.
+6. **Notificaciones push** (Firebase) — encaja perfecto con el dominio: "tu pedido está listo", recordatorio de pago pendiente, apertura de nueva campaña.
+7. **Búsqueda/filtros** en catálogo y en el panel de pagos (que hoy descarga todos los pedidos de golpe, sin paginación).
+8. **Calendario de clases** — el placeholder "Próximamente" de HomePage sugiere que ya está pensado; sería el siguiente gran valor añadido para un dojo (horarios, asistencia).
+9. Completar o retirar los elementos decorativos no funcionales (recordar usuario, olvidé contraseña, historial de pedidos).
+10. **Localización/i18n** (hoy todo hardcodeado en español) y accesibilidad (`SemanticProperties`) si se plantea publicar en tiendas.
+
+**Puntos fuertes UX ya existentes:** modo oscuro coherente y con identidad, feedback en botones ("Añadido", "Procesando..."), badge de carrito con contador, confirmaciones tras acciones, EmptyView y RefreshView en PagosPage.
+
+---
+
+## ⚪ Infraestructura de desarrollo (largo plazo)
+
+- **Cero tests** en ambos proyectos (ni unitarios ni de integración). Prioridad: creación de pedidos y auth.
+- **CI/CD**: la carpeta `.github` existe pero está vacía — sin pipeline de build/firma.
+- **Crash reporting/telemetría** (Sentry, App Center): ausente; si la app crashea en un móvil real, nadie se entera.
+- **Swagger** solo en Development y sin esquema JWT configurado; sin health checks; sin versionado de API (`v1`); sin paginación en ningún listado.
+- `ApplicationId` genérico `com.companyname.dojoappmaui` — cambiar antes de publicar en tiendas. `ApplicationDisplayVersion=1.0` sin gestión de versiones.
+- SQLite como BD está bien para este volumen, pero sin auditoría (quién marcó un pago, cuándo) ni soft-deletes (borrar un producto borra en cascada sus variantes, perdiendo histórico).
+- Health checks y rate limiting ausentes en la API.
+
+---
+
+## 🎯 Orden de prioridades recomendado
+
+1. **Seguridad backend** (1-2 días): `[Authorize]` en todo + roles en BD + secretos fuera de git y rotados + middleware global de errores + precio calculado desde BD + eliminar/proteger `UsersController`.
+2. **Sesión completa en la app**: logout + auto-login + manejo de 401 centralizado con `DelegatingHandler`.
+3. **Saneamiento HTTP/config**: `IHttpClientFactory`, URL base configurable por entorno, token centralizado en un solo punto.
+4. **Quick wins funcionales**: historial de pedidos (endpoint ya existe), cantidad por ítem, carrito persistente, loaders y estados vacíos.
+5. **A medio plazo**: notificaciones push, calendario de clases, tests de lo crítico, CI básico y crash reporting.
+
+---
+
+*Informe generado automáticamente mediante análisis estático del código. Ninguna línea de código fue modificada.*
