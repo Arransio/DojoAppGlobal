@@ -35,7 +35,7 @@ public partial class HomePage : ContentPage
 			if (userId == null || userId <= 0)
 				return;
 
-			var service = new OrderReportService();
+			var service = ServiceHelper.GetService<OrderReportService>();
 			var pedidos = await service.GetPedidosByUserAsync(userId.Value);
 
 			var pendientes = pedidos.Where(p => !p.EstaPagado).ToList();

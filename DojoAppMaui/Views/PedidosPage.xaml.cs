@@ -8,19 +8,14 @@ namespace DojoAppMaui.Views;
 
 public partial class PedidosPage : ContentPage
 {
-	private readonly ProductService _productService = new ProductService();
-
-	// Cliente único para toda la página (crear uno por llamada agota sockets).
-	// AuthHttpHandler añade el token y gestiona los 401 de sesión caducada.
-	private readonly HttpClient _httpClient = new HttpClient(new AuthHttpHandler());
+	// Resuelto desde DI: llega con HttpClient configurado (URL base, timeout, token).
+	private readonly ProductService _productService = ServiceHelper.GetService<ProductService>();
 
 	private List<Colores> colors = new();
 
 	private List<ProductVariant> allVariants = new();
 
 	private List<Product> currentProducts = new();
-
-	public string baseUrl = "http://10.0.2.2:5221/api/";
 
 	public PedidosPage()
 	{
@@ -122,16 +117,7 @@ public partial class PedidosPage : ContentPage
 	{
 		try
 		{
-			// POST: el endpoint crea la variante si no existe (un GET no debe crear datos)
-			var response = await _httpClient.PostAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}", null);
-			if (!response.IsSuccessStatusCode)
-				return null;
-
-			var json = await response.Content.ReadAsStringAsync();
-			var variant = JsonSerializer.Deserialize<ProductVariant>(json, new JsonSerializerOptions
-			{
-				PropertyNameCaseInsensitive = true
-			});
+			var variant = await _productService.EnsureVariantAsync(productId, size);
 
 			if (variant != null)
 				return new ProductVariantUI { Id = variant.Id, Size = variant.Size };
@@ -270,20 +256,7 @@ public partial class PedidosPage : ContentPage
 
 	private async Task LoadColors()
 	{
-		var httpResponse = await _httpClient.GetAsync($"{baseUrl}Colors");
-
-		if (!httpResponse.IsSuccessStatusCode)
-		{
-			Debug.WriteLine("////////////ERROR API: " + httpResponse.StatusCode);
-			return;
-		}
-
-		var response = await httpResponse.Content.ReadAsStringAsync();
-
-		colors = JsonSerializer.Deserialize<List<Colores>>(response, new JsonSerializerOptions
-		{
-			PropertyNameCaseInsensitive = true
-		}) ?? new List<Colores>();
+		colors = await _productService.GetColorsAsync();
 	}
 
 	private string GetColorsName(int colorId)
@@ -313,12 +286,7 @@ public partial class PedidosPage : ContentPage
 
 	private async Task LoadVariants()
 	{
-		var response = await _httpClient.GetStringAsync($"{baseUrl}ProductVariants");
-
-		allVariants = JsonSerializer.Deserialize<List<ProductVariant>>(response, new JsonSerializerOptions
-		{
-			PropertyNameCaseInsensitive = true
-		}) ?? new List<ProductVariant>();
+		allVariants = await _productService.GetVariantsAsync();
 	}
 
 	protected override async void OnAppearing()

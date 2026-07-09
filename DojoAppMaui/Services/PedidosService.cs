@@ -1,113 +1,84 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using DojoAppMaui.Models;
 
 namespace DojoAppMaui.Services
 {
     public class PedidosService
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiUrl = "http://10.0.2.2:5221/api/pedidos/create";
-
-        public PedidosService()
+        private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            // AuthHttpHandler añade el token y gestiona los 401 de sesión caducada
-            _httpClient = new HttpClient(new AuthHttpHandler());
+            PropertyNameCaseInsensitive = true
+        };
+
+        private readonly HttpClient _httpClient;
+
+        // El HttpClient llega ya configurado desde MauiProgram vía IHttpClientFactory.
+        public PedidosService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
         }
 
-        public async Task<CreatePedidoResponse> CreatePedidoAsync(List<CartItem> items, int userId, int campaignId, string customerName)
+        // La identidad NO se envía: el servidor la toma del token (evita suplantación).
+        // Los precios tampoco: se calculan en el servidor desde la BD.
+        public async Task<CreatePedidoResponse> CreatePedidoAsync(List<CartItem> items, int campaignId, string customerName)
         {
-            try
+            Debug.WriteLine($"[PedidosService] Creando pedido con {items.Count} items");
+
+            // Validar que todos los items tengan variante (talla) y colores seleccionados
+            var itemsIncompletos = items.Where(item =>
+                item.ProductVariantId <= 0 ||
+                item.PrimaryColorId <= 0 ||
+                item.SecondaryColorId <= 0).ToList();
+            if (itemsIncompletos.Any())
             {
-                Debug.WriteLine($"[PedidosService] Creando pedido con {items.Count} items");
-
-                // Validar que todos los items tengan variante (talla) y colores seleccionados
-                var itemsIncompletos = items.Where(item =>
-                    item.ProductVariantId <= 0 ||
-                    item.PrimaryColorId <= 0 ||
-                    item.SecondaryColorId <= 0).ToList();
-                if (itemsIncompletos.Any())
-                {
-                    var productosAffectados = string.Join(", ", itemsIncompletos.Select(i => i.Product.Name));
-                    Debug.WriteLine($"[PedidosService] ❌ Items sin talla/color completos: {productosAffectados}");
-                    throw new Exception($"Los siguientes productos no tienen talla o color seleccionados: {productosAffectados}");
-                }
-
-                // Preparar items del pedido (el color se manda en el pedido)
-                var pedidoItems = items.Select(item => new PedidoItemRequest
-                {
-                    ProductVariantId = item.ProductVariantId,
-                    PrimaryColorId = item.PrimaryColorId,
-                    SecondaryColorId = item.SecondaryColorId,
-                    Quantity = 1,
-                    UnitPrice = (decimal)item.Product.Price
-                }).ToList();
-
-                // Calcular total
-                decimal totalPrice = (decimal)items.Sum(item => item.Product.Price);
-
-                // Crear request
-                var request = new CreatePedidoRequestMAUI
-                {
-                    UserId = userId,
-                    CustomerName = customerName,
-                    CampaignId = campaignId,
-                    Items = pedidoItems,
-                    TotalPrice = totalPrice
-                };
-
-                var json = JsonSerializer.Serialize(request);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                Debug.WriteLine($"[PedidosService] POST a: {_apiUrl}");
-                Debug.WriteLine($"[PedidosService] Request: UserId={userId}, CampaignId={campaignId}, Items={pedidoItems.Count}, Total={totalPrice}€");
-
-                var response = await _httpClient.PostAsync(_apiUrl, content);
-
-                var responseJson = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine($"[PedidosService] Response: {responseJson}");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    Debug.WriteLine($"[PedidosService] Error: {response.StatusCode}");
-                    throw new Exception($"Error al crear pedido: {response.StatusCode} - {responseJson}");
-                }
-
-                var result = JsonSerializer.Deserialize<CreatePedidoResponse>(
-                    responseJson,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                );
-
-                Debug.WriteLine($"[PedidosService] Pedido creado exitosamente con ID: {result?.PedidoId}");
-                return result;
+                var productosAffectados = string.Join(", ", itemsIncompletos.Select(i => i.Product.Name));
+                throw new Exception($"Los siguientes productos no tienen talla o color seleccionados: {productosAffectados}");
             }
-            catch (HttpRequestException ex)
+
+            var pedidoItems = items.Select(item => new PedidoItemRequest
             {
-                Debug.WriteLine($"[PedidosService] Error de conexión: {ex.Message}");
-                throw new Exception($"Error de conexión: {ex.Message}");
-            }
-            catch (Exception ex)
+                ProductVariantId = item.ProductVariantId,
+                PrimaryColorId = item.PrimaryColorId,
+                SecondaryColorId = item.SecondaryColorId,
+                Quantity = 1
+            }).ToList();
+
+            var request = new CreatePedidoRequestMAUI
             {
-                Debug.WriteLine($"[PedidosService] Error: {ex.Message}");
-                throw;
-            }
+                CustomerName = customerName,
+                CampaignId = campaignId,
+                Items = pedidoItems
+            };
+
+            var json = JsonSerializer.Serialize(request);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            Debug.WriteLine($"[PedidosService] POST api/pedidos/create: CampaignId={campaignId}, Items={pedidoItems.Count}");
+
+            var response = await _httpClient.PostAsync("api/pedidos/create", content);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            Debug.WriteLine($"[PedidosService] Response: {responseJson}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error al crear pedido: {response.StatusCode} - {responseJson}");
+
+            var result = JsonSerializer.Deserialize<CreatePedidoResponse>(responseJson, JsonOptions);
+
+            Debug.WriteLine($"[PedidosService] Pedido creado exitosamente con ID: {result?.PedidoId}");
+            return result;
         }
     }
 
-    // DTOs locales en MAUI
+    // DTOs locales en MAUI. Reflejan el contrato del servidor: sin UserId
+    // (sale del token) y sin precios (se calculan server-side).
     public class CreatePedidoRequestMAUI
     {
-        public int UserId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public int CampaignId { get; set; }
         public List<PedidoItemRequest> Items { get; set; } = new();
-        public decimal TotalPrice { get; set; }
     }
 
     public class PedidoItemRequest
@@ -116,7 +87,6 @@ namespace DojoAppMaui.Services
         public int PrimaryColorId { get; set; }
         public int SecondaryColorId { get; set; }
         public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
     }
 
     public class CreatePedidoResponse

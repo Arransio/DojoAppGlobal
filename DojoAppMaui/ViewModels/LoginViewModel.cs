@@ -1,9 +1,5 @@
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Input;
-using DojoAppMaui.Views;
-
-//using AndroidX.Browser.Trusted;
 using DojoAppMaui.Services;
 using DojoAppMaui.Views;
 
@@ -70,7 +66,8 @@ public class LoginViewModel : BaseViewModel
 
 	public LoginViewModel()
 	{
-		_authService = new AuthService();
+		// Resuelto desde DI: llega con HttpClient configurado (URL base, timeout).
+		_authService = ServiceHelper.GetService<AuthService>();
 
 		LoginCommand = new Command(async () => await Login());
 		RegisterCommand = new Command(async () => await OnRegisterClicked());
@@ -133,6 +130,16 @@ public class LoginViewModel : BaseViewModel
 				return;
 			}
 
+			// Aviso inmediato si no hay red (el modo demo, más arriba, funciona offline)
+			if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+			{
+				await Application.Current.MainPage.DisplayAlert(
+					"Sin conexión",
+					"No hay conexión a internet. Revisa tu red e inténtalo de nuevo.",
+					"OK");
+				return;
+			}
+
 			Debug.WriteLine("[LoginViewModel] Iniciando login...");
 
 			var result = await _authService.LoginAsync(Username, Password);
@@ -184,32 +191,32 @@ public class LoginViewModel : BaseViewModel
 			Email = string.Empty;
 			Password = string.Empty;
 		}
+		// Los errores se distinguen por TIPO de excepción, no por el texto del
+		// mensaje (que cambia con el idioma del sistema y la versión de .NET).
+		catch (HttpRequestException ex)
+		{
+			Debug.WriteLine($"[LoginViewModel] Error de red en login: {ex.Message}");
+			await Application.Current.MainPage.DisplayAlert(
+				"Error de conexión",
+				"No se pudo conectar con el servidor. Verifica tu conexión a internet.",
+				"OK");
+		}
+		catch (TaskCanceledException)
+		{
+			// El timeout del HttpClient (15 s) se manifiesta como cancelación
+			await Application.Current.MainPage.DisplayAlert(
+				"Servidor no disponible",
+				"El servidor tardó demasiado en responder. Inténtalo de nuevo más tarde.",
+				"OK");
+		}
 		catch (Exception ex)
 		{
+			// Errores de negocio del AuthService (credenciales incorrectas, etc.)
 			Debug.WriteLine($"[LoginViewModel] Error en login: {ex.Message}");
-
-			// Mostrar mensaje de error específico
-			if (ex.Message.Contains("401") || ex.Message.Contains("Usuario o contraseña"))
-			{
-				await Application.Current.MainPage.DisplayAlert(
-					"Acceso denegado",
-					"Usuario o contraseña incorrectos",
-					"OK");
-			}
-			else if (ex.Message.Contains("conexión") || ex.Message.Contains("connection"))
-			{
-				await Application.Current.MainPage.DisplayAlert(
-					"Error de conexión",
-					"No se pudo conectar con el servidor. Verifica tu conexión a internet",
-					"OK");
-			}
-			else
-			{
-				await Application.Current.MainPage.DisplayAlert(
-					"Error",
-					$"Error al iniciar sesión: {ex.Message}",
-					"OK");
-			}
+			await Application.Current.MainPage.DisplayAlert(
+				"Error al iniciar sesión",
+				ex.Message,
+				"OK");
 		}
 		finally
 		{
@@ -290,10 +297,10 @@ public class LoginViewModel : BaseViewModel
 			return;
 		}
 
-		// Mostrar diálogo de entrada para nueva contraseña
+		// Mostrar diálogo de entrada para nueva contraseña (el backend exige mínimo 8)
 		var newPassword = await Application.Current.MainPage.DisplayPromptAsync(
 			"Nueva Contraseña",
-			"Ingresa una contraseña (mínimo 4 caracteres)",
+			"Ingresa una contraseña (mínimo 8 caracteres)",
 			placeholder: "contraseña",
 			maxLength: 50);
 
@@ -302,11 +309,11 @@ public class LoginViewModel : BaseViewModel
 			return;
 		}
 
-		if (newPassword.Length < 4)
+		if (newPassword.Length < 8)
 		{
 			await Application.Current.MainPage.DisplayAlert(
 				"Error",
-				"La contraseña debe tener mínimo 4 caracteres",
+				"La contraseña debe tener mínimo 8 caracteres",
 				"OK");
 			return;
 		}
@@ -336,6 +343,21 @@ public class LoginViewModel : BaseViewModel
 			Username = string.Empty;
 			Email = string.Empty;
 			Password = string.Empty;
+		}
+		catch (HttpRequestException ex)
+		{
+			Debug.WriteLine($"[LoginViewModel] Error de red en registro: {ex.Message}");
+			await Application.Current.MainPage.DisplayAlert(
+				"Error de conexión",
+				"No se pudo conectar con el servidor. Verifica tu conexión a internet.",
+				"OK");
+		}
+		catch (TaskCanceledException)
+		{
+			await Application.Current.MainPage.DisplayAlert(
+				"Servidor no disponible",
+				"El servidor tardó demasiado en responder. Inténtalo de nuevo más tarde.",
+				"OK");
 		}
 		catch (Exception ex)
 		{

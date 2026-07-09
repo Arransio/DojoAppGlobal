@@ -177,14 +177,9 @@ dotnet run -f net8.0-windows10.0.19041.0
 
 ## 🔐 Credenciales de Prueba
 
-Cuando veas la pantalla de login, usa:
-
-```
-Usuario:    admin
-Contraseña: Admin123!
-```
-
-O crea una cuenta nueva con el botón **"Registrarse"**
+Las credenciales de prueba **no se versionan** en este repositorio (un manual en git
+es visible para cualquiera con acceso al historial). Pídelas al responsable del
+proyecto, o crea una cuenta nueva con el botón **"Registrarse"**.
 
 ---
 
@@ -290,7 +285,7 @@ taskkill /PID <número> /F
 ### ❌ "Token is null in response"
 
 **Solución:**
-1. Verifica que el usuario existe (admin/Admin123!)
+1. Verifica que el usuario existe en la BD y tiene el email confirmado
 2. Revisa los logs del servidor en la consola
 3. Asegúrate de que la BD se creó correctamente
 
@@ -323,14 +318,13 @@ Antes de empezar, verifica:
 - [ ] BD creada: `dotnet ef database update` ✅
 - [ ] Backend ejecutándose en localhost:7088 ✅
 - [ ] Frontend mostrando pantalla de login ✅
-- [ ] Login funciona con admin/Admin123! ✅
+- [ ] Login funciona con las credenciales de prueba (pídelas al responsable) ✅
 
 ---
 
 ## 📝 Notas Importantes
 
 - La **API debe ejecutarse antes que la app MAUI**
-- Usa **contraseña: Admin123!** (con mayúscula y número)
 - Si tienes problemas, revisa los **logs de la consola**
 - Para desarrolladores: Los debug statements están en los archivos `Services/`
 

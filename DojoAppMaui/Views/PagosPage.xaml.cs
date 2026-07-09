@@ -8,7 +8,7 @@ namespace DojoAppMaui.Views;
 
 public partial class PagosPage : ContentPage
 {
-    private readonly OrderReportService _service = new();
+    private readonly OrderReportService _service = ServiceHelper.GetService<OrderReportService>();
     private readonly ObservableCollection<PagoRow> _rows = new();
 
     public PagosPage()

@@ -17,7 +17,7 @@ public partial class ReporteMenuPage : ContentPage
             ReporteButton.IsEnabled = false;
             ReporteButton.Text = "CARGANDO...";
 
-            var orderReportService = new OrderReportService();
+            var orderReportService = ServiceHelper.GetService<OrderReportService>();
             var pedidos = await orderReportService.GetAllPedidosAsync();
 
             if (pedidos.Count == 0)

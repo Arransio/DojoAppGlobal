@@ -1,5 +1,4 @@
-﻿using DojoAppMaui.Services;
-using DojoAppMaui.ViewModels;
+using DojoAppMaui.Services;
 using Microsoft.Extensions.Logging;
 using PdfSharpCore.Fonts;
 
@@ -21,13 +20,35 @@ public static class MauiProgram
                 fonts.AddFont("Sora-Variable.ttf", "Sora");
             });
 
-        builder.Services.AddSingleton<ApiService>();
-        builder.Services.AddTransient<MainViewModel>();
-        builder.Services.AddTransient<MainPage>();
+        // --- Red (IHttpClientFactory) ---
+        // La factory comparte y recicla los handlers entre clientes: evita el
+        // agotamiento de sockets de crear HttpClient sueltos y deja URL base,
+        // timeout y AuthHttpHandler configurados en este único punto.
+        builder.Services.AddTransient<AuthHttpHandler>();
+
+        // AuthService va SIN AuthHttpHandler: su 401 significa "credenciales
+        // incorrectas", no "sesión caducada" (no debe disparar el logout global).
+        builder.Services.AddHttpClient<AuthService>(ConfigureApiClient);
+
+        builder.Services.AddHttpClient<ApiService>(ConfigureApiClient)
+            .AddHttpMessageHandler<AuthHttpHandler>();
+        builder.Services.AddHttpClient<ProductService>(ConfigureApiClient)
+            .AddHttpMessageHandler<AuthHttpHandler>();
+        builder.Services.AddHttpClient<PedidosService>(ConfigureApiClient)
+            .AddHttpMessageHandler<AuthHttpHandler>();
+        builder.Services.AddHttpClient<OrderReportService>(ConfigureApiClient)
+            .AddHttpMessageHandler<AuthHttpHandler>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
         return builder.Build();
+    }
+
+    private static void ConfigureApiClient(HttpClient client)
+    {
+        client.BaseAddress = new Uri(AppConfig.ApiBaseUrl);
+        client.Timeout = AppConfig.HttpTimeout;
     }
 }

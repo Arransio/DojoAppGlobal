@@ -8,12 +8,12 @@ namespace DojoAppMaui.Views;
 public partial class CarritoPage : ContentPage
 {
     private List<CartItem> cart;
-    private PedidosService _pedidosService;
+    private readonly PedidosService _pedidosService;
 
     public CarritoPage()
     {
         InitializeComponent();
-        _pedidosService = new PedidosService();
+        _pedidosService = ServiceHelper.GetService<PedidosService>();
         LoadCarrito();
     }
 
@@ -74,15 +74,8 @@ public partial class CarritoPage : ContentPage
                 return;
             }
 
-            // Obtener UserId
-            var userId = await TokenStorage.GetUserId();
-            if (userId == null || userId <= 0)
-            {
-                await DisplayAlert("Error", "No se encontró el usuario. Por favor, inicia sesión nuevamente", "OK");
-                return;
-            }
-
-            Debug.WriteLine($"[CarritoPage] UserId: {userId}");
+            // La identidad del pedido la pone el servidor desde el token de sesión;
+            // aquí ya no se envía ningún UserId.
 
             // El pedido se asocia al nombre completo del perfil; es obligatorio tenerlo.
             var customerName = PerfilService.GetNombre()?.Trim() ?? string.Empty;
@@ -99,7 +92,7 @@ public partial class CarritoPage : ContentPage
             ConfirmOrderButton.IsEnabled = false;
             ConfirmOrderButton.Text = "Procesando...";
 
-            var response = await _pedidosService.CreatePedidoAsync(items, userId.Value, campaignId, customerName);
+            var response = await _pedidosService.CreatePedidoAsync(items, campaignId, customerName);
 
             // Limpiar carrito
             App.CarritoService.GetItems().Clear();

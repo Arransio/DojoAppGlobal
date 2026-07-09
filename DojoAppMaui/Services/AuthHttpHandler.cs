@@ -17,12 +17,14 @@ namespace DojoAppMaui.Services
 		// int en lugar de bool para poder usar Interlocked (0 = libre, 1 = redirigiendo).
 		private static int _redirectingToLogin;
 
-		public AuthHttpHandler() : base(new HttpClientHandler())
-		{
-		}
+		// Sin InnerHandler propio: lo asigna IHttpClientFactory al construir la cadena.
 
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
 		{
+			// Fallo rápido sin conexión: un aviso inmediato en vez de esperar el timeout.
+			if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+				throw new HttpRequestException("Sin conexión a internet");
+
 			if (request.Headers.Authorization == null)
 			{
 				var token = await TokenStorage.GetToken();
