@@ -1,6 +1,5 @@
 ﻿namespace Api_Dojo_App.Controllers;
 
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,12 +19,15 @@ public class AuthController : ControllerBase
 	private readonly IConfiguration _config;
 	private readonly AppDbContext _context;
 	private readonly IEmailService _emailService;
+	private readonly ILogger<AuthController> _logger;
 
-	public AuthController(IConfiguration config, AppDbContext context, IEmailService emailService)
+	public AuthController(IConfiguration config, AppDbContext context, IEmailService emailService,
+		ILogger<AuthController> logger)
 	{
 		_config = config;
 		_context = context;
 		_emailService = emailService;
+		_logger = logger;
 	}
 
 	[EnableRateLimiting("auth")]
@@ -68,111 +70,143 @@ public class AuthController : ControllerBase
 	[HttpPost("register")]
 	public async Task<IActionResult> Register([FromBody] RegisterRequest request)
 	{
-		try
+		// Sin try/catch genérico: las excepciones inesperadas deben llegar al
+		// GlobalExceptionMiddleware (500 genérico + log), no volver al cliente
+		// con detalles internos (ex.Message).
+
+		// Validar entrada
+		if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+			return BadRequest("Usuario y contraseña son requeridos");
+
+		if (string.IsNullOrWhiteSpace(request.Email))
+			return BadRequest("El email es requerido");
+
+		if (request.Username.Length < 3)
+			return BadRequest("Usuario debe tener mínimo 3 caracteres");
+
+		if (request.Password.Length < 8)
+			return BadRequest("Contraseña debe tener mínimo 8 caracteres");
+
+		// Validar formato de email
+		if (!IsValidEmail(request.Email))
+			return BadRequest("El email no es válido");
+
+		// Verificar si el usuario EXISTE
+		var existingUser = _context.Users.FirstOrDefault(u => u.Username == request.Username);
+
+		if (existingUser != null)
 		{
-			// Validar entrada
-			if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-				return BadRequest("Usuario y contraseña son requeridos");
-
-			if (string.IsNullOrWhiteSpace(request.Email))
-				return BadRequest("El email es requerido");
-
-			if (request.Username.Length < 3)
-				return BadRequest("Usuario debe tener mínimo 3 caracteres");
-
-			if (request.Password.Length < 4)
-				return BadRequest("Contraseña debe tener mínimo 4 caracteres");
-
-			// Validar formato de email
-			if (!IsValidEmail(request.Email))
-				return BadRequest("El email no es válido");
-
-			// Verificar si el usuario EXISTE
-			var existingUser = _context.Users.FirstOrDefault(u => u.Username == request.Username);
-
-			if (existingUser != null)
-			{
-				Debug.WriteLine($"[AuthController] Usuario '{request.Username}' ya existe en la BD");
-				return BadRequest("El usuario ya existe. Por favor elige otro nombre de usuario");
-			}
-
-			// Verificar si el email ya existe
-			var existingEmail = _context.Users.FirstOrDefault(u => u.Email == request.Email);
-
-			if (existingEmail != null)
-			{
-				Debug.WriteLine($"[AuthController] Email '{request.Email}' ya existe en la BD");
-				return BadRequest("El email ya está registrado");
-			}
-
-			// Generar token de confirmación
-			var confirmationToken = GenerateConfirmationToken();
-			var tokenExpiry = DateTime.UtcNow.AddHours(24);
-
-			// Usuario NO existe, crearlo sin confirmar
-			Debug.WriteLine($"[AuthController] Creando nuevo usuario: {request.Username}");
-
-			var newUser = new User
-			{
-				Username = request.Username,
-				PasswordHash = HashPassword(request.Password),
-				Email = request.Email,
-				Role = "user",
-				IsEmailConfirmed = false,
-				EmailConfirmationToken = confirmationToken,
-				EmailConfirmationTokenExpiry = tokenExpiry
-			};
-
-			// Agregar a la base de datos
-			_context.Users.Add(newUser);
-			await _context.SaveChangesAsync();
-
-			Debug.WriteLine($"[AuthController] Usuario '{request.Username}' creado exitosamente con ID: {newUser.Id}");
-
-				// Generar link de confirmación
-				var confirmationLink = $"{_config["AppSettings:FrontendUrl"]}/api/auth/confirm-email?token={confirmationToken}&email={request.Email}";
-
-				// Enviar email de confirmación
-				var emailSent = await _emailService.SendConfirmationEmailAsync(request.Email, confirmationLink);
-
-			if (!emailSent)
-			{
-				Debug.WriteLine($"[AuthController] Error: No se pudo enviar el email de confirmación a {request.Email}");
-				return StatusCode(500, "Usuario registrado pero no se pudo enviar el email de confirmación. Por favor intenta más tarde.");
-			}
-
-			return Ok(new
-			{
-				Message = "Usuario registrado exitosamente. Por favor, confirma tu email.",
-				UserId = newUser.Id
-			});
+			_logger.LogWarning("Registro rechazado: usuario '{Username}' ya existe", request.Username);
+			return BadRequest("El usuario ya existe. Por favor elige otro nombre de usuario");
 		}
-		catch (Exception ex)
+
+		// Verificar si el email ya existe
+		var existingEmail = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
+		if (existingEmail != null)
 		{
-			Debug.WriteLine($"[AuthController] Error en register: {ex.Message}");
-			return StatusCode(500, $"Error al registrarse: {ex.Message}");
+			_logger.LogWarning("Registro rechazado: email ya registrado");
+			return BadRequest("El email ya está registrado");
 		}
+
+		// Generar token de confirmación
+		var confirmationToken = GenerateConfirmationToken();
+		var tokenExpiry = DateTime.UtcNow.AddHours(24);
+
+		// Usuario NO existe, crearlo sin confirmar
+		var newUser = new User
+		{
+			Username = request.Username,
+			PasswordHash = HashPassword(request.Password),
+			Email = request.Email,
+			Role = "user",
+			IsEmailConfirmed = false,
+			EmailConfirmationToken = confirmationToken,
+			EmailConfirmationTokenExpiry = tokenExpiry
+		};
+
+		// Agregar a la base de datos
+		_context.Users.Add(newUser);
+		await _context.SaveChangesAsync();
+
+		_logger.LogInformation("Usuario '{Username}' creado con ID {UserId}, pendiente de confirmar email",
+			newUser.Username, newUser.Id);
+
+		// Enviar email de confirmación
+		var emailSent = await SendConfirmationEmailAsync(request.Email, confirmationToken);
+
+		if (!emailSent)
+		{
+			// El usuario queda creado sin confirmar; puede pedir el reenvío
+			// con POST /api/auth/resend-confirmation.
+			_logger.LogError("No se pudo enviar el email de confirmación a usuario {UserId}", newUser.Id);
+			return StatusCode(500, "Usuario registrado pero no se pudo enviar el email de confirmación. " +
+				"Usa la opción de reenviar el correo de confirmación más tarde.");
+		}
+
+		return Ok(new
+		{
+			Message = "Usuario registrado exitosamente. Por favor, confirma tu email.",
+			UserId = newUser.Id
+		});
+	}
+
+	// Reenvía el correo de confirmación. Sin esto, un fallo del email en el
+	// registro dejaba la cuenta creada pero imposible de confirmar (no puede
+	// loguearse ni volver a registrarse: username/email ya existen).
+	[EnableRateLimiting("auth")]
+	[HttpPost("resend-confirmation")]
+	public async Task<IActionResult> ResendConfirmation([FromBody] ResendConfirmationRequest request)
+	{
+		if (string.IsNullOrWhiteSpace(request.Email))
+			return BadRequest("El email es requerido");
+
+		// La respuesta es la misma exista o no la cuenta: no revelar qué emails
+		// están registrados (enumeración de usuarios).
+		var genericResponse = Ok(new
+		{
+			Message = "Si el email está registrado y pendiente de confirmar, se ha reenviado el correo."
+		});
+
+		var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+		if (user == null || user.IsEmailConfirmed)
+			return genericResponse;
+
+		// Token nuevo (el anterior puede haber expirado)
+		user.EmailConfirmationToken = GenerateConfirmationToken();
+		user.EmailConfirmationTokenExpiry = DateTime.UtcNow.AddHours(24);
+		await _context.SaveChangesAsync();
+
+		var emailSent = await SendConfirmationEmailAsync(user.Email, user.EmailConfirmationToken);
+		if (!emailSent)
+			_logger.LogError("Fallo al reenviar email de confirmación a usuario {UserId}", user.Id);
+		else
+			_logger.LogInformation("Email de confirmación reenviado a usuario {UserId}", user.Id);
+
+		return genericResponse;
+	}
+
+	// Construye el link con la URL pública configurada por entorno y envía el correo.
+	private Task<bool> SendConfirmationEmailAsync(string email, string confirmationToken)
+	{
+		var confirmationLink = $"{_config["AppSettings:FrontendUrl"]}/api/auth/confirm-email" +
+			$"?token={confirmationToken}&email={Uri.EscapeDataString(email)}";
+
+		return _emailService.SendConfirmationEmailAsync(email, confirmationLink);
 	}
 
 	[Authorize]
 	[HttpGet("profile")]
 	public IActionResult GetProfile()
 	{
-
-		var authHeader = Request.Headers["Authorization"].ToString();
-
-		Debug.WriteLine("RAW HEADER: [" + authHeader + "]");
-		Debug.WriteLine("LENGTH HEADER: " + authHeader.Length);
-		Debug.WriteLine($"User.Identity.Name: {User.Identity?.Name}");
-		Debug.WriteLine($"User.IsInRole('admin'): {User.IsInRole("admin")}");
-
-		var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "No role found";
-		Debug.WriteLine($"Role from claims: {role}");
+		// Nunca loguear el header Authorization: contiene el token completo
+		// y un token en un log es un token robable.
+		var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "No role found";
 
 		return Ok(new
 		{
 			Message = "Acceso autorizado",
-			User = User.Identity.Name,
+			User = User.Identity?.Name,
 			Role = role,
 			IsAdmin = User.IsInRole("admin"),
 			AllClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList()
@@ -202,13 +236,13 @@ public class AuthController : ControllerBase
 
 			if (user.EmailConfirmationToken != token)
 			{
-				Debug.WriteLine($"[AuthController] Token incorrecto para {email}");
+				_logger.LogWarning("Token de confirmación incorrecto para email de usuario {UserId}", user.Id);
 				return Content(GetErrorHtml("Token inválido"), "text/html");
 			}
 
 			if (user.EmailConfirmationTokenExpiry < DateTime.UtcNow)
 			{
-				Debug.WriteLine($"[AuthController] Token expirado para {email}");
+				_logger.LogWarning("Token de confirmación expirado para usuario {UserId}", user.Id);
 				return Content(GetErrorHtml("El token ha expirado. Por favor, solicita un nuevo email de confirmación"), "text/html");
 			}
 
@@ -219,14 +253,16 @@ public class AuthController : ControllerBase
 
 			await _context.SaveChangesAsync();
 
-			Debug.WriteLine($"[AuthController] Email confirmado para usuario: {user.Username}");
+			_logger.LogInformation("Email confirmado para usuario {UserId}", user.Id);
 
 			return Content(GetSuccessHtml("¡Email confirmado exitosamente! Ya puedes iniciar sesión en la aplicación"), "text/html");
 		}
 		catch (Exception ex)
 		{
-			Debug.WriteLine($"[AuthController] Error en confirm-email: {ex.Message}");
-			return Content(GetErrorHtml($"Error al confirmar email: {ex.Message}"), "text/html");
+			// Este endpoint devuelve HTML a un navegador (no JSON), así que no puede
+			// delegar en el middleware global; el detalle se loguea, nunca se muestra.
+			_logger.LogError(ex, "Error al confirmar email por link");
+			return Content(GetErrorHtml("Error al confirmar el email. Por favor, inténtalo de nuevo más tarde."), "text/html");
 		}
 	}
 
@@ -234,50 +270,43 @@ public class AuthController : ControllerBase
 	[HttpPost("confirm-email")]
 	public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
 	{
-		try
+		// Las excepciones inesperadas las gestiona el GlobalExceptionMiddleware.
+		if (string.IsNullOrWhiteSpace(request.Token) || string.IsNullOrWhiteSpace(request.Email))
+			return BadRequest("Token y email son requeridos");
+
+		var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
+		if (user == null)
+			return BadRequest("Usuario no encontrado");
+
+		if (user.IsEmailConfirmed)
+			return BadRequest("El email ya ha sido confirmado");
+
+		if (user.EmailConfirmationToken != request.Token)
 		{
-			if (string.IsNullOrWhiteSpace(request.Token) || string.IsNullOrWhiteSpace(request.Email))
-				return BadRequest("Token y email son requeridos");
-
-			var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
-
-			if (user == null)
-				return BadRequest("Usuario no encontrado");
-
-			if (user.IsEmailConfirmed)
-				return BadRequest("El email ya ha sido confirmado");
-
-			if (user.EmailConfirmationToken != request.Token)
-			{
-				Debug.WriteLine($"[AuthController] Token incorrecto para {request.Email}");
-				return BadRequest("Token inválido");
-			}
-
-			if (user.EmailConfirmationTokenExpiry < DateTime.UtcNow)
-			{
-				Debug.WriteLine($"[AuthController] Token expirado para {request.Email}");
-				return BadRequest("El token ha expirado. Por favor, solicita un nuevo email de confirmación");
-			}
-
-			// Confirmar email
-			user.IsEmailConfirmed = true;
-			user.EmailConfirmationToken = null;
-			user.EmailConfirmationTokenExpiry = null;
-
-			await _context.SaveChangesAsync();
-
-			Debug.WriteLine($"[AuthController] Email confirmado para usuario: {user.Username}");
-
-			return Ok(new
-			{
-				Message = "Email confirmado exitosamente. Ya puedes iniciar sesión."
-			});
+			_logger.LogWarning("Token de confirmación incorrecto para usuario {UserId}", user.Id);
+			return BadRequest("Token inválido");
 		}
-		catch (Exception ex)
+
+		if (user.EmailConfirmationTokenExpiry < DateTime.UtcNow)
 		{
-			Debug.WriteLine($"[AuthController] Error en confirm-email: {ex.Message}");
-			return StatusCode(500, $"Error al confirmar email: {ex.Message}");
+			_logger.LogWarning("Token de confirmación expirado para usuario {UserId}", user.Id);
+			return BadRequest("El token ha expirado. Por favor, solicita un nuevo email de confirmación");
 		}
+
+		// Confirmar email
+		user.IsEmailConfirmed = true;
+		user.EmailConfirmationToken = null;
+		user.EmailConfirmationTokenExpiry = null;
+
+		await _context.SaveChangesAsync();
+
+		_logger.LogInformation("Email confirmado para usuario {UserId}", user.Id);
+
+		return Ok(new
+		{
+			Message = "Email confirmado exitosamente. Ya puedes iniciar sesión."
+		});
 	}
 
 	private string GenerateJwtToken(int userId, string username, string role = "user")
@@ -325,12 +354,9 @@ public class AuthController : ControllerBase
 	// Generar token único de confirmación
 	private string GenerateConfirmationToken()
 	{
-		using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
-		{
-			byte[] tokenData = new byte[32];
-			rng.GetBytes(tokenData);
-			return Convert.ToBase64String(tokenData).Replace("/", "_").Replace("+", "-");
-		}
+		byte[] tokenData = new byte[32];
+		System.Security.Cryptography.RandomNumberGenerator.Fill(tokenData);
+		return Convert.ToBase64String(tokenData).Replace("/", "_").Replace("+", "-");
 	}
 
 	// Validar formato de email

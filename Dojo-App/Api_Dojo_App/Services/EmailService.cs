@@ -2,7 +2,6 @@ namespace Api_Dojo_App.Services;
 
 using System.Net;
 using System.Net.Mail;
-using System.Diagnostics;
 
 public interface IEmailService
 {
@@ -12,10 +11,12 @@ public interface IEmailService
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _config;
+    private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IConfiguration config)
+    public EmailService(IConfiguration config, ILogger<EmailService> logger)
     {
         _config = config;
+        _logger = logger;
     }
 
     public async Task<bool> SendConfirmationEmailAsync(string email, string confirmationLink)
@@ -54,13 +55,15 @@ public class EmailService : IEmailService
                 };
 
                 await smtpClient.SendMailAsync(mailMessage);
-                Debug.WriteLine($"[EmailService] Email de confirmación enviado a: {email}");
+                _logger.LogInformation("Email de confirmación enviado");
                 return true;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[EmailService] Error enviando email a {email}: {ex.Message}");
+            // ILogger y no Debug.WriteLine: en Release, Debug no escribe nada y los
+            // fallos de email quedarían invisibles en producción.
+            _logger.LogError(ex, "Error enviando email de confirmación");
             return false;
         }
     }

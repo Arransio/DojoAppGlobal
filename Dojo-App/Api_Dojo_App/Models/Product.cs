@@ -12,6 +12,10 @@ namespace Api_Dojo_App.Models
 
         public int CampaignId { get; set; }
 
+        // Soft-delete: los productos no se borran (destruiría el histórico de
+        // pedidos), se retiran del catálogo marcándolos inactivos.
+        public bool IsActive { get; set; } = true;
+
         [JsonIgnore]
         public Campaign? Campaign { get; set; }
 

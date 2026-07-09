@@ -22,20 +22,29 @@ public class PedidosController : ControllerBase
     [HttpPost("create")]
     public IActionResult CreatePedidoFromCart([FromBody] CreatePedidoRequest request)
     {
+        // La identidad sale SIEMPRE del token firmado, nunca del body:
+        // un cliente podría enviar cualquier UserId y crear pedidos a nombre de otro.
+        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(idClaim, out var userId))
+            return Unauthorized(new { error = "Token sin identificador de usuario" });
+
         _logger.LogInformation("Creando pedido: UserId={UserId}, CampaignId={CampaignId}, Items={Items}",
-            request.UserId, request.CampaignId, request.Items?.Count ?? 0);
+            userId, request.CampaignId, request.Items?.Count ?? 0);
 
         // Validar usuario
-        var user = _context.Users.FirstOrDefault(u => u.Id == request.UserId);
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
         if (user == null)
         {
-            _logger.LogWarning("Usuario {UserId} no encontrado al crear pedido", request.UserId);
+            _logger.LogWarning("Usuario {UserId} del token no existe en BD al crear pedido", userId);
             return NotFound(new { error = "Usuario no válido" });
         }
 
         // El pedido debe ir asociado al nombre completo del perfil del usuario.
         if (string.IsNullOrWhiteSpace(request.CustomerName))
             return BadRequest(new { error = "Para hacer un pedido, es necesario completar tu perfil" });
+
+        if (request.CustomerName.Trim().Length > 100)
+            return BadRequest(new { error = "El nombre es demasiado largo (máximo 100 caracteres)" });
 
         // Validar campaña
         var campaign = _context.Campaigns.FirstOrDefault(c => c.Id == request.CampaignId);
@@ -98,7 +107,7 @@ public class PedidosController : ControllerBase
         // Crear nuevo pedido con el total calculado en servidor
         var newPedido = new Pedido
         {
-            UserId = request.UserId,
+            UserId = userId,
             CustomerName = request.CustomerName.Trim(),
             CampaignId = request.CampaignId,
             CreatedAt = DateTime.UtcNow,

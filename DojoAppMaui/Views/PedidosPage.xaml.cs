@@ -122,7 +122,8 @@ public partial class PedidosPage : ContentPage
 	{
 		try
 		{
-			var response = await _httpClient.GetAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}");
+			// POST: el endpoint crea la variante si no existe (un GET no debe crear datos)
+			var response = await _httpClient.PostAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}", null);
 			if (!response.IsSuccessStatusCode)
 				return null;
 

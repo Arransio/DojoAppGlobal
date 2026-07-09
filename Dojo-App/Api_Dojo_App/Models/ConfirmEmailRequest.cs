@@ -5,4 +5,9 @@ namespace Api_Dojo_App.Models
         public string Email { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
     }
+
+    public class ResendConfirmationRequest
+    {
+        public string Email { get; set; } = string.Empty;
+    }
 }

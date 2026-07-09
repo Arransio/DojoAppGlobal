@@ -17,8 +17,13 @@ public class ColorsController : ControllerBase
     // Crear color (solo admin)
     [Authorize(Roles = "admin")]
     [HttpPost]
-    public IActionResult Create(Color color)
+    public IActionResult Create(CreateColorRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return BadRequest(new { error = "El nombre es requerido" });
+
+        var color = new Color { Name = request.Name.Trim() };
+
         _context.Colors.Add(color);
         _context.SaveChanges();
 

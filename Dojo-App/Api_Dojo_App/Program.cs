@@ -22,6 +22,13 @@ if (string.IsNullOrWhiteSpace(builder.Configuration["EmailSettings:SenderPasswor
 	throw new InvalidOperationException(
 		"Falta 'EmailSettings:SenderPassword'. Configúrala con 'dotnet user-secrets set \"EmailSettings:SenderPassword\" \"...\"' o una variable de entorno.");
 
+// URL pública para los links de los emails. Depende del entorno: en desarrollo
+// viene de appsettings.Development.json (emulador); en producción DEBE configurarse
+// con la URL real o los correos de confirmación llevarían enlaces rotos.
+if (string.IsNullOrWhiteSpace(builder.Configuration["AppSettings:FrontendUrl"]))
+	throw new InvalidOperationException(
+		"Falta 'AppSettings:FrontendUrl' (URL base de los links de email para este entorno).");
+
 //Esquema de autenticacion de peticiones con token
 builder.Services.AddAuthentication(options =>
 {

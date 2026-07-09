@@ -29,20 +29,31 @@ public class ProductVariantsController : ControllerBase
     // Crear variante (solo admin)
     [Authorize(Roles = "admin")]
     [HttpPost]
-    public IActionResult Create(ProductVariant variant)
+    public IActionResult Create(CreateVariantRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.Size))
+            return BadRequest(new { error = "La talla es requerida" });
+
+        if (!_context.Products.Any(p => p.Id == request.ProductId))
+            return NotFound(new { error = "Producto no válido" });
+
+        var variant = new ProductVariant { ProductId = request.ProductId, Size = request.Size.Trim() };
+
         _context.ProductVariants.Add(variant);
         _context.SaveChanges();
 
         return Ok(variant);
     }
 
-    // Obtiene o crea una variante para un producto y talla dados (requiere sesión: crea datos)
+    // Obtiene o crea una variante para un producto y talla dados.
+    // POST porque crea datos (un GET debe ser seguro: cachés y prefetchers pueden
+    // repetirlo por su cuenta). No se restringe a admin: el flujo normal de la app
+    // lo invoca cuando un usuario selecciona una talla que aún no tiene variante.
     [Authorize]
-    [HttpGet("ensure/{productId}/{size}")]
+    [HttpPost("ensure/{productId}/{size}")]
     public IActionResult EnsureVariant(int productId, string size)
     {
-        var productExists = _context.Products.Any(p => p.Id == productId);
+        var productExists = _context.Products.Any(p => p.Id == productId && p.IsActive);
         if (!productExists)
             return NotFound(new { error = $"Producto {productId} no existe" });
 

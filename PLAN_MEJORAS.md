@@ -270,12 +270,14 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 
 ### Fase 2.5 — NUEVA: lógica de autorización backend (~1 sesión)
 *Por qué esta fase existe y va primero:* la Fase 1 protegió las **puertas** (quién puede llamar a qué endpoint); estos hallazgos son de **lógica interior** (qué hace el endpoint una vez dentro). La suplantación de pedidos (ALTA-1) y la cascada destructiva (ALTA-2) son los dos únicos puntos donde un usuario real puede causar daño hoy — datos falsos e histórico destruido — y ambos se corrigen en medio día.
-- [ ] `CreatePedidoFromCart`: `UserId` del claim del token, ignorar el del body; derivar/validar `CustomerName`. *(→ ALTA-1)*
-- [ ] FKs `Product→Variant→PedidoItem` a `Restrict` (migración) + soft-delete `IsActive` en `Product`. *(→ ALTA-2)*
-- [ ] Quitar `ex.Message` de las respuestas; dejar actuar al middleware global. Quitar el volcado del header Authorization. *(→ fuga de información)*
-- [ ] Endpoint de reenvío de confirmación de email; fallos de email con `ILogger`. *(→ ALTA-4)*
-- [ ] `FrontendUrl` configurable por entorno. *(→ ALTA-3)*
-- [ ] `ensure` de variantes → POST + rol admin. DTOs de entrada en los POST admin. Contraseña mínima 8.
+- [x] `CreatePedidoFromCart`: `UserId` del claim del token (se eliminó del DTO junto con los precios); `CustomerName` validado (no vacío, máx. 100). *(→ ALTA-1, 09/07/2026)*
+- [x] FKs `Product→Variant→PedidoItem` (y `Campaign→Products/Pedidos`) a `Restrict` + soft-delete `IsActive` en `Product` con filtro en todo el catálogo. Migración `SoftDeleteProductsAndRestrictDeletes` aplicada (con `defaultValue: true` corregido a mano: el scaffold generaba `false`, que habría ocultado el catálogo existente). *(→ ALTA-2, 09/07/2026)*
+- [x] Sin `ex.Message` al cliente (Register/ConfirmEmail delegan en el middleware; el confirm por link devuelve HTML genérico + log). Header Authorization ya no se loguea. `ILogger` en AuthController y EmailService. *(09/07/2026)*
+- [x] `POST /api/auth/resend-confirmation`: respuesta genérica exista o no la cuenta (evita enumeración de usuarios); regenera token de 24h. *(→ ALTA-4, 09/07/2026)*
+- [x] `FrontendUrl` por entorno: valor del emulador en `appsettings.Development.json`, fail-fast en `Program.cs` si falta (en prod habrá que configurar la URL pública). *(→ ALTA-3, 09/07/2026)*
+- [x] `ensure` de variantes → POST (verificado: GET ahora devuelve 405). **Desviación del plan:** se mantiene `[Authorize]` para cualquier usuario, no solo admin — el flujo normal de la app lo invoca al seleccionar una talla sin variante. DTOs de entrada en los 4 POST admin (`AdminRequests.cs`). Contraseña mínima 8. `RNGCryptoServiceProvider` → `RandomNumberGenerator` (adelantado de Fase 5). *(09/07/2026)*
+
+*Verificación 09/07/2026: API arrancado en local — `GET /api/products` 200 con catálogo intacto tras la migración, `resend-confirmation` responde genérico con email inexistente, `ensure` por GET rechazado con 405. App MAUI recompilada OK tras el cambio a POST.*
 
 ### Fase 3 — App: red y configuración
 *Por qué antes que la 4:* toda mejora de UX que se haga ahora heredaría los seis `10.0.2.2` y los `HttpClient` desechables. Arreglar los cimientos de red primero evita construir sobre ellos y luego re-tocar cada pantalla.
