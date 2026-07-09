@@ -7,6 +7,23 @@
 
 ---
 
+## Registro de progreso
+
+| Etapa | Estado | Fecha | Commit |
+|---|---|---|---|
+| Fase 1 — Seguridad del backend | ✅ Completada | 06/07/2026 | `dec6799` |
+| Paso 0 — Remates y commit de la Fase 2 | ✅ Completada | 09/07/2026 | `19bb1da` |
+| Fase 2 — Sesión en la app | ✅ Completada | 09/07/2026 | `19bb1da` |
+| Fase 2.5 — Lógica de autorización backend | ✅ Completada | 09/07/2026 | `b805863` |
+| Fase 3 — App: red y configuración (estructural) | ✅ Completada | 09/07/2026 | `7133e71` |
+| Fase 4 — App: funcionalidad y UX | ⬜ Pendiente | — | — |
+| Fase 5 — Operación | ⬜ Pendiente | — | — |
+| Fase 6 — Despliegue a producción | ⬜ Pendiente (requiere hosting) | — | — |
+
+> Regla acordada el 09/07/2026: este registro (y los checkboxes de cada fase) se actualizan en el momento en que se completa cada etapa, para tener constancia visual de lo ya implementado.
+
+---
+
 ## Estado actual
 
 **Fase 1 (backend, COMPLETADA — commit `dec6799`)**: `[Authorize]` en todos los controllers, roles en BD, secretos en user-secrets con clave JWT rotada, middleware global de errores, precio recalculado server-side, rate limiting en auth, HTTPS solo en prod. Verificada en auditoría: bien cerrada. El catálogo (GET products/colors/variants/campaigns) queda público a propósito (modo demo offline).
@@ -279,13 +296,18 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 
 *Verificación 09/07/2026: API arrancado en local — `GET /api/products` 200 con catálogo intacto tras la migración, `resend-confirmation` responde genérico con email inexistente, `ensure` por GET rechazado con 405. App MAUI recompilada OK tras el cambio a POST.*
 
-### Fase 3 — App: red y configuración
+### Fase 3 — App: red y configuración (parte ESTRUCTURAL)
 *Por qué antes que la 4:* toda mejora de UX que se haga ahora heredaría los seis `10.0.2.2` y los `HttpClient` desechables. Arreglar los cimientos de red primero evita construir sobre ellos y luego re-tocar cada pantalla.
-- [ ] Fuente única de URL base por plataforma/entorno (`AppConfig`). *(→ ALTA-5)*
-- [ ] `IHttpClientFactory` con `AuthHttpHandler` y timeout de 10-15 s, registrado en `MauiProgram` (paquete `Microsoft.Extensions.Http`). *(→ ALTA-6, ALTA-7)*
-- [ ] Comprobación de `Connectivity.NetworkAccess` antes de llamar; errores por tipo de excepción, no por substring del mensaje.
-- [ ] Borrar código muerto: `MainPage`, `ProductsPage`, `MainViewModel`, `AppShell`, `DebugAuthService` (app) y `WeatherForecast.cs` (API). Quitar credenciales de `MANUAL_INSTALACION.md`.
-- [ ] DI real: registrar servicios y páginas en `MauiProgram`, eliminar `new` en code-behind (gradual).
+
+*Decisión del 09/07/2026:* la app aún no está en producción (BD local, acceso solo desde emulador), así que esta fase se limita a la **estructura** — que es precisamente la preparación de la futura migración a hosting: con la URL centralizada, migrar será cambiar una línea de configuración en vez de mezclar cambio de infraestructura y refactor de seis archivos a la vez. Los **valores** de producción (URL pública, HTTPS obligatorio, cleartext solo debug, ATS de iOS) se aplazan a la nueva **Fase 6 — Despliegue**, cuando exista el hosting.
+- [x] Fuente única de URL base por plataforma (`Services/AppConfig.cs`): eliminados los seis `10.0.2.2` dispersos y el `https://localhost:7088` desalineado de ApiService. *(→ ALTA-5, 09/07/2026)*
+- [x] `IHttpClientFactory` con clientes tipados en `MauiProgram` + timeout de 15 s. `AuthService` va sin `AuthHttpHandler` a propósito: su 401 es "credenciales incorrectas", no "sesión caducada". `PedidosPage` ya no hace HTTP (colores/variantes/ensure movidos a `ProductService`). *(→ ALTA-6, ALTA-7, 09/07/2026)*
+- [x] `Connectivity.NetworkAccess` con fallo rápido en `AuthHttpHandler` + aviso en login; errores por tipo de excepción (`HttpRequestException` = red, `TaskCanceledException` = timeout) en vez de substrings. *(09/07/2026)*
+- [x] Código muerto eliminado: `MainPage`, `ProductsPage`, `MainViewModel`, `ProductVariantColorViewModel`, `AppShell`, `DebugAuthService`, `AuthService.TestAuth` (app) y `WeatherForecast.cs` (API). Credenciales fuera de `MANUAL_INSTALACION.md`. *(09/07/2026)*
+- [x] DI real para los SERVICIOS (clientes tipados + `ServiceHelper` como puente desde el code-behind). Las **páginas** siguen creándose con `new` — se migrarán gradualmente al tocarlas en la Fase 4 (regla del boy scout). *(09/07/2026)*
+
+*Extra de esta fase: `PedidosService` ya no envía `UserId` ni precios (alineado con el contrato server-side de la Fase 2.5) y el mínimo de contraseña en el registro de la app pasó a 8, alineado con el backend.*
+*Verificación 09/07/2026: API y app compilan sin errores (commit `7133e71`). Prueba funcional en emulador pendiente de la próxima sesión de trabajo manual.*
 
 ### Fase 4 — App: funcionalidad y UX
 *Por qué en este orden interno:* historial y cantidades son lo de mayor valor visible; loaders y estados vacíos multiplican la sensación de calidad de todo lo demás.
@@ -300,13 +322,26 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 - [ ] `db.Database.Migrate()` en el arranque + seed asíncrono con try/catch y log.
 - [ ] Backup automatizado de `app.db` con rotación (idealmente `VACUUM INTO`, no `File.Copy`).
 - [ ] Async real en `Login` y `CreatePedidoFromCart`; `ILogger` en todo el API.
-- [ ] `SmtpClient` → MailKit; `JwtBearer` alineado a 8.0.25; `RNGCryptoServiceProvider` → `RandomNumberGenerator`.
-- [ ] `allowBackup="false"` en AndroidManifest; plan HTTPS para prod con cleartext solo en debug.
+- [ ] `SmtpClient` → MailKit; `JwtBearer` alineado a 8.0.25. (~~`RNGCryptoServiceProvider`~~ ya hecho en Fase 2.5.)
+- [ ] `allowBackup="false"` en AndroidManifest.
 - [ ] Opcional: Dockerfile / perfil de publicación / CI básico.
+
+### Fase 6 — NUEVA: Despliegue a producción (cuando exista el hosting)
+*Por qué es una fase aparte (decisión del 09/07/2026):* los valores de producción no se pueden configurar contra un servidor que no existe. Al separarlos de la estructura (Fase 3), el día de la migración solo cambia UNA variable — la infraestructura — y cualquier fallo se depura contra una app cuyo código de red ya está probado. Requisito previo: Fases 3 y 5 completadas (en especial `Migrate()` automático y backups, que en un servidor remoto son imprescindibles).
+- [ ] Contratar/preparar hosting para el API + decidir dónde vive la BD (¿SQLite en disco persistente? ¿migrar a un motor servidor?).
+- [ ] URL pública del API en la configuración de la app (un solo valor gracias a `AppConfig` de Fase 3, Release→producción / Debug→emulador).
+- [ ] HTTPS obligatorio: certificado en el servidor, quitar `usesCleartextTraffic` global (si acaso, `network_security_config.xml` permitiendo cleartext solo hacia `10.0.2.2` en debug), verificar ATS en iOS.
+- [ ] `AppSettings:FrontendUrl` de producción (los links de los emails de confirmación) vía variable de entorno o `appsettings.Production.json`.
+- [ ] Secretos de producción (Jwt:Key, password SMTP) como variables de entorno del servidor — nunca en archivos versionados.
+- [ ] Pruebas end-to-end desde dispositivos reales (Android físico; iOS si aplica): registro con email real, login, pedido completo, reporte admin.
+- [ ] Revisar el rate limiting con tráfico real detrás de NAT/proxy (la partición por IP puede agrupar usuarios).
 
 ---
 
 ## Decisiones tomadas (histórico)
+- La Fase 3 se ejecuta solo en su parte estructural mientras no haya hosting; los valores de producción pasan a la Fase 6 — Despliegue (09/07/2026).
+- El registro de progreso y los checkboxes del plan se actualizan al completar cada etapa (09/07/2026).
+- Expiración del JWT: 3 días / 4320 min (09/07/2026).
 - Catálogo GET público para no romper el modo demo offline (06/07/2026).
 - `UsersController` y POST `api/pedidos` legacy eliminados por no estar protegidos (06/07/2026).
 - No se rota la app-password de Gmail: riesgo asumido, sigue en el historial git (06/07/2026, reconfirmado 09/07/2026).
