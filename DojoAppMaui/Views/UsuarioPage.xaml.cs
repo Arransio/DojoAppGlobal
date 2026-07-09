@@ -208,6 +208,22 @@ public partial class UsuarioPage : ContentPage
         await DisplayAlert("Historial de pedidos", "Esta sección estará disponible próximamente.", "OK");
     }
 
+    private async void OnCerrarSesionClicked(object sender, EventArgs e)
+    {
+        var confirmar = await DisplayAlert(
+            "Cerrar sesión",
+            "¿Seguro que quieres cerrar la sesión?",
+            "Sí, cerrar", "Cancelar");
+
+        if (!confirmar)
+            return;
+
+        // Borra solo la sesión (token, usuario, rol); el perfil local se conserva
+        await TokenStorage.ClearSession();
+
+        Application.Current.MainPage = new NavigationPage(new LoginPage());
+    }
+
     // ---------- Foto de perfil ----------
 
     private void RenderAvatar()

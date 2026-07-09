@@ -205,6 +205,12 @@
                 <Button Text="Historial de pedidos" Style="{StaticResource GhostButton}"
                         Clicked="OnHistorialClicked"/>
 
+                <!-- Cerrar sesión: borra la sesión pero conserva el perfil local -->
+                <Button Text="Cerrar sesión" Style="{StaticResource GhostButton}"
+                        TextColor="{StaticResource AccentRed}"
+                        BorderColor="{StaticResource AccentRed}"
+                        Clicked="OnCerrarSesionClicked"/>
+
             </VerticalStackLayout>
         </ScrollView>
 

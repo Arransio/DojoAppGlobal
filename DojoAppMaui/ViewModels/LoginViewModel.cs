@@ -37,6 +37,16 @@ public class LoginViewModel : BaseViewModel
 		set => SetProperty(ref password, value);
 	}
 
+	// "Recordar usuario": precarga el nombre de usuario en el próximo arranque
+	private const string RememberedUsernameKey = "remembered_username";
+
+	private bool rememberUsername;
+	public bool RememberUsername
+	{
+		get => rememberUsername;
+		set => SetProperty(ref rememberUsername, value);
+	}
+
 	// Control de throttling para registro
 	private DateTime _lastRegisterClickTime = DateTime.MinValue;
 	private const int RegisterThrottleSeconds = 60; // 1 minuto
@@ -64,6 +74,23 @@ public class LoginViewModel : BaseViewModel
 
 		LoginCommand = new Command(async () => await Login());
 		RegisterCommand = new Command(async () => await OnRegisterClicked());
+
+		// Precargar el usuario recordado (si lo hay)
+		var remembered = Preferences.Get(RememberedUsernameKey, null);
+		if (!string.IsNullOrEmpty(remembered))
+		{
+			Username = remembered;
+			RememberUsername = true;
+		}
+	}
+
+	// Guarda o borra el usuario recordado según el estado del checkbox
+	private void PersistRememberedUsername(string loggedUsername)
+	{
+		if (RememberUsername && !string.IsNullOrWhiteSpace(loggedUsername))
+			Preferences.Set(RememberedUsernameKey, loggedUsername.Trim());
+		else
+			Preferences.Remove(RememberedUsernameKey);
 	}
 
 	private async Task Login()
@@ -85,6 +112,8 @@ public class LoginViewModel : BaseViewModel
 				await TokenStorage.SaveToken("demo-offline-token");
 				await TokenStorage.SaveUserId(0);
 				await TokenStorage.SaveUsername("demo");
+				await TokenStorage.SaveRole("user");
+				PersistRememberedUsername("demo");
 
 				await Application.Current.MainPage.Navigation.PushAsync(new HomePage());
 
@@ -129,12 +158,19 @@ public class LoginViewModel : BaseViewModel
 					Debug.WriteLine($"[LoginViewModel] UserId guardado: {result.UserId}");
 				}
 
-				// Guardar Username para calcular rol localmente
+				// Guardar Username
 				if (!string.IsNullOrEmpty(Username))
 				{
 					await TokenStorage.SaveUsername(Username);
 					Debug.WriteLine($"[LoginViewModel] Username guardado: {Username}");
 				}
+
+				// Guardar el rol que emite el backend (viene de la BD)
+				await TokenStorage.SaveRole(result.Role);
+				Debug.WriteLine($"[LoginViewModel] Rol guardado: {result.Role}");
+
+				// Recordar usuario (si está marcado)
+				PersistRememberedUsername(Username);
 
 			var storedToken = await TokenStorage.GetToken();
 			Debug.WriteLine($"[LoginViewModel] Token guardado correctamente");

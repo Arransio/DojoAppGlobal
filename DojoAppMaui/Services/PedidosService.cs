@@ -17,7 +17,8 @@ namespace DojoAppMaui.Services
 
         public PedidosService()
         {
-            _httpClient = new HttpClient();
+            // AuthHttpHandler añade el token y gestiona los 401 de sesión caducada
+            _httpClient = new HttpClient(new AuthHttpHandler());
         }
 
         public async Task<CreatePedidoResponse> CreatePedidoAsync(List<CartItem> items, int userId, int campaignId, string customerName)
@@ -63,13 +64,6 @@ namespace DojoAppMaui.Services
 
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                // Obtener token y agregar al header
-                var token = await TokenStorage.GetToken();
-                if (!string.IsNullOrEmpty(token))
-                {
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
 
                 Debug.WriteLine($"[PedidosService] POST a: {_apiUrl}");
                 Debug.WriteLine($"[PedidosService] Request: UserId={userId}, CampaignId={campaignId}, Items={pedidoItems.Count}, Total={totalPrice}€");

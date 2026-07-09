@@ -17,35 +17,20 @@
 
 		public ApiService()
 		{
-			_httpClient = new HttpClient
+			// AuthHttpHandler añade el token y gestiona los 401 de sesión caducada
+			_httpClient = new HttpClient(new AuthHttpHandler())
 			{
 				BaseAddress = new Uri(baseUrl)
 			};
 		}
 
-		private async Task EnsureAuthorization()
-		{
-			var token = await TokenStorage.GetToken();
-			if (!string.IsNullOrEmpty(token))
-			{
-				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-				Debug.WriteLine($"[ApiService] Token añadido a headers: {token.Substring(0, Math.Min(20, token.Length))}...");
-			}
-			else
-			{
-				Debug.WriteLine("[ApiService] No hay token disponible");
-			}
-		}
-
 		public async Task<Campaign> GetActiveCampaignAsync()
 		{
-			await EnsureAuthorization();
 			return await _httpClient.GetFromJsonAsync<Campaign>("api/campaigns/active");
 		}
 
 			public async Task<T> GetAsync<T>(string endpoint)
 			{
-				await EnsureAuthorization();
 				return await _httpClient.GetFromJsonAsync<T>(endpoint);
 			}
 			}

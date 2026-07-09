@@ -10,6 +10,10 @@ public partial class PedidosPage : ContentPage
 {
 	private readonly ProductService _productService = new ProductService();
 
+	// Cliente único para toda la página (crear uno por llamada agota sockets).
+	// AuthHttpHandler añade el token y gestiona los 401 de sesión caducada.
+	private readonly HttpClient _httpClient = new HttpClient(new AuthHttpHandler());
+
 	private List<Colores> colors = new();
 
 	private List<ProductVariant> allVariants = new();
@@ -118,13 +122,7 @@ public partial class PedidosPage : ContentPage
 	{
 		try
 		{
-			// Endpoint protegido en el backend (crea datos): requiere token
-			var client = new HttpClient();
-			var token = await TokenStorage.GetToken();
-			if (!string.IsNullOrEmpty(token))
-				client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-			var response = await client.GetAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}");
+			var response = await _httpClient.GetAsync($"{baseUrl}ProductVariants/ensure/{productId}/{size}");
 			if (!response.IsSuccessStatusCode)
 				return null;
 
@@ -271,9 +269,7 @@ public partial class PedidosPage : ContentPage
 
 	private async Task LoadColors()
 	{
-		var client = new HttpClient();
-
-		var httpResponse = await client.GetAsync($"{baseUrl}Colors");
+		var httpResponse = await _httpClient.GetAsync($"{baseUrl}Colors");
 
 		if (!httpResponse.IsSuccessStatusCode)
 		{
@@ -316,9 +312,7 @@ public partial class PedidosPage : ContentPage
 
 	private async Task LoadVariants()
 	{
-		var client = new HttpClient();
-
-		var response = await client.GetStringAsync($"{baseUrl}ProductVariants");
+		var response = await _httpClient.GetStringAsync($"{baseUrl}ProductVariants");
 
 		allVariants = JsonSerializer.Deserialize<List<ProductVariant>>(response, new JsonSerializerOptions
 		{

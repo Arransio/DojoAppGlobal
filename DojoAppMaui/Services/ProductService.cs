@@ -1,14 +1,15 @@
 ﻿using System.Text.Json;
 using DojoAppMaui.Models;
+using DojoAppMaui.Services;
 
 public class ProductService
 {
     private readonly HttpClient _httpClient;
- 
+
     public ProductService()
     {
-        _httpClient = new HttpClient();
-      
+        // AuthHttpHandler añade el token y gestiona los 401 de sesión caducada
+        _httpClient = new HttpClient(new AuthHttpHandler());
     }
 
     public async Task<List<Product>> GetProducts()

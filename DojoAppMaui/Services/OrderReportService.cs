@@ -17,15 +17,11 @@ namespace DojoAppMaui.Services
         {
         }
 
-        // Estos endpoints ahora requieren autenticación en el backend:
-        // el token se añade siempre al header.
-        private static async Task<HttpClient> CreateAuthorizedClientAsync()
+        // Estos endpoints requieren autenticación: AuthHttpHandler añade el token
+        // y gestiona los 401 de sesión caducada.
+        private static HttpClient CreateClient()
         {
-            var client = new HttpClient();
-            var token = await TokenStorage.GetToken();
-            if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return client;
+            return new HttpClient(new AuthHttpHandler());
         }
 
         // Pedidos de un usuario concreto (para los avisos de pago en su pantalla de inicio).
@@ -33,7 +29,7 @@ namespace DojoAppMaui.Services
         {
             try
             {
-                using var httpClient = await CreateAuthorizedClientAsync();
+                using var httpClient = CreateClient();
                 var url = $"{_baseUrl}/user/{userId}";
                 Debug.WriteLine($"[OrderReportService] GET {url}");
 
@@ -61,7 +57,7 @@ namespace DojoAppMaui.Services
         {
             try
             {
-                using var httpClient = await CreateAuthorizedClientAsync();
+                using var httpClient = CreateClient();
                 var url = $"{_baseUrl}/payments";
                 var json = JsonSerializer.Serialize(updates);
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
@@ -87,7 +83,7 @@ namespace DojoAppMaui.Services
             {
                 Debug.WriteLine("[OrderReportService] Obteniendo todos los pedidos");
 
-                using (var httpClient = await CreateAuthorizedClientAsync())
+                using (var httpClient = CreateClient())
                 {
                     Debug.WriteLine($"[OrderReportService] Enviando GET a: {_apiUrl}");
 
