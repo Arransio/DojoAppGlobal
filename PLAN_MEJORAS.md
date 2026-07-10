@@ -16,7 +16,7 @@
 | Fase 2 — Sesión en la app | ✅ Completada | 09/07/2026 | `19bb1da` |
 | Fase 2.5 — Lógica de autorización backend | ✅ Completada | 09/07/2026 | `b805863` |
 | Fase 3 — App: red y configuración (estructural) | ✅ Completada | 09/07/2026 | `7133e71` |
-| Fase 4 — App: funcionalidad y UX | ⬜ Pendiente | — | — |
+| Fase 4 — App: funcionalidad y UX | ✅ Completada | 10/07/2026 | `6129a10` |
 | Fase 5 — Operación | ⬜ Pendiente | — | — |
 | Fase 6 — Despliegue a producción | ⬜ Pendiente (requiere hosting) | — | — |
 
