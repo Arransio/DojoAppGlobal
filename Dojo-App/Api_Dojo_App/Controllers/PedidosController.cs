@@ -28,8 +28,8 @@ public class PedidosController : ControllerBase
         if (!int.TryParse(idClaim, out var userId))
             return Unauthorized(new { error = "Token sin identificador de usuario" });
 
-        _logger.LogInformation("Creando pedido: UserId={UserId}, CampaignId={CampaignId}, Items={Items}",
-            userId, request.CampaignId, request.Items?.Count ?? 0);
+        _logger.LogInformation("Creando pedido: UserId={UserId}, Items={Items}",
+            userId, request.Items?.Count ?? 0);
 
         // Validar usuario
         var user = _context.Users.FirstOrDefault(u => u.Id == userId);
@@ -46,16 +46,15 @@ public class PedidosController : ControllerBase
         if (request.CustomerName.Trim().Length > 100)
             return BadRequest(new { error = "El nombre es demasiado largo (máximo 100 caracteres)" });
 
-        // Validar campaña
-        var campaign = _context.Campaigns.FirstOrDefault(c => c.Id == request.CampaignId);
+        // La campaña la decide el servidor, no el cliente: todo pedido nuevo va a la
+        // campaña activa (mismo principio que el UserId: no confiar en el cliente
+        // para datos que el servidor puede derivar).
+        var campaign = _context.Campaigns.FirstOrDefault(c => c.IsActive);
         if (campaign == null)
         {
-            _logger.LogWarning("Campaña {CampaignId} no encontrada al crear pedido", request.CampaignId);
-            return NotFound(new { error = "Campaña no válida" });
+            _logger.LogWarning("Pedido rechazado: no hay campaña activa");
+            return BadRequest(new { error = "No hay ninguna campaña activa en este momento" });
         }
-
-        if (!campaign.IsActive)
-            return BadRequest(new { error = "La campaña no está activa" });
 
         // Validar items
         if (request.Items == null || !request.Items.Any())
@@ -109,7 +108,7 @@ public class PedidosController : ControllerBase
         {
             UserId = userId,
             CustomerName = request.CustomerName.Trim(),
-            CampaignId = request.CampaignId,
+            CampaignId = campaign.Id,
             CreatedAt = DateTime.UtcNow,
             Status = "Pendiente",
             Items = pedidoItems,

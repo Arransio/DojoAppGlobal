@@ -39,6 +39,10 @@ public static class MauiProgram
         builder.Services.AddHttpClient<OrderReportService>(ConfigureApiClient)
             .AddHttpMessageHandler<AuthHttpHandler>();
 
+        // --- ViewModels ---
+        // Transient: cada pantalla recibe su propia instancia con estado limpio.
+        builder.Services.AddTransient<ViewModels.HistorialPedidosViewModel>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif

@@ -1,11 +1,11 @@
 namespace Api_Dojo_App.Models
 {
     // El DTO solo declara lo que el servidor acepta del cliente.
-    // Ni UserId (sale del token) ni precios (se calculan en servidor) forman parte
-    // del contrato: si el cliente los envía, se ignoran al deserializar.
+    // Ni UserId (sale del token), ni precios (se calculan en servidor), ni CampaignId
+    // (el pedido va siempre a la campaña activa) forman parte del contrato:
+    // si el cliente los envía, se ignoran al deserializar.
     public class CreatePedidoRequest
     {
-        public int CampaignId { get; set; }
         public List<PedidoItemRequest> Items { get; set; } = new();
 
         // Nombre completo del perfil del usuario que realiza el pedido.

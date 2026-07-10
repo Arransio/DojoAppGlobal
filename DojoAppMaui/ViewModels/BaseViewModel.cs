@@ -26,7 +26,12 @@ public class BaseViewModel : INotifyPropertyChanged
 			return false;
 
 		backingStore = value;
-		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		OnPropertyChanged(propertyName);
 		return true;
 	}
+
+	// Para notificar propiedades calculadas (sin campo propio) cuando cambia
+	// alguna de las que dependen.
+	protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+		=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

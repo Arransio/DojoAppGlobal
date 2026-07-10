@@ -31,6 +31,8 @@
     <Color x:Key="AccentSalmon">#ffb3ac</Color>
     <Color x:Key="OnAccent">#fff2f0</Color>
     <Color x:Key="ErrorRed">#ffb4ab</Color>
+    <Color x:Key="SuccessGreen">#9fd8a4</Color>  <!-- estados "pagado"/OK, tono pastel acorde al ErrorRed -->
+
 
     <!-- Contornos / divisores -->
     <Color x:Key="OutlineWarm">#ab8985</Color>

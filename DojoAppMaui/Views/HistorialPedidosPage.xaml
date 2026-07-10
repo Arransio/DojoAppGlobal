@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DojoAppMaui.Controls"
+             xmlns:vm="clr-namespace:DojoAppMaui.ViewModels"
+             x:Class="DojoAppMaui.Views.HistorialPedidosPage"
+             x:DataType="vm:HistorialPedidosViewModel"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="{StaticResource ObsidianBg}">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Cabecera con botón de volver (esta página se apila sobre Usuario) -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="8" Padding="12,16,20,4">
+            <Button Text="←"
+                    Clicked="OnVolverClicked"
+                    BackgroundColor="{StaticResource SurfaceHigh}"
+                    TextColor="{StaticResource TextPrimary}"
+                    CornerRadius="10" Padding="0"
+                    WidthRequest="44" HeightRequest="44"
+                    FontSize="20"
+                    VerticalOptions="Center"/>
+            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                <Label Text="TUS PEDIDOS" Style="{StaticResource ChipLabel}"/>
+                <Label Text="Historial" Style="{StaticResource DisplayTitle}"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Contenido: cuatro estados excluyentes gobernados por el ViewModel -->
+        <Grid Grid.Row="1">
+
+            <!-- 1. Cargando -->
+            <VerticalStackLayout IsVisible="{Binding IsBusy}" Spacing="12"
+                                 VerticalOptions="Center" HorizontalOptions="Center">
+                <ActivityIndicator IsRunning="{Binding IsBusy}"/>
+                <Label Text="Cargando tus pedidos…"
+                       Style="{StaticResource MutedLabel}" FontSize="13"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- 2. Error de red/servidor: mensaje + reintentar -->
+            <VerticalStackLayout IsVisible="{Binding HayError}" Spacing="10" Padding="32"
+                                 VerticalOptions="Center" HorizontalOptions="Center">
+                <Label Text="⚠️" FontSize="40" HorizontalOptions="Center"/>
+                <Label Text="No se pudo cargar el historial"
+                       FontFamily="Sora" FontAttributes="Bold" FontSize="17"
+                       TextColor="{StaticResource TextPrimary}"
+                       HorizontalTextAlignment="Center" HorizontalOptions="Center"/>
+                <Label Text="{Binding MensajeError}"
+                       Style="{StaticResource MutedLabel}" FontSize="13"
+                       HorizontalTextAlignment="Center" HorizontalOptions="Center"/>
+                <Button Text="Reintentar"
+                        Command="{Binding RecargarCommand}"
+                        Margin="0,10,0,0"
+                        HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- 3. Vacío legítimo: la carga fue bien pero no hay pedidos -->
+            <VerticalStackLayout IsVisible="{Binding SinPedidos}" Spacing="8" Padding="32"
+                                 VerticalOptions="Center" HorizontalOptions="Center">
+                <Label Text="📦" FontSize="40" HorizontalOptions="Center"/>
+                <Label Text="Aún no tienes pedidos"
+                       FontFamily="Sora" FontAttributes="Bold" FontSize="17"
+                       TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                <Label Text="Cuando hagas tu primer pedido aparecerá aquí."
+                       Style="{StaticResource MutedLabel}" FontSize="13"
+                       HorizontalTextAlignment="Center" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- 4. Lista de pedidos -->
+            <CollectionView ItemsSource="{Binding Pedidos}" IsVisible="{Binding HayPedidos}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PedidoHistorialItem">
+                        <Border Style="{StaticResource GlassCard}" Margin="16,6">
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="3">
+
+                                <Label Text="{Binding Titulo}"
+                                       FontFamily="Sora" FontAttributes="Bold" FontSize="16"
+                                       TextColor="{StaticResource TextPrimary}"/>
+
+                                <Label Grid.Column="1" Text="{Binding TotalTexto}"
+                                       FontSize="18" FontAttributes="Bold"
+                                       TextColor="{StaticResource AccentSalmon}"
+                                       HorizontalOptions="End"/>
+
+                                <Label Grid.Row="1" Text="{Binding FechaTexto}"
+                                       FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+
+                                <!-- Estado: verde si está pagado, salmón si sigue pendiente -->
+                                <Label Grid.Row="2" Text="{Binding EstadoTexto}"
+                                       FontSize="13" FontAttributes="Bold"
+                                       TextColor="{StaticResource SuccessGreen}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding EstaPagado}" Value="False">
+                                            <Setter Property="TextColor" Value="{StaticResource AccentSalmon}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </Grid>
+
+        <!-- Banner de navegación global -->
+        <controls:BottomNavBar Grid.Row="2" ActiveTab="Usuario"/>
+
+    </Grid>
+
+</ContentPage>

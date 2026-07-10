@@ -22,7 +22,57 @@ public partial class PedidosPage : ContentPage
 		InitializeComponent();
 	}
 
-	private async void LoadProducts()
+	// Orquesta la carga completa del catálogo con sus estados visuales:
+	// cargando → (datos | vacío | error con reintentar).
+	private async Task LoadCatalogAsync()
+	{
+		LoadingView.IsVisible = true;
+		LoadingIndicator.IsRunning = true;
+		ErrorView.IsVisible = false;
+		EmptyView.IsVisible = false;
+		ProductsCollectionView.IsVisible = false;
+
+		try
+		{
+			await LoadColors();
+			await LoadVariants();
+			await LoadProducts();
+
+			// Catálogo vacío legítimo ≠ error: cada uno tiene su pantalla.
+			var hayProductos = currentProducts.Count > 0;
+			EmptyView.IsVisible = !hayProductos;
+			ProductsCollectionView.IsVisible = hayProductos;
+		}
+		// El tipo de excepción dice qué pasó; nunca se inspecciona el texto del mensaje.
+		catch (TaskCanceledException)
+		{
+			ErrorMessageLabel.Text = "El servidor tarda demasiado en responder. Inténtalo de nuevo.";
+			ErrorView.IsVisible = true;
+		}
+		catch (HttpRequestException)
+		{
+			ErrorMessageLabel.Text = "No se pudo conectar con el servidor. Comprueba tu conexión.";
+			ErrorView.IsVisible = true;
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"[PedidosPage] Error inesperado cargando el catálogo: {ex}");
+			ErrorMessageLabel.Text = "No se pudo cargar el catálogo.";
+			ErrorView.IsVisible = true;
+		}
+		finally
+		{
+			LoadingView.IsVisible = false;
+			LoadingIndicator.IsRunning = false;
+		}
+	}
+
+	private async void OnReintentarClicked(object sender, EventArgs e)
+	{
+		await LoadCatalogAsync();
+	}
+
+	private async Task LoadProducts()
 	{
 		var products = await _productService.GetProducts();
 
@@ -181,19 +231,11 @@ public partial class PedidosPage : ContentPage
 			return;
 		}
 
-		// Create a temporary product with the selected variant info for cart
-		var cartProduct = new Product
-		{
-			Id = product.Id,
-			Name = product.Name,
-			Price = product.Price,
-			SelectedSize = product.SelectedSizeStep,
-			SelectedVariant = product.SelectedVariant
-		};
-
 		App.CarritoService.AddItem(new CartItem
 		{
-			Product = cartProduct,
+			ProductId = product.Id,
+			ProductName = product.Name,
+			UnitPrice = product.Price,
 			Size = product.SelectedSizeStep,
 			ProductVariantId = product.SelectedVariant.Id,
 			PrimaryColorId = product.SelectedPrimaryColorId,
@@ -293,9 +335,8 @@ public partial class PedidosPage : ContentPage
 	{
 		base.OnAppearing();
 
-		await LoadColors();
-		await LoadVariants();
-		LoadProducts();
+		// LoadCatalogAsync captura sus propias excepciones: este async void no puede lanzar.
+		await LoadCatalogAsync();
 
 		// Cargar datos del usuario logueado en la cabecera
 		await LoadUserInfo();

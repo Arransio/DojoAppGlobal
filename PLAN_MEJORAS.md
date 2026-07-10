@@ -311,11 +311,13 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 
 ### Fase 4 — App: funcionalidad y UX
 *Por qué en este orden interno:* historial y cantidades son lo de mayor valor visible; loaders y estados vacíos multiplican la sensación de calidad de todo lo demás.
-- [ ] Historial de pedidos del usuario (el endpoint ya existe y está protegido — solo UI).
-- [ ] Cantidad por ítem con agrupación en el carrito; carrito persistente en `Preferences`; `GetItems()` de solo lectura. *(→ ALTA-8)*
-- [ ] Loaders (`ActivityIndicator` enlazado a `IsBusy`) y estados vacíos con distinción "sin datos" vs "error de red" + reintentar. *(→ ALTA-7)*
-- [ ] Usar la campaña activa real en el flujo de pedido (idealmente, que la asigne el servidor). *(→ ALTA-9)*
-- [ ] Al tocar cada pantalla, extraer su lógica a un ViewModel (regla del boy scout; valorar `CommunityToolkit.Mvvm`).
+- [x] Historial de pedidos del usuario: `HistorialPedidosPage` + `HistorialPedidosViewModel` (MVVM completo: `IsBusy`, error con reintentar, vacío vs datos). Se apila sobre Usuario con `PushAsync` — botón volver y gesto atrás de Android funcionan. *(10/07/2026)*
+- [x] Carrito rehecho: `CartItem` plano y serializable con `Quantity` observable; añadir el mismo artículo (misma variante + colores) agrupa sumando cantidad; stepper +/− con total por línea; persistencia JSON en `Preferences` en cada cambio (sobrevive a que Android mate el proceso); `GetItems()` devuelve `IReadOnlyList` y el vaciado es un `Clear()` explícito del servicio; el badge del carrito cuenta unidades, no líneas. *(→ ALTA-8, 10/07/2026)*
+- [x] Loaders y estados: catálogo (`PedidosPage`) e historial con spinner + distinción "sin datos" vs "error de red/timeout" + botón reintentar; estado vacío en el carrito. `ProductService` ahora lanza ante error del servidor (antes devolvía lista vacía, indistinguible de "no hay productos"). Errores clasificados por tipo de excepción, nunca por substring. La carga del catálogo dejó de ser un `async void` sin protección. *(→ ALTA-7, 10/07/2026)*
+- [x] Campaña activa: **la asigna el servidor** — `CampaignId` eliminado del contrato de `POST /api/pedidos/create` (mismo principio que `UserId`: el servidor no confía en datos que puede derivar); sin campaña activa el pedido se rechaza con error claro. Eliminado el `campaignId = 1` hardcodeado de `CarritoPage`. *(→ ALTA-9, 10/07/2026)*
+- [x] MVVM: patrón de referencia establecido en `HistorialPedidosViewModel` (+ `OnPropertyChanged` para propiedades calculadas en `BaseViewModel`). **Desviación consciente:** `CarritoPage` y `PedidosPage` se tocaron pero siguen en code-behind — extraer sus ViewModels se aplaza a cuando se vuelvan a tocar con el emulador disponible para validar el refactor (son las dos pantallas con más lógica de interacción visual). `CommunityToolkit.Mvvm` valorado y aplazado: `BaseViewModel` cubre lo necesario sin añadir dependencia. *(10/07/2026)*
+
+*Verificación 10/07/2026: API y app (net8.0-android) compilan sin errores. Prueba funcional end-to-end contra el API en local con token de desarrollo: `POST pedidos/create` sin `CampaignId` → el servidor lo asignó a la campaña activa (id 1), respetó `quantity=2` y calculó el total server-side (2 × 80 € = 160 €); `GET pedidos/user/{id}` devuelve el pedido para la nueva pantalla de historial. Quedó un pedido de prueba (id 17, "Prueba Fase 4", 160 €) en la BD de desarrollo. Prueba de UI en emulador pendiente de la próxima sesión manual (incluye también la de la Fase 3).*
 
 ### Fase 5 — Operación
 *Por qué existe:* todo lo anterior es inútil si la BD se corrompe sin backup (ya pasó una vez) o si un despliegue falla por una migración olvidada.

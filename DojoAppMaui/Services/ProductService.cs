@@ -19,12 +19,13 @@ namespace DojoAppMaui.Services
 			_httpClient = httpClient;
 		}
 
+		// Los GET lanzan si el servidor falla (EnsureSuccessStatusCode) en lugar de
+		// devolver lista vacía: una lista vacía significa "no hay datos", y un fallo
+		// de red debe llegar a la UI como error para poder mostrar "reintentar".
 		public async Task<List<Product>> GetProducts()
 		{
 			var response = await _httpClient.GetAsync("api/products");
-
-			if (!response.IsSuccessStatusCode)
-				return new List<Product>();
+			response.EnsureSuccessStatusCode();
 
 			var json = await response.Content.ReadAsStringAsync();
 
@@ -34,9 +35,7 @@ namespace DojoAppMaui.Services
 		public async Task<List<Colores>> GetColorsAsync()
 		{
 			var response = await _httpClient.GetAsync("api/Colors");
-
-			if (!response.IsSuccessStatusCode)
-				return new List<Colores>();
+			response.EnsureSuccessStatusCode();
 
 			var json = await response.Content.ReadAsStringAsync();
 
@@ -46,9 +45,7 @@ namespace DojoAppMaui.Services
 		public async Task<List<ProductVariant>> GetVariantsAsync()
 		{
 			var response = await _httpClient.GetAsync("api/ProductVariants");
-
-			if (!response.IsSuccessStatusCode)
-				return new List<ProductVariant>();
+			response.EnsureSuccessStatusCode();
 
 			var json = await response.Content.ReadAsStringAsync();
 

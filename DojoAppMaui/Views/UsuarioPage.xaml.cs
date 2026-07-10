@@ -205,7 +205,9 @@ public partial class UsuarioPage : ContentPage
 
     private async void OnHistorialClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Historial de pedidos", "Esta sección estará disponible próximamente.", "OK");
+        // Se apila sobre esta página (no reemplaza la raíz): el botón "volver"
+        // y el gesto atrás de Android regresan al perfil.
+        await Navigation.PushAsync(new HistorialPedidosPage());
     }
 
     private async void OnCerrarSesionClicked(object sender, EventArgs e)

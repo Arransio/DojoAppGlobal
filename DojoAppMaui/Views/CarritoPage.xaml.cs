@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Linq;
 using DojoAppMaui.Models;
 using DojoAppMaui.Services;
 
@@ -7,7 +6,6 @@ namespace DojoAppMaui.Views;
 
 public partial class CarritoPage : ContentPage
 {
-    private List<CartItem> cart;
     private readonly PedidosService _pedidosService;
 
     public CarritoPage()
@@ -24,22 +22,46 @@ public partial class CarritoPage : ContentPage
         CartCollection.ItemsSource = null;
         CartCollection.ItemsSource = items.ToList();
 
-        double total = App.CarritoService.GetTotal();
-        TotalLabel.Text = $"Total: {total:F2} €";
+        RefreshTotales();
 
-        // Habilitar/deshabilitar botón de confirmar
+        // El estado vacío sustituye a la lista cuando no hay artículos.
+        EmptyCartView.IsVisible = items.Count == 0;
+        CartCollection.IsVisible = items.Count > 0;
+    }
+
+    // Actualiza total y botón sin recargar la lista (las líneas se refrescan solas
+    // por binding cuando cambia la cantidad).
+    private void RefreshTotales()
+    {
+        TotalLabel.Text = $"Total: {App.CarritoService.GetTotal():F2} €";
+
         if (ConfirmOrderButton != null)
-            ConfirmOrderButton.IsEnabled = items.Count > 0;
+            ConfirmOrderButton.IsEnabled = App.CarritoService.GetCount() > 0;
 
         NavBar?.RefreshBadge();
     }
 
+    private void OnIncrementClicked(object sender, EventArgs e)
+    {
+        if ((sender as Button)?.BindingContext is CartItem item)
+        {
+            App.CarritoService.ChangeQuantity(item, +1);
+            RefreshTotales();
+        }
+    }
+
+    private void OnDecrementClicked(object sender, EventArgs e)
+    {
+        if ((sender as Button)?.BindingContext is CartItem item)
+        {
+            App.CarritoService.ChangeQuantity(item, -1);
+            RefreshTotales();
+        }
+    }
+
     private void OnRemoveClicked(object sender, EventArgs e)
     {
-        var button = sender as Button;
-        var item = button?.BindingContext as CartItem;
-
-        if (item != null)
+        if ((sender as Button)?.BindingContext is CartItem item)
         {
             App.CarritoService.RemoveItem(item);
             LoadCarrito();
@@ -50,8 +72,6 @@ public partial class CarritoPage : ContentPage
     {
         try
         {
-            Debug.WriteLine("[CarritoPage] Iniciando confirmación de pedido");
-
             var items = App.CarritoService.GetItems();
 
             if (items.Count == 0)
@@ -67,15 +87,15 @@ public partial class CarritoPage : ContentPage
                 item.SecondaryColorId <= 0).ToList();
             if (itemsIncompletos.Any())
             {
-                var productosAffectados = string.Join("\n• ", itemsIncompletos.Select(i => i.Product.Name));
+                var productosAffectados = string.Join("\n• ", itemsIncompletos.Select(i => i.ProductName));
                 await DisplayAlert("Selección incompleta",
                     $"Debes seleccionar talla y colores para:\n• {productosAffectados}",
                     "OK");
                 return;
             }
 
-            // La identidad del pedido la pone el servidor desde el token de sesión;
-            // aquí ya no se envía ningún UserId.
+            // La identidad y la campaña las pone el servidor (token de sesión y
+            // campaña activa); aquí no se envía ninguna de las dos.
 
             // El pedido se asocia al nombre completo del perfil; es obligatorio tenerlo.
             var customerName = PerfilService.GetNombre()?.Trim() ?? string.Empty;
@@ -86,23 +106,19 @@ public partial class CarritoPage : ContentPage
                 return;
             }
 
-            // TODO: Obtener la campaña activa - por ahora usamos 1 como default
-            int campaignId = 1;
-
             ConfirmOrderButton.IsEnabled = false;
             ConfirmOrderButton.Text = "Procesando...";
 
-            var response = await _pedidosService.CreatePedidoAsync(items, campaignId, customerName);
+            var response = await _pedidosService.CreatePedidoAsync(items, customerName);
 
-            // Limpiar carrito
-            App.CarritoService.GetItems().Clear();
+            App.CarritoService.Clear();
             LoadCarrito();
 
             ConfirmOrderButton.Text = "Confirmar Pedido";
             ConfirmOrderButton.IsEnabled = false;
 
-            await DisplayAlert("✅ Éxito", 
-                $"Pedido creado exitosamente\n\nID: {response.PedidoId}\nTotal: {response.TotalPrice:F2} €", 
+            await DisplayAlert("✅ Éxito",
+                $"Pedido creado exitosamente\n\nID: {response.PedidoId}\nTotal: {response.TotalPrice:F2} €",
                 "OK");
 
             // Volver al catálogo de pedidos tras confirmar el pedido

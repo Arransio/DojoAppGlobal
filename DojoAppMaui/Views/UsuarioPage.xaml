@@ -201,7 +201,7 @@
                 <Button x:Name="GuardarButton" Text="Guardar" IsVisible="False"
                         Clicked="OnGuardarClicked"/>
 
-                <!-- Historial de pedidos (placeholder) -->
+                <!-- Historial de pedidos del usuario -->
                 <Button Text="Historial de pedidos" Style="{StaticResource GhostButton}"
                         Clicked="OnHistorialClicked"/>
 

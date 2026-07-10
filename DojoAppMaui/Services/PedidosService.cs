@@ -21,8 +21,9 @@ namespace DojoAppMaui.Services
         }
 
         // La identidad NO se envía: el servidor la toma del token (evita suplantación).
-        // Los precios tampoco: se calculan en el servidor desde la BD.
-        public async Task<CreatePedidoResponse> CreatePedidoAsync(List<CartItem> items, int campaignId, string customerName)
+        // Los precios tampoco (se calculan en servidor desde la BD), ni la campaña
+        // (el servidor asigna siempre la campaña activa).
+        public async Task<CreatePedidoResponse> CreatePedidoAsync(IReadOnlyList<CartItem> items, string customerName)
         {
             Debug.WriteLine($"[PedidosService] Creando pedido con {items.Count} items");
 
@@ -33,7 +34,7 @@ namespace DojoAppMaui.Services
                 item.SecondaryColorId <= 0).ToList();
             if (itemsIncompletos.Any())
             {
-                var productosAffectados = string.Join(", ", itemsIncompletos.Select(i => i.Product.Name));
+                var productosAffectados = string.Join(", ", itemsIncompletos.Select(i => i.ProductName));
                 throw new Exception($"Los siguientes productos no tienen talla o color seleccionados: {productosAffectados}");
             }
 
@@ -42,20 +43,19 @@ namespace DojoAppMaui.Services
                 ProductVariantId = item.ProductVariantId,
                 PrimaryColorId = item.PrimaryColorId,
                 SecondaryColorId = item.SecondaryColorId,
-                Quantity = 1
+                Quantity = item.Quantity
             }).ToList();
 
             var request = new CreatePedidoRequestMAUI
             {
                 CustomerName = customerName,
-                CampaignId = campaignId,
                 Items = pedidoItems
             };
 
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Debug.WriteLine($"[PedidosService] POST api/pedidos/create: CampaignId={campaignId}, Items={pedidoItems.Count}");
+            Debug.WriteLine($"[PedidosService] POST api/pedidos/create: Items={pedidoItems.Count}");
 
             var response = await _httpClient.PostAsync("api/pedidos/create", content);
 
@@ -73,11 +73,11 @@ namespace DojoAppMaui.Services
     }
 
     // DTOs locales en MAUI. Reflejan el contrato del servidor: sin UserId
-    // (sale del token) y sin precios (se calculan server-side).
+    // (sale del token), sin precios (se calculan server-side) y sin CampaignId
+    // (el servidor asigna la campaña activa).
     public class CreatePedidoRequestMAUI
     {
         public string CustomerName { get; set; } = string.Empty;
-        public int CampaignId { get; set; }
         public List<PedidoItemRequest> Items { get; set; } = new();
     }
 

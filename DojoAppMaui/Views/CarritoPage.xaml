@@ -18,14 +18,14 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Style="{StaticResource GlassCard}" Margin="16,6">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
 
                             <VerticalStackLayout Spacing="4">
-                                <Label Text="{Binding Product.Name}" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource TextPrimary}"/>
+                                <Label Text="{Binding ProductName}" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource TextPrimary}"/>
                                 <Label Text="{Binding Size, StringFormat='Talla: {0}'}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
                                 <Label Text="{Binding PrimaryColorName, StringFormat='Color principal: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                                 <Label Text="{Binding SecondaryColorName, StringFormat='Color secundario: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-                                <Label Text="{Binding Product.Price, StringFormat='{}{0:F2} €'}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentSalmon}" Margin="0,4,0,0"/>
+                                <Label Text="{Binding UnitPrice, StringFormat='{}{0:F2} € / ud.'}" FontSize="12" TextColor="{StaticResource TextSecondary}" Margin="0,4,0,0"/>
                             </VerticalStackLayout>
 
                             <Button Text="🗑"
@@ -38,11 +38,53 @@
                                     WidthRequest="48"
                                     HeightRequest="48"
                                     VerticalOptions="Start"/>
+
+                            <!-- Cantidad (stepper) + total de la línea -->
+                            <HorizontalStackLayout Grid.Row="1" Spacing="10" VerticalOptions="Center">
+                                <Button Text="−"
+                                        Clicked="OnDecrementClicked"
+                                        BackgroundColor="{StaticResource SurfaceHigh}"
+                                        TextColor="{StaticResource TextPrimary}"
+                                        CornerRadius="10" Padding="0"
+                                        WidthRequest="40" HeightRequest="40"
+                                        FontSize="18" FontAttributes="Bold"/>
+                                <Label Text="{Binding Quantity}"
+                                       FontFamily="Sora" FontAttributes="Bold" FontSize="16"
+                                       TextColor="{StaticResource TextPrimary}"
+                                       WidthRequest="28" HorizontalTextAlignment="Center"
+                                       VerticalOptions="Center"/>
+                                <Button Text="+"
+                                        Clicked="OnIncrementClicked"
+                                        BackgroundColor="{StaticResource SurfaceHigh}"
+                                        TextColor="{StaticResource TextPrimary}"
+                                        CornerRadius="10" Padding="0"
+                                        WidthRequest="40" HeightRequest="40"
+                                        FontSize="18" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+
+                            <Label Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding TotalPrice, StringFormat='{}{0:F2} €'}"
+                                   FontSize="18" FontAttributes="Bold"
+                                   TextColor="{StaticResource AccentSalmon}"
+                                   VerticalOptions="Center" HorizontalOptions="End"/>
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <!-- Estado vacío: sin artículos no hay lista, hay una invitación al catálogo -->
+        <VerticalStackLayout x:Name="EmptyCartView" Grid.Row="1" IsVisible="False"
+                             Spacing="8" Padding="32"
+                             VerticalOptions="Center" HorizontalOptions="Center">
+            <Label Text="🛒" FontSize="42" HorizontalOptions="Center"/>
+            <Label Text="Tu carrito está vacío"
+                   FontFamily="Sora" FontAttributes="Bold" FontSize="17"
+                   TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+            <Label Text="Añade productos desde el catálogo de pedidos."
+                   Style="{StaticResource MutedLabel}" FontSize="13"
+                   HorizontalTextAlignment="Center" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
 
         <!-- Resumen + confirmar -->
         <Border Grid.Row="2" BackgroundColor="{StaticResource SurfaceLowest}" Stroke="{StaticResource Hairline}" StrokeThickness="1" StrokeShape="RoundRectangle 16,16,0,0" Padding="20,16">
