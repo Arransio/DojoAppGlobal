@@ -1,7 +1,7 @@
 # Plan de mejoras DojoApp (MAUI + API)
 
 > Auditoría completa realizada el 09/07/2026. Complementa a `EstudioMejoras.xdoc` (06/07/2026).
-> Estado: Fase 1 completada (commit `dec6799`) · Fase 2 implementada sin commitear · Fase 2.5 NUEVA propuesta.
+> Estado: ver la tabla **Registro de progreso** (fuente única del estado; se actualiza al cerrar cada etapa). Última etapa completada: Fase 4 (10/07/2026).
 >
 > Este documento sirve como **plan de acción** y como **documento de formación**: cada punto incluye una explicación de por qué el problema existe, qué riesgo real supone y cuál es el concepto técnico detrás.
 
@@ -28,7 +28,7 @@
 
 **Fase 1 (backend, COMPLETADA — commit `dec6799`)**: `[Authorize]` en todos los controllers, roles en BD, secretos en user-secrets con clave JWT rotada, middleware global de errores, precio recalculado server-side, rate limiting en auth, HTTPS solo en prod. Verificada en auditoría: bien cerrada. El catálogo (GET products/colors/variants/campaigns) queda público a propósito (modo demo offline).
 
-**Fase 2 (app, HECHA EN WORKING TREE — pendiente de commit)**:
+**Fase 2 (app, COMPLETADA — commit `19bb1da`)**:
 - `AuthHttpHandler` (DelegatingHandler): añade Bearer y ante 401 cierra sesión y vuelve al login.
 - Logout con confirmación en `UsuarioPage` (`ClearSession` selectivo, conserva perfil local).
 - Auto-login en `LoginPage.OnAppearing` validando expiración del JWT (token demo excluido).
@@ -60,7 +60,7 @@
 - [x] Arreglar carrera del flag en `AuthHttpHandler` (`Interlocked.CompareExchange`). *(09/07/2026)*
 - [x] Expiración del JWT decidida: **3 días (4320 min)** — equilibrio auto-login/ventana de robo. *(09/07/2026)*
 - [x] Unificar los `HttpClient` de `PedidosPage` en un campo. *(09/07/2026)*
-- [ ] Commit de la Fase 2 (13 archivos + `AuthHttpHandler.cs` nuevo).
+- [x] Commit de la Fase 2 (13 archivos + `AuthHttpHandler.cs` nuevo). *(commit `19bb1da`, 09/07/2026)*
 
 ---
 
@@ -283,7 +283,7 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 - [x] Arreglar carrera del flag en `AuthHttpHandler` (`Interlocked.CompareExchange`). *(09/07/2026)*
 - [x] Expiración del JWT decidida: **3 días (4320 min)**. *(09/07/2026)*
 - [x] Unificar los `HttpClient` de `PedidosPage` en un campo. *(09/07/2026)*
-- [ ] Commit de la Fase 2.
+- [x] Commit de la Fase 2. *(commit `19bb1da`, 09/07/2026)*
 
 ### Fase 2.5 — NUEVA: lógica de autorización backend (~1 sesión)
 *Por qué esta fase existe y va primero:* la Fase 1 protegió las **puertas** (quién puede llamar a qué endpoint); estos hallazgos son de **lógica interior** (qué hace el endpoint una vez dentro). La suplantación de pedidos (ALTA-1) y la cascada destructiva (ALTA-2) son los dos únicos puntos donde un usuario real puede causar daño hoy — datos falsos e histórico destruido — y ambos se corrigen en medio día.
