@@ -9,6 +9,7 @@ using Api_Dojo_App.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -32,14 +33,16 @@ public class AuthController : ControllerBase
 
 	[EnableRateLimiting("auth")]
 	[HttpPost("login")]
-	public IActionResult Login([FromBody] LoginRequest request)
+	public async Task<IActionResult> Login([FromBody] LoginRequest request)
 	{
 		// Validar entrada
 		if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
 			return BadRequest("Usuario y contraseña son requeridos");
 
-		// Buscar usuario en la base de datos
-		var user = _context.Users.FirstOrDefault(u => u.Username == request.Username);
+		// Buscar usuario en la base de datos.
+		// Consulta asíncrona: libera el hilo del thread pool mientras espera al disco,
+		// para que el pool no se agote en un pico de logins (cierre de campaña).
+		var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
 		if (user == null)
 			return Unauthorized("Usuario o contraseña incorrectos");

@@ -20,7 +20,7 @@ public class PedidosController : ControllerBase
 
     [Authorize]
     [HttpPost("create")]
-    public IActionResult CreatePedidoFromCart([FromBody] CreatePedidoRequest request)
+    public async Task<IActionResult> CreatePedidoFromCart([FromBody] CreatePedidoRequest request)
     {
         // La identidad sale SIEMPRE del token firmado, nunca del body:
         // un cliente podría enviar cualquier UserId y crear pedidos a nombre de otro.
@@ -32,7 +32,7 @@ public class PedidosController : ControllerBase
             userId, request.Items?.Count ?? 0);
 
         // Validar usuario
-        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
         {
             _logger.LogWarning("Usuario {UserId} del token no existe en BD al crear pedido", userId);
@@ -49,7 +49,7 @@ public class PedidosController : ControllerBase
         // La campaña la decide el servidor, no el cliente: todo pedido nuevo va a la
         // campaña activa (mismo principio que el UserId: no confiar en el cliente
         // para datos que el servidor puede derivar).
-        var campaign = _context.Campaigns.FirstOrDefault(c => c.IsActive);
+        var campaign = await _context.Campaigns.FirstOrDefaultAsync(c => c.IsActive);
         if (campaign == null)
         {
             _logger.LogWarning("Pedido rechazado: no hay campaña activa");
@@ -66,9 +66,9 @@ public class PedidosController : ControllerBase
 
         foreach (var itemRequest in request.Items)
         {
-            var variant = _context.ProductVariants
+            var variant = await _context.ProductVariants
                 .Include(v => v.Product)
-                .FirstOrDefault(v => v.Id == itemRequest.ProductVariantId);
+                .FirstOrDefaultAsync(v => v.Id == itemRequest.ProductVariantId);
 
             if (variant == null)
             {
@@ -80,11 +80,11 @@ public class PedidosController : ControllerBase
                 return BadRequest(new { error = "La cantidad debe ser mayor que 0" });
 
             // Validar colores (se eligen en el pedido, ya no en la variante)
-            var primaryColor = _context.Colors.FirstOrDefault(c => c.Id == itemRequest.PrimaryColorId);
+            var primaryColor = await _context.Colors.FirstOrDefaultAsync(c => c.Id == itemRequest.PrimaryColorId);
             if (primaryColor == null)
                 return NotFound(new { error = $"Color primario con ID {itemRequest.PrimaryColorId} no existe" });
 
-            var secondaryColor = _context.Colors.FirstOrDefault(c => c.Id == itemRequest.SecondaryColorId);
+            var secondaryColor = await _context.Colors.FirstOrDefaultAsync(c => c.Id == itemRequest.SecondaryColorId);
             if (secondaryColor == null)
                 return NotFound(new { error = $"Color secundario con ID {itemRequest.SecondaryColorId} no existe" });
 
@@ -116,7 +116,7 @@ public class PedidosController : ControllerBase
         };
 
         _context.Pedidos.Add(newPedido);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         _logger.LogInformation("Pedido {PedidoId} creado para usuario {UserId} (total {Total})",
             newPedido.Id, newPedido.UserId, newPedido.TotalPrice);
