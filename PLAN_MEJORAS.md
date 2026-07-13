@@ -17,7 +17,7 @@
 | Fase 2.5 — Lógica de autorización backend | ✅ Completada | 09/07/2026 | `b805863` |
 | Fase 3 — App: red y configuración (estructural) | ✅ Completada | 09/07/2026 | `7133e71` |
 | Fase 4 — App: funcionalidad y UX | ✅ Completada | 10/07/2026 | `6129a10` |
-| Fase 5 — Operación | ✅ Completada (salvo punto 6, opcional) | 13/07/2026 | `be855c5`, `a1c3b8d`, (+commit puntos 4-5) |
+| Fase 5 — Operación | ✅ Completada (salvo punto 6, opcional) | 13/07/2026 | `be855c5`, `a1c3b8d`, `685b026` |
 | Fase 6 — Despliegue a producción | ⬜ Pendiente (requiere hosting) | — | — |
 
 > Regla acordada el 09/07/2026: este registro (y los checkboxes de cada fase) se actualizan en el momento en que se completa cada etapa, para tener constancia visual de lo ya implementado.
