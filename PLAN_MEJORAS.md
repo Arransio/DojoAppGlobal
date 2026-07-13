@@ -307,7 +307,7 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 - [x] DI real para los SERVICIOS (clientes tipados + `ServiceHelper` como puente desde el code-behind). Las **páginas** siguen creándose con `new` — se migrarán gradualmente al tocarlas en la Fase 4 (regla del boy scout). *(09/07/2026)*
 
 *Extra de esta fase: `PedidosService` ya no envía `UserId` ni precios (alineado con el contrato server-side de la Fase 2.5) y el mínimo de contraseña en el registro de la app pasó a 8, alineado con el backend.*
-*Verificación 09/07/2026: API y app compilan sin errores (commit `7133e71`). Prueba funcional en emulador pendiente de la próxima sesión de trabajo manual.*
+*Verificación 09/07/2026: API y app compilan sin errores (commit `7133e71`). Prueba funcional en emulador realizada: todo funciona correctamente.*
 
 ### Fase 4 — App: funcionalidad y UX
 *Por qué en este orden interno:* historial y cantidades son lo de mayor valor visible; loaders y estados vacíos multiplican la sensación de calidad de todo lo demás.
@@ -317,20 +317,23 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 - [x] Campaña activa: **la asigna el servidor** — `CampaignId` eliminado del contrato de `POST /api/pedidos/create` (mismo principio que `UserId`: el servidor no confía en datos que puede derivar); sin campaña activa el pedido se rechaza con error claro. Eliminado el `campaignId = 1` hardcodeado de `CarritoPage`. *(→ ALTA-9, 10/07/2026)*
 - [x] MVVM: patrón de referencia establecido en `HistorialPedidosViewModel` (+ `OnPropertyChanged` para propiedades calculadas en `BaseViewModel`). **Desviación consciente:** `CarritoPage` y `PedidosPage` se tocaron pero siguen en code-behind — extraer sus ViewModels se aplaza a cuando se vuelvan a tocar con el emulador disponible para validar el refactor (son las dos pantallas con más lógica de interacción visual). `CommunityToolkit.Mvvm` valorado y aplazado: `BaseViewModel` cubre lo necesario sin añadir dependencia. *(10/07/2026)*
 
-*Verificación 10/07/2026: API y app (net8.0-android) compilan sin errores. Prueba funcional end-to-end contra el API en local con token de desarrollo: `POST pedidos/create` sin `CampaignId` → el servidor lo asignó a la campaña activa (id 1), respetó `quantity=2` y calculó el total server-side (2 × 80 € = 160 €); `GET pedidos/user/{id}` devuelve el pedido para la nueva pantalla de historial. Quedó un pedido de prueba (id 17, "Prueba Fase 4", 160 €) en la BD de desarrollo. Prueba de UI en emulador pendiente de la próxima sesión manual (incluye también la de la Fase 3).*
+*Verificación 10/07/2026: API y app (net8.0-android) compilan sin errores. Prueba funcional end-to-end contra el API en local con token de desarrollo: `POST pedidos/create` sin `CampaignId` → el servidor lo asignó a la campaña activa (id 1), respetó `quantity=2` y calculó el total server-side (2 × 80 € = 160 €); `GET pedidos/user/{id}` devuelve el pedido para la nueva pantalla de historial. Quedó un pedido de prueba (id 17, "Prueba Fase 4", 160 €) en la BD de desarrollo. Prueba de UI en emulador realizada (cubre también la Fase 3): todo funciona correctamente.*
 
 ### Fase 5 — Operación
 *Por qué existe:* todo lo anterior es inútil si la BD se corrompe sin backup (ya pasó una vez) o si un despliegue falla por una migración olvidada.
-- [ ] `db.Database.Migrate()` en el arranque + seed asíncrono con try/catch y log.
-- [ ] Backup automatizado de `app.db` con rotación (idealmente `VACUUM INTO`, no `File.Copy`).
+- [x] `db.Database.Migrate()` en el arranque + seed asíncrono con try/catch y log. `MigrateAsync()` con fallo **fatal** (no debe arrancar con esquema incorrecto); seed de roles asíncrono (`FirstOrDefaultAsync`/`AsAsyncEnumerable`/`SaveChangesAsync`) con try/catch **no fatal** (el API sigue si el seed falla). *(13/07/2026)*
+- [~] ~~Backup automatizado de `app.db` con rotación (idealmente `VACUUM INTO`, no `File.Copy`).~~ **DESCARTADO (13/07/2026):** la BD de producción será **Neon (Postgres gestionado)**, que incluye backups automáticos y point-in-time restore — mejor y más consistente que la tarea casera. Opcional a futuro: `pg_dump` periódico a otro sitio solo si se quiere una copia *fuera* del proveedor (no depender de una única cuenta), no por seguridad de datos.
 - [ ] Async real en `Login` y `CreatePedidoFromCart`; `ILogger` en todo el API.
 - [ ] `SmtpClient` → MailKit; `JwtBearer` alineado a 8.0.25. (~~`RNGCryptoServiceProvider`~~ ya hecho en Fase 2.5.)
 - [ ] `allowBackup="false"` en AndroidManifest.
 - [ ] Opcional: Dockerfile / perfil de publicación / CI básico.
 
+*Verificación 13/07/2026 (punto 1): API arrancado contra una BD nueva temporal (`ConnectionStrings__Default` a un archivo inexistente) — `Migrate()` creó la BD y aplicó las 5 migraciones desde cero, logueó "Migraciones aplicadas correctamente", el seed corrió sin fallar y el API quedó escuchando en :5221. Antes de este cambio ese mismo escenario (BD nueva) tumbaba el arranque porque el seed consultaba `db.Users` sin tablas.*
+
 ### Fase 6 — NUEVA: Despliegue a producción (cuando exista el hosting)
 *Por qué es una fase aparte (decisión del 09/07/2026):* los valores de producción no se pueden configurar contra un servidor que no existe. Al separarlos de la estructura (Fase 3), el día de la migración solo cambia UNA variable — la infraestructura — y cualquier fallo se depura contra una app cuyo código de red ya está probado. Requisito previo: Fases 3 y 5 completadas (en especial `Migrate()` automático y backups, que en un servidor remoto son imprescindibles).
-- [ ] Contratar/preparar hosting para el API + decidir dónde vive la BD (¿SQLite en disco persistente? ¿migrar a un motor servidor?).
+- [ ] Contratar/preparar hosting para el API. **BD decidida (13/07/2026): Neon (Postgres gestionado).**
+- [ ] **Migración SQLite → Postgres (Neon):** sustituir el paquete `Microsoft.EntityFrameworkCore.Sqlite` por `Npgsql.EntityFrameworkCore.PostgreSQL` y `UseSqlite(...)` → `UseNpgsql(...)`. **Regenerar las 8 migraciones** (son específicas del proveedor: borrar la carpeta `Migrations` y scaffoldear de cero contra Npgsql desde el modelo actual — se puede porque aún no hay datos de producción). Probar el flujo completo contra Postgres (ojo a case-sensitivity en login por email/username y a la mayor estrictez de tipos; "compila" ≠ "funciona"). Connection string vía variable de entorno, endpoint **con pooler** de Neon, contar con posible cold-start (cubierto por los timeouts de red ya implementados).
 - [ ] URL pública del API en la configuración de la app (un solo valor gracias a `AppConfig` de Fase 3, Release→producción / Debug→emulador).
 - [ ] HTTPS obligatorio: certificado en el servidor, quitar `usesCleartextTraffic` global (si acaso, `network_security_config.xml` permitiendo cleartext solo hacia `10.0.2.2` en debug), verificar ATS en iOS.
 - [ ] `AppSettings:FrontendUrl` de producción (los links de los emails de confirmación) vía variable de entorno o `appsettings.Production.json`.
@@ -341,6 +344,7 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 ---
 
 ## Decisiones tomadas (histórico)
+- BD de producción: **Neon (Postgres gestionado)**; backups delegados al proveedor (point-in-time restore), se descarta la tarea de backup casera de la Fase 5. Implica migración SQLite→Postgres en la Fase 6 (13/07/2026).
 - La Fase 3 se ejecuta solo en su parte estructural mientras no haya hosting; los valores de producción pasan a la Fase 6 — Despliegue (09/07/2026).
 - El registro de progreso y los checkboxes del plan se actualizan al completar cada etapa (09/07/2026).
 - Expiración del JWT: 3 días / 4320 min (09/07/2026).

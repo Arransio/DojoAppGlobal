@@ -86,34 +86,62 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-// --- Seed de roles ---
-// El rol vive en la BD (User.Role). Aseguramos que test1 es admin y que los
-// usuarios antiguos sin rol pasan a "user", para no cambiar el comportamiento
-// actual de la app (su gating local de admin usa test1).
+// --- Migraciones + seed de roles al arranque ---
 using (var scope = app.Services.CreateScope())
 {
 	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 	var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-	var changed = false;
-
-	var admin = db.Users.FirstOrDefault(u => u.Username == "test1");
-	if (admin != null && admin.Role != "admin")
+	// 1) Aplicar migraciones pendientes automáticamente.
+	// Migrate() crea la BD si no existe y aplica solo lo que falte (si no hay nada
+	// pendiente, no hace nada). Esto elimina el paso manual 'dotnet ef database update'
+	// en cada despliegue y evita el fallo "el API no arranca contra una BD nueva".
+	// Un fallo aquí SÍ es fatal: arrancar con un esquema incorrecto daría errores 500
+	// silenciosos en runtime; es preferible que el arranque falle de forma ruidosa.
+	try
 	{
-		admin.Role = "admin";
-		changed = true;
+		await db.Database.MigrateAsync();
+		logger.LogInformation("Migraciones aplicadas correctamente");
+	}
+	catch (Exception ex)
+	{
+		logger.LogCritical(ex, "Fallo al aplicar las migraciones al arranque");
+		throw;
 	}
 
-	foreach (var user in db.Users.Where(u => string.IsNullOrEmpty(u.Role) && u.Username != "test1"))
+	// 2) Seed de roles. El rol vive en la BD (User.Role). Aseguramos que test1 es
+	// admin y que los usuarios antiguos sin rol pasan a "user", para no cambiar el
+	// comportamiento actual de la app (su gating local de admin usa test1).
+	// Un fallo aquí NO es fatal: el API puede servir aunque el seed no se aplique;
+	// lo registramos y seguimos.
+	try
 	{
-		user.Role = "user";
-		changed = true;
-	}
+		var changed = false;
 
-	if (changed)
+		var admin = await db.Users.FirstOrDefaultAsync(u => u.Username == "test1");
+		if (admin != null && admin.Role != "admin")
+		{
+			admin.Role = "admin";
+			changed = true;
+		}
+
+		await foreach (var user in db.Users
+			.Where(u => string.IsNullOrEmpty(u.Role) && u.Username != "test1")
+			.AsAsyncEnumerable())
+		{
+			user.Role = "user";
+			changed = true;
+		}
+
+		if (changed)
+		{
+			await db.SaveChangesAsync();
+			logger.LogInformation("Seed de roles aplicado");
+		}
+	}
+	catch (Exception ex)
 	{
-		db.SaveChanges();
-		logger.LogInformation("Seed de roles aplicado");
+		logger.LogError(ex, "Fallo al aplicar el seed de roles al arranque (el API continúa)");
 	}
 }
 
