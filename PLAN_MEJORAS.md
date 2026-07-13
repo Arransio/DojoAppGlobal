@@ -1,7 +1,7 @@
 # Plan de mejoras DojoApp (MAUI + API)
 
 > Auditoría completa realizada el 09/07/2026. Complementa a `EstudioMejoras.xdoc` (06/07/2026).
-> Estado: ver la tabla **Registro de progreso** (fuente única del estado; se actualiza al cerrar cada etapa). Última etapa completada: Fase 4 (10/07/2026).
+> Estado: ver la tabla **Registro de progreso** (fuente única del estado; se actualiza al cerrar cada etapa). Última etapa completada: Fase 5 (13/07/2026, salvo el punto 6 opcional — Dockerfile/CI).
 >
 > Este documento sirve como **plan de acción** y como **documento de formación**: cada punto incluye una explicación de por qué el problema existe, qué riesgo real supone y cuál es el concepto técnico detrás.
 
@@ -17,7 +17,7 @@
 | Fase 2.5 — Lógica de autorización backend | ✅ Completada | 09/07/2026 | `b805863` |
 | Fase 3 — App: red y configuración (estructural) | ✅ Completada | 09/07/2026 | `7133e71` |
 | Fase 4 — App: funcionalidad y UX | ✅ Completada | 10/07/2026 | `6129a10` |
-| Fase 5 — Operación | ⬜ Pendiente | — | — |
+| Fase 5 — Operación | ✅ Completada (salvo punto 6, opcional) | 13/07/2026 | `be855c5`, `a1c3b8d`, (+commit puntos 4-5) |
 | Fase 6 — Despliegue a producción | ⬜ Pendiente (requiere hosting) | — | — |
 
 > Regla acordada el 09/07/2026: este registro (y los checkboxes de cada fase) se actualizan en el momento en que se completa cada etapa, para tener constancia visual de lo ya implementado.
@@ -324,13 +324,15 @@ Directorio del API: `app.db`, `app - backup.db`, `app - backup2.db`, **`app.corr
 - [x] `db.Database.Migrate()` en el arranque + seed asíncrono con try/catch y log. `MigrateAsync()` con fallo **fatal** (no debe arrancar con esquema incorrecto); seed de roles asíncrono (`FirstOrDefaultAsync`/`AsAsyncEnumerable`/`SaveChangesAsync`) con try/catch **no fatal** (el API sigue si el seed falla). *(13/07/2026)*
 - [~] ~~Backup automatizado de `app.db` con rotación (idealmente `VACUUM INTO`, no `File.Copy`).~~ **DESCARTADO (13/07/2026):** la BD de producción será **Neon (Postgres gestionado)**, que incluye backups automáticos y point-in-time restore — mejor y más consistente que la tarea casera. Opcional a futuro: `pg_dump` periódico a otro sitio solo si se quiere una copia *fuera* del proveedor (no depender de una única cuenta), no por seguridad de datos.
 - [x] Async real en `Login` y `CreatePedidoFromCart`; `ILogger` en todo el API. Ambos endpoints a `async Task<IActionResult>` con `FirstOrDefaultAsync`/`SaveChangesAsync` (libera el hilo del thread pool en picos de carga). `ILogger` ya estaba en `AuthController`, `EmailService` y `PedidosController` desde Fase 2.5 — sin `Debug.WriteLine` reales en el API. *(13/07/2026)*
-- [ ] `SmtpClient` → MailKit; `JwtBearer` alineado a 8.0.25. (~~`RNGCryptoServiceProvider`~~ ya hecho en Fase 2.5.)
-- [ ] `allowBackup="false"` en AndroidManifest.
+- [x] `SmtpClient` → MailKit; `JwtBearer` alineado a 8.0.25. (~~`RNGCryptoServiceProvider`~~ ya hecho en Fase 2.5.) `EmailService` reescrito con `MailKit`/`MimeKit` (STARTTLS en 587, SslOnConnect en 465). MailKit fijado en **4.16.0** — las versiones previas (incl. 4.8/4.13) arrastran GHSA-9j88-vvj5-vhgr (inyección de respuesta STARTTLS), corregida justo en 4.16.0. `JwtBearer` 8.0.5 → 8.0.25 (alineado con el resto de paquetes EF). *(13/07/2026)*
+- [x] `allowBackup="false"` en AndroidManifest. *(13/07/2026)*
 - [ ] Opcional: Dockerfile / perfil de publicación / CI básico.
 
 *Verificación 13/07/2026 (punto 1): API arrancado contra una BD nueva temporal (`ConnectionStrings__Default` a un archivo inexistente) — `Migrate()` creó la BD y aplicó las 5 migraciones desde cero, logueó "Migraciones aplicadas correctamente", el seed corrió sin fallar y el API quedó escuchando en :5221. Antes de este cambio ese mismo escenario (BD nueva) tumbaba el arranque porque el seed consultaba `db.Users` sin tablas.*
 
 *Verificación 13/07/2026 (punto 3): compila sin errores; `POST /api/auth/login` (ya async) devuelve 400 con body vacío y 401 con credenciales inválidas contra la BD real — confirma que el camino `FirstOrDefaultAsync` se ejecuta correctamente.*
+
+*Verificación 13/07/2026 (puntos 4 y 5): API compila sin errores y sin avisos de vulnerabilidad (MailKit 4.16.0), arranca limpio con MailKit y sirve `GET /api/products` 200. El envío SMTP real no se ejerció (evita mandar correos de prueba); la configuración (servidor/puerto/credenciales) es la misma que ya funcionaba con `SmtpClient`, solo cambia la librería — confirmar en el próximo registro real. `allowBackup="false"` es un cambio de atributo del manifest (no requiere recompilar la app MAUI).*
 
 ### Fase 6 — NUEVA: Despliegue a producción (cuando exista el hosting)
 *Por qué es una fase aparte (decisión del 09/07/2026):* los valores de producción no se pueden configurar contra un servidor que no existe. Al separarlos de la estructura (Fase 3), el día de la migración solo cambia UNA variable — la infraestructura — y cualquier fallo se depura contra una app cuyo código de red ya está probado. Requisito previo: Fases 3 y 5 completadas (en especial `Migrate()` automático y backups, que en un servidor remoto son imprescindibles).
